@@ -96,14 +96,24 @@ export function HeroReveal() {
           </div>
           <div data-shade className="absolute inset-0 bg-gradient-to-t from-ink-900/70 via-ink-900/20 to-ink-900/10 opacity-0" />
 
+          {/* once the photo is full screen: the ZettaJoule-style dictionary entry for the name */}
           <div data-outro className="absolute inset-x-0 bottom-0 px-[var(--gutter)] pb-[12vh] text-white opacity-0">
-            <div className="mx-auto max-w-[1440px]">
-              <p className="h1 max-w-4xl text-white!">{d.home.heroLine}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Btn href={href("/products", lang)} variant="primary">
-                  {d.cta.explore}
-                </Btn>
-                <ContactButton variant="light">{d.nav.talk}</ContactButton>
+            <div className="mx-auto grid max-w-[1440px] gap-8 md:grid-cols-12 md:items-end">
+              <div className="md:col-span-6">
+                <p className="display text-white!">{lang === "ar" ? "غرغار" : "Ghargrow"}</p>
+                <p className="mt-3 flex items-baseline gap-4 font-mono text-sm text-white/70">
+                  <span dir="ltr">{d.home.namePron}</span>
+                  <em className="not-italic">{d.home.nameNoun}</em>
+                </p>
+              </div>
+              <div className="md:col-span-6">
+                <p className="text-[clamp(20px,1.9vw,28px)] leading-snug font-light text-white/90">{d.home.nameDef}</p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Btn href={href("/products", lang)} variant="primary">
+                    {d.cta.explore}
+                  </Btn>
+                  <ContactButton variant="light">{d.nav.talk}</ContactButton>
+                </div>
               </div>
             </div>
           </div>

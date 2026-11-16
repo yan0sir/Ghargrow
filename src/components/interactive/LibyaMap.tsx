@@ -36,7 +36,7 @@ export function LibyaMap() {
   return (
     <div className="grid gap-10 md:grid-cols-12 md:items-center">
       <div className="md:col-span-7">
-        <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Map of Libya with Ghargrow branches">
+        <svg viewBox={`0 0 ${VW} ${VH}`} className="mx-auto w-[60%]" role="img" aria-label="Map of Libya with Ghargrow branches">
           <defs>
             <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse">
               <circle cx="5" cy="5" r="1.4" fill="#43780e" opacity="0.35" />
