@@ -85,6 +85,10 @@ export function Header() {
                 <Roll>{n.label}</Roll>
               </Link>
             ))}
+            {/* standalone HTML page (route handler), so a plain anchor instead of <Link> */}
+            <a href={href("/3d", lang)} className="group hover:text-green-700">
+              <Roll>3D</Roll>
+            </a>
           </nav>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -158,6 +162,12 @@ export function Header() {
                   </li>
                 ),
               )}
+              <li className="overflow-hidden">
+                <a data-item href={href("/3d", lang)} className="flex items-center justify-between py-2 font-display text-[44px] leading-tight font-light">
+                  3D
+                  <IconArrow className="size-6 opacity-50" />
+                </a>
+              </li>
             </ul>
             <Link data-item href={href("/find-your-machine", lang)} className="mt-8 inline-block border border-white/40 px-5 py-3 text-sm">
               {d.nav.quiz}
