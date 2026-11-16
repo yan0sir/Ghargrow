@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ghargrow website
 
-## Getting Started
+The bilingual (EN / AR, RTL) site for Ghargrow Agro-Industries. Built from `../website-brief.md` and `../implementation-plan.md`.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · GSAP 3.13 (ScrollTrigger, SplitText, MotionPath) · Lenis smooth scroll.
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 → redirects to /en or /ar
+npm run build      # static prerender of every EN/AR route
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's where
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path | What |
+|---|---|
+| `src/app/[lang]/…` | All pages (home, products hub, category, product detail, spare parts, services, projects, about, news, careers, contact, find-your-machine) |
+| `src/proxy.ts` | Locale redirect (`/` → `/en` or `/ar` from Accept-Language) |
+| `src/content/` | **All content** — `catalog.ts` (brands, categories, products + specs), `more.ts` (parts, services, projects, news, jobs, quiz), `site.ts` (branches, phones, socials), `dict.ts` (UI strings EN/AR). Shaped to move into a headless CMS (Sanity) later. |
+| `src/components/scenes/` | Signature scroll scenes: `HeroTractor` (scroll-scrubbed AXION frames), `FieldJourney` (illustrated farm, tractor drives the track), `AttachmentSwap` (layered tractor, implements swap), `FrameScrub` (generic pinned frame sequence) |
+| `src/components/interactive/` | Pivot coverage simulator, find-your-machine quiz, Libya map, parts catalog, product highlights/hotspots, bale flow |
+| `src/components/motion/` | Frame-sequence engine, split-text reveals, growing crops (POLA-style), leaf-bloom logo |
+| `src/components/contact/` | Shared contact sheet (WhatsApp with pre-filled product, call a branch, inquiry form), floating pill |
+| `src/app/api/inquiry/route.ts` | Inquiry endpoint — emails via Resend when `RESEND_API_KEY` + `INQUIRY_TO` are set, otherwise logs |
+| `scripts/process-media.py`, `scripts/process-logos.py` | Rebuild `public/media/` from the brand media library (photos → WebP, cutouts, frame sequences, video loops) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Lighter mode
 
-## Learn More
+The footer toggle (and `prefers-reduced-motion`) turns off smooth scroll, pinned scenes and frame sequences, showing posters instead — saves mobile data.
 
-To learn more about Next.js, take a look at the following resources:
+## Before launch — needs the client
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **WhatsApp number(s)** — all WhatsApp links use the Benghazi number (`src/content/site.ts`). Confirm which numbers take WhatsApp.
+- **Arabic copy review** by a native speaker (`src/content/dict.ts`, `catalog.ts`, `more.ts`).
+- **Model names** — old site mixes AXION/ARION 640C, ARION/AXION 620; this build uses ARION 640 C and ARION 620 per the CLAAS portfolio.
+- **Specs** — CLAAS figures come from the CLAAS 2024 portfolio / DOMINATOR 260 flyer in the media library. Western and Arcusin have no spec sheets yet (features only). Pivot simulator span lengths and end-gun throw are indicative placeholders.
+- **Arcusin** — no Arcusin photos or logo in the library; bale-handling pages use Ghargrow bale photos and a text wordmark.
+- **Projects / news** — built from Ghargrow's own photos; confirm locations, dates, farm names. Careers lists only the Accountant role from the "We are hiring" post.
+- **Inquiry destination** — set `RESEND_API_KEY`, `INQUIRY_TO` (and optionally `INQUIRY_FROM`) env vars, or swap for the CRM.
+- **Footage licences** — hero/drive/AXION sequences and the DOMINATOR, QUADRANT, DISCO loops are cut from CLAAS dealer films; pivot loops from Western's Ukraine film. Confirm dealer usage rights.
+- **CMS** — content is in typed files today; move to Sanity per the implementation plan Phase 2 when the team is ready to edit.

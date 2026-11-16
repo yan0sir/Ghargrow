@@ -1,26 +1,245 @@
 @import "tailwindcss";
 
+/* ───────────────────────── Ghargrow design tokens ───────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --green-900: #1f3a07;
+  --green-800: #2c5209;
+  --green-700: #43780e; /* logo green */
+  --green-500: #6c9a35;
+  --green-300: #a9c98a;
+  --green-100: #e6efda;
+  --sand-50: #f1eee9;
+  --sand-100: #ebe6dd;
+  --sand-200: #e3dccf;
+  --wheat-400: #d9b26a;
+  --sky-300: #9db8e3;
+  --sky-100: #dce7f5;
+  --ink-900: #14140f;
+  --ink-700: #524f4b;
+  --ink-400: #8a867f;
+  --whatsapp: #25d366;
+  --gutter: clamp(16px, 3vw, 40px);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-green-900: var(--green-900);
+  --color-green-800: var(--green-800);
+  --color-green-700: var(--green-700);
+  --color-green-500: var(--green-500);
+  --color-green-300: var(--green-300);
+  --color-green-100: var(--green-100);
+  --color-sand-50: var(--sand-50);
+  --color-sand-100: var(--sand-100);
+  --color-sand-200: var(--sand-200);
+  --color-wheat-400: var(--wheat-400);
+  --color-sky-300: var(--sky-300);
+  --color-sky-100: var(--sky-100);
+  --color-ink-900: var(--ink-900);
+  --color-ink-700: var(--ink-700);
+  --color-ink-400: var(--ink-400);
+  --color-whatsapp: var(--whatsapp);
+  --font-display: var(--font-geist), var(--font-plex-arabic), system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-plex-arabic), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), var(--font-plex-arabic), ui-monospace, monospace;
+  --radius-none: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Arabic: Plex Arabic first everywhere */
+html[lang="ar"] {
+  --font-display: var(--font-plex-arabic), system-ui, sans-serif;
+}
+html[lang="ar"] body {
+  font-family: var(--font-plex-arabic), system-ui, sans-serif;
+}
+html[lang="ar"] .font-display,
+html[lang="ar"] .font-mono {
+  font-family: var(--font-plex-arabic), system-ui, sans-serif;
+}
+
+html {
+  background: var(--sand-50);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--sand-50);
+  color: var(--ink-700);
+  font-family: var(--font-inter), var(--font-plex-arabic), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+html[lang="ar"] body {
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+::selection {
+  background: var(--green-700);
+  color: #fff;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* ───────────────────────── Type utilities ───────────────────────── */
+@utility display-xl {
+  font-family: var(--font-display);
+  font-weight: 250;
+  font-size: clamp(64px, 14vw, 220px);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: var(--ink-900);
+}
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 250;
+  font-size: clamp(48px, 8.5vw, 132px);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--ink-900);
+}
+@utility h1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(40px, 5.6vw, 80px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink-900);
+}
+@utility h2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(32px, 3.8vw, 54px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink-900);
+}
+@utility h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--ink-900);
+}
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+@utility lead {
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.55;
+}
+@utility wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+@utility section-y {
+  padding-block: clamp(88px, 12vw, 168px);
+}
+
+html[lang="ar"] .display-xl,
+html[lang="ar"] .display,
+html[lang="ar"] .h1,
+html[lang="ar"] .h2 {
+  letter-spacing: 0;
+  line-height: 1.15;
+  font-weight: 300;
+}
+html[lang="ar"] .eyebrow {
+  letter-spacing: 0;
+  font-size: 13px;
+}
+
+/* Signature gradient: morning sky fading into the field */
+.sky-gradient {
+  background: linear-gradient(180deg, var(--sky-300) 0%, var(--sky-100) 42%, #f3e3cc 78%, var(--sand-50) 100%);
+}
+
+/* Split lines for reveals */
+.split-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.split-line > span {
+  display: block;
+  will-change: transform;
+}
+
+/* SplitText line masks: room for descenders / Arabic marks */
+.split-line-inner-mask {
+  padding-block: 0.08em 0.16em;
+  margin-block: -0.08em -0.16em;
+}
+
+/* Button text roll */
+.roll {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  height: 1.3em;
+  line-height: 1.3em;
+}
+.roll > span {
+  display: block;
+  transition: transform 0.55s var(--ease-out);
+}
+.roll > span + span {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 100%;
+}
+.group:hover .roll > span,
+.group:focus-visible .roll > span {
+  transform: translateY(-100%);
+}
+
+/* Hide scrollbar utility for horizontal rails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Lighter mode / reduced motion */
+html.lite .motion-only {
+  display: none !important;
+}
+html:not(.lite) .lite-only {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:focus-visible {
+  outline: 2px solid var(--green-700);
+  outline-offset: 3px;
 }
