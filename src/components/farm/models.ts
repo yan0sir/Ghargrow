@@ -238,7 +238,7 @@ export function animateAnt(ant: Ant, t: number, speed: number) {
 }
 
 /* ───────────── centre pivot ───────────── */
-export type Pivot = { group: THREE.Group; arm: THREE.Group; wheels: THREE.Object3D[]; spray: THREE.Points; R: number };
+export type Pivot = { group: THREE.Group; arm: THREE.Group; wheels: THREE.Object3D[]; spray: THREE.Points; mist: THREE.MeshBasicMaterial; R: number };
 
 export function buildPivot(R: number): Pivot {
   const group = new THREE.Group();
@@ -319,7 +319,7 @@ export function buildPivot(R: number): Pivot {
     arm.add(rod(v3(x, pipeY(x), 0), v3(x, 1.4, 0), 0.02, steel, 4));
   }
   // spray: droplets along the arm (animated in the shader, in arm space)
-  const n = Math.round(R * 22);
+  const n = Math.round(R * 48);
   const geo = new THREE.BufferGeometry();
   const ax = new Float32Array(n * 3),
     seed = new Float32Array(n * 2);
@@ -337,13 +337,31 @@ export function buildPivot(R: number): Pivot {
   arm.traverse((o) => ((o as THREE.Mesh).castShadow = true));
   group.add(arm);
   group.traverse((o) => ((o as THREE.Mesh).castShadow = true));
-  return { group, arm, wheels, spray, R };
+  // mist umbrella under every sprinkler + end-gun jet (share one material so they fade together)
+  const mist = new THREE.MeshBasicMaterial({ color: 0xe6f4ff, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
+  for (let x = 3; x < R + 2; x += 4) {
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(2.1, 1.35, 28, 1, true), mist);
+    cone.position.set(x, 0.74, 0);
+    arm.add(cone);
+  }
+  const jetPts: THREE.Vector3[] = [];
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24;
+    jetPts.push(v3(R + 3.5 + t * 16, pipeY(R) + 0.5 + Math.sin(t * Math.PI) * 4.5 - t * 4.2, 0));
+  }
+  const jet = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(jetPts), 48, 0.35, 8), mist);
+  arm.add(jet);
+  const jetFan = new THREE.Mesh(new THREE.ConeGeometry(3.2, 1.2, 24, 1, true), mist);
+  jetFan.position.set(R + 19, 0.6, 0);
+  arm.add(jetFan);
+  return { group, arm, wheels, spray, mist, R };
 }
 
 export function sprayMaterial() {
   return new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
+    blending: THREE.AdditiveBlending,
     uniforms: { uTime: { value: 0 }, uOn: { value: 0 }, uPx: { value: 1 } },
     vertexShader: /* glsl */ `
       attribute vec2 aSeed;
@@ -360,7 +378,7 @@ export function sprayMaterial() {
         vA = (1.0 - t) * 0.85;
         vec4 mv = modelViewMatrix * vec4(p,1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = uPx * 60.0 / -mv.z;
+        gl_PointSize = uPx * 150.0 / -mv.z;
         #include <logdepthbuf_vertex>
       }`,
     fragmentShader: /* glsl */ `

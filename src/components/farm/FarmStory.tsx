@@ -28,15 +28,16 @@ const serif = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], variable
 
 /*
  * "From sand to harvest" — one pinned, scroll-driven Three.js story:
- *   0.00–0.06  an ant walks across Libyan sand (driven by scroll only)
- *   0.06–0.15  the camera pulls back from millimetres to hundreds of metres
- *   0.15–0.30  three centre pivots roll in; the camera latches onto the edge of one arm as it starts to water
- *   0.30–0.70  riding the arm: autumn sowing → winter rain → spring growth → golden summer, day/night cycles
- *   0.70–0.92  the camera holds while the machines drive in, then follows them; combines spiral in,
+ *   0.00–0.05  an ant walks across Libyan sand (driven by scroll only)
+ *   0.05–0.11  the camera pulls back from millimetres to hundreds of metres
+ *   0.11–0.24  three centre pivots roll in and spray (the wet sector follows each arm)
+ *   0.24–0.70  aerial time-lapse: autumn sowing → winter rain → spring growth → golden summer;
+ *              at the very end the camera latches onto a pivot arm's edge and rides it round
+ *   0.70–0.92  the view returns to normal as the machines drive in, then follows them; combines spiral in,
  *              AXION tractors with grain carts alongside, bales drop. The pivot arm always stays opposite.
  *   0.92–1.00  pull up over the harvested circles, then drag to explore
  */
-const SEG = { hero: [0, 0.06], pan: [0.06, 0.15], piv: [0.15, 0.3], season: [0.3, 0.7], harvest: [0.7, 0.92], end: [0.92, 1] } as const;
+const SEG = { hero: [0, 0.05], pan: [0.05, 0.11], piv: [0.11, 0.24], season: [0.24, 0.7], harvest: [0.7, 0.92], end: [0.92, 1] } as const;
 const R = 40;
 const RINGS = 5;
 const FIELDS = [v3(0, 0, 0), v3(96, 0, -20), v3(-94, 0, 22)];
@@ -145,7 +146,7 @@ const COPY = {
   },
 };
 
-const JUMP_AT = [0.02, 0.2, 0.33, 0.47, 0.62, 0.78];
+const JUMP_AT = [0.02, 0.14, 0.27, 0.42, 0.58, 0.78];
 
 /** Per-character fade (StaggeredFade from the reference), CSS-driven. */
 function Stagger({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -374,7 +375,7 @@ export function FarmStory() {
       const fEnd = ease(seg(p, SEG.end));
 
       /* ── ant (scroll only) ── */
-      const walked = clamp(p / SEG.pan[1]) * 0.14; // metres
+      const walked = clamp(p / SEG.pan[1]) * 0.12; // metres
       const heading = ANT_HEADING + Math.sin(walked * 38) * 0.18;
       ant.group.position.set(
         ANT_HOME.x + Math.cos(ANT_HEADING) * walked,
@@ -386,16 +387,16 @@ export function FarmStory() {
       ant.group.visible = p < 0.2;
 
       /* ── pivots arrive, then water ── */
-      const arrive = (i: number) => ease(clamp((fPiv - i * 0.12) / 0.45));
+      const arrive = (i: number) => ease(clamp((fPiv - i * 0.07) / 0.3));
       let theta: number;
-      if (p < SEG.season[0]) theta = ease(clamp((fPiv - 0.38) / 0.62)) * Math.PI * 2;
+      if (p < SEG.season[0]) theta = ease(clamp((fPiv - 0.3) / 0.7)) * Math.PI * 2;
       else if (p < SEG.harvest[0]) theta = Math.PI * 2 + g * Math.PI * 7;
       else theta = Math.PI; // replaced per field below by the combine-opposite angle
       pivots.forEach(({ c, pv }, i) => {
         const k = p >= SEG.season[0] ? 1 : arrive(i);
         const out = c.clone().setY(0);
         const dir = out.lengthSq() > 1 ? out.normalize() : v3(-0.6, 0, -0.8);
-        pv.group.position.set(c.x + dir.x * (1 - k) * 320, 0, c.z + dir.z * (1 - k) * 320);
+        pv.group.position.set(c.x + dir.x * (1 - k) * 170, 0, c.z + dir.z * (1 - k) * 170);
         pv.group.visible = k > 0.001;
         let th = theta;
         if (p >= SEG.harvest[0]) th = machines[i].lastS * Math.PI * 2 * RINGS + Math.PI;
@@ -403,7 +404,10 @@ export function FarmStory() {
         pv.wheels.forEach((w, wi) => (w.rotation.z = -(th * (R * ((wi >> 1) + 1)) / 3) / 0.67 - (1 - k) * 40));
         const sprayMat = pv.spray.material as THREE.ShaderMaterial;
         sprayMat.uniforms.uTime.value = time;
-        sprayMat.uniforms.uOn.value = clamp((fPiv - 0.38) * 6) * (1 - clamp((p - SEG.harvest[0]) * 40));
+        const sprayOn = (p >= SEG.season[0] ? 1 : clamp((fPiv - 0.3) * 6)) * (1 - clamp((p - SEG.harvest[0]) * 40));
+        sprayMat.uniforms.uOn.value = sprayOn;
+        pv.mist.opacity = sprayOn * (0.16 + Math.sin(time * 7 + i) * 0.03);
+        pv.mist.visible = sprayOn > 0.01;
         sprayMat.uniforms.uPx.value = renderer.getPixelRatio() * (el.clientHeight / 900);
       });
       fieldMat.uniforms.uSweep.value = p >= SEG.season[0] ? 7 : theta;
@@ -526,15 +530,16 @@ export function FarmStory() {
         tgt = heroTgt.clone().lerp(AER_T, tf);
         pos = sph(tgt, dist, elev, azi);
       } else if (p < SEG.season[0]) {
-        const a = aerial(lerp(235, 205, fPiv), lerp(0.74, 0.64, fPiv), 0.95 + fPiv * 0.3);
+        const a = aerial(lerp(235, 200, fPiv), lerp(0.74, 0.62, fPiv), 0.95 + fPiv * 0.35);
+        pos = a.pos;
+        tgt = a.tgt;
+      } else if (p < SEG.harvest[0]) {
+        // aerial time-lapse, then at the very end latch onto the edge of pivot 1's arm and ride it round
+        const a = aerial(lerp(200, 150, clamp(g / 0.6)), lerp(0.62, 0.5, clamp(g / 0.6)), 1.3 + g * 1.1);
         const gr = grab(theta);
-        const k = ease(clamp((fPiv - 0.3) / 0.35));
+        const k = ease(clamp((g - 0.68) / 0.14));
         pos = a.pos.lerp(gr.pos, k);
         tgt = a.tgt.lerp(gr.tgt, k);
-      } else if (p < SEG.harvest[0]) {
-        const gr = grab(theta);
-        pos = gr.pos;
-        tgt = gr.tgt;
       } else {
         // hold where the arm left us while the machines drive in, then ease into following them
         const hold = grab(Math.PI);
@@ -595,15 +600,15 @@ export function FarmStory() {
       wheatMat.uniforms.uSun.value.copy(sunDir).transformDirection(camera.matrixWorldInverse);
 
       /* ── overlays ── */
-      const heroOut = clamp(p / 0.05);
+      const heroOut = clamp(p / 0.04);
       heroBack.style.opacity = String(1 - heroOut);
       heroBack.style.transform = `translate3d(0, ${-heroOut * 60}px, 0)`;
-      heroFront.style.opacity = String(1 - clamp(p / 0.035));
-      heroFront.style.visibility = p < 0.035 ? "visible" : "hidden";
+      heroFront.style.opacity = String(1 - clamp(p / 0.03));
+      heroFront.style.visibility = p < 0.03 ? "visible" : "hidden";
       hint.style.opacity = String(1 - clamp(p / 0.02));
 
-      const panIn = clamp((p - 0.07) / 0.05),
-        panOut = clamp((p - 0.135) / 0.02);
+      const panIn = clamp((p - 0.055) / 0.03),
+        panOut = clamp((p - 0.1) / 0.015);
       panWords.forEach((w, i) => {
         const k = clamp(panIn * 2.2 - (i / panWords.length) * 1.2);
         w.style.opacity = String((0.12 + 0.88 * k) * (1 - panOut));
@@ -611,8 +616,8 @@ export function FarmStory() {
       });
       panBox.style.visibility = panIn > 0 && panOut < 1 ? "visible" : "hidden";
 
-      const pivIn = clamp((p - 0.16) / 0.05),
-        pivOut = clamp((p - 0.285) / 0.02);
+      const pivIn = clamp((p - 0.115) / 0.04),
+        pivOut = clamp((p - 0.225) / 0.02);
       pivWords.forEach((w, i) => {
         const k = clamp(pivIn * 2.2 - (i / pivWords.length) * 1.2);
         w.style.opacity = String((0.12 + 0.88 * k) * (1 - pivOut));
@@ -627,7 +632,7 @@ export function FarmStory() {
         s.style.transform = `translate3d(0, ${(1 - o) * 24}px, 0)`;
         s.style.filter = `blur(${(1 - o) * 8}px)`;
       });
-      const hudOn = clamp((p - 0.22) * 20) * (1 - clamp((p - 0.72) * 25));
+      const hudOn = clamp((p - 0.16) * 20) * (1 - clamp((p - 0.72) * 25));
       hud.style.opacity = String(hudOn);
       const dayN = Math.round(g * 270);
       hudDay.textContent = String(dayN).padStart(3, "0");
@@ -637,7 +642,7 @@ export function FarmStory() {
       hudHeight.textContent = (grow * 0.92).toFixed(2);
 
       // hotspots: projected from the world, live values
-      const hsOn = p > 0.22 && p < 0.68;
+      const hsOn = p > 0.16 && p < 0.6;
       hotspots.forEach((hs, i) => {
         const w = hsWorld[i].clone().project(camera);
         const visible = hsOn && w.z < 1 && Math.abs(w.x) < 0.95 && Math.abs(w.y) < 0.9;
@@ -750,7 +755,7 @@ export function FarmStory() {
           <p className="max-w-xs text-sm leading-relaxed font-light text-white/85 [text-shadow:0_1px_12px_rgba(40,20,0,.5)] sm:max-w-md sm:text-base md:text-lg">{t.sub}</p>
           <button
             type="button"
-            onClick={() => jump(0.13)}
+            onClick={() => jump(0.1)}
             className="liquid-glass pointer-events-auto mt-7 rounded-full px-8 py-3.5 text-xs tracking-[0.2em] text-white/90 uppercase sm:px-10 sm:py-4"
           >
             {t.begin}
