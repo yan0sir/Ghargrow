@@ -20,6 +20,7 @@ import {
   buildWheat,
   fieldMaterial,
   harvestPose,
+  RIN,
   v3,
 } from "./models";
 
@@ -27,14 +28,15 @@ const serif = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], variable
 
 /*
  * "From sand to harvest" — one pinned, scroll-driven Three.js story:
- *   0.00–0.07  an ant walks across Libyan sand (it follows your cursor)
- *   0.07–0.22  the camera pulls back from millimetres to hundreds of metres
- *   0.22–0.36  three centre pivots roll in and water the sand (wet sector follows each arm)
- *   0.36–0.72  time-lapse: autumn sowing → winter rain → spring growth → golden summer, day/night cycles
- *   0.72–0.92  combines spiral in from the edge of each circle, tractors and grain carts alongside, bales drop
+ *   0.00–0.06  an ant walks across Libyan sand (driven by scroll only)
+ *   0.06–0.15  the camera pulls back from millimetres to hundreds of metres
+ *   0.15–0.30  three centre pivots roll in; the camera latches onto the edge of one arm as it starts to water
+ *   0.30–0.70  riding the arm: autumn sowing → winter rain → spring growth → golden summer, day/night cycles
+ *   0.70–0.92  the camera holds while the machines drive in, then follows them; combines spiral in,
+ *              AXION tractors with grain carts alongside, bales drop. The pivot arm always stays opposite.
  *   0.92–1.00  pull up over the harvested circles, then drag to explore
  */
-const SEG = { hero: [0, 0.07], pan: [0.07, 0.22], piv: [0.22, 0.36], season: [0.36, 0.72], harvest: [0.72, 0.92], end: [0.92, 1] } as const;
+const SEG = { hero: [0, 0.06], pan: [0.06, 0.15], piv: [0.15, 0.3], season: [0.3, 0.7], harvest: [0.7, 0.92], end: [0.92, 1] } as const;
 const R = 40;
 const RINGS = 5;
 const FIELDS = [v3(0, 0, 0), v3(96, 0, -20), v3(-94, 0, 22)];
@@ -143,7 +145,7 @@ const COPY = {
   },
 };
 
-const JUMP_AT = [0.02, 0.3, 0.4, 0.52, 0.66, 0.8];
+const JUMP_AT = [0.02, 0.2, 0.33, 0.47, 0.62, 0.78];
 
 /** Per-character fade (StaggeredFade from the reference), CSS-driven. */
 function Stagger({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -244,7 +246,7 @@ export function FarmStory() {
       const balePose = Array.from({ length: 46 }, (_, k) => {
         const s = (k + 0.6) / 46;
         const p = harvestPose(R, RINGS, s);
-        const out = R / RINGS / 2 + 0.6;
+        const out = (R - RIN) / RINGS / 2 + 0.6;
         return { s, x: Math.cos(p.a) * (p.r + out), z: Math.sin(p.a) * (p.r + out), heading: p.heading };
       });
       return { c, comb, cart, bales, balePose, lastS: 0 };
@@ -289,27 +291,8 @@ export function FarmStory() {
     rain.frustumCulled = false;
     scene.add(rain);
 
-    /* ant steering: follows the cursor on the sand during the hero */
-    const ray = new THREE.Raycaster();
-    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-    const ndc = new THREE.Vector2(9, 9);
-    const antTarget = ANT_HOME.clone().add(v3(0.1, 0, 0));
-    let heading = 0.4;
-    let pointerOn = false;
-    let mx = 0,
-      my = 0,
-      px = 0,
-      py = 0;
-    const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-      mx = e.clientX / window.innerWidth - 0.5;
-      my = e.clientY / window.innerHeight - 0.5;
-      pointerOn = true;
-    };
-    const onLeave = () => (pointerOn = false);
-    window.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerleave", onLeave);
+    /* the ant is driven by scroll only: distance walked = f(progress) */
+    const ANT_HEADING = 0.4;
 
     /* controls (free orbit at the very end) */
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -376,7 +359,6 @@ export function FarmStory() {
     const clock = new THREE.Clock();
     let raf = 0;
     let freeCam = false;
-    const antDir = new THREE.Vector3();
 
     const tick = () => {
       const dt = Math.min(0.05, clock.getDelta());
@@ -384,8 +366,6 @@ export function FarmStory() {
       sp += (progress - sp) * (1 - Math.pow(0.86, (dt * 1000) / 16.7));
       if (Math.abs(progress - sp) < 0.0002) sp = progress;
       const p = sp;
-      px += (mx - px) * 0.06;
-      py += (my - py) * 0.06;
 
       const fPan = ease(seg(p, SEG.pan));
       const fPiv = seg(p, SEG.piv);
@@ -393,30 +373,17 @@ export function FarmStory() {
       const h = seg(p, SEG.harvest);
       const fEnd = ease(seg(p, SEG.end));
 
-      /* ── ant ── */
-      if (p < 0.12) {
-        if (pointerOn) {
-          ray.setFromCamera(ndc, camera);
-          const hit = new THREE.Vector3();
-          if (ray.ray.intersectPlane(plane, hit) && hit.distanceTo(ANT_HOME) < 0.6) antTarget.copy(hit);
-        } else if (ant.group.position.distanceTo(antTarget) < 0.01) {
-          const a = Math.random() * Math.PI * 2;
-          antTarget.copy(ANT_HOME).add(v3(Math.cos(a) * 0.15, 0, Math.sin(a) * 0.15));
-        }
-        antDir.copy(antTarget).sub(ant.group.position).setY(0);
-        const distT = antDir.length();
-        const want = Math.atan2(-antDir.z, antDir.x);
-        heading = lerpAngle(heading, want, Math.min(1, dt * 4));
-        const speed = distT > 0.006 ? 0.028 : 0;
-        ant.group.position.x += Math.cos(heading) * speed * dt;
-        ant.group.position.z += -Math.sin(heading) * speed * dt;
-        // stay on the macro patch
-        const off = ant.group.position.clone().sub(ANT_HOME);
-        if (off.length() > 0.3) ant.group.position.copy(ANT_HOME).add(off.setLength(0.3));
-        ant.group.rotation.y = heading;
-        animateAnt(ant, time, speed > 0 ? 1 : 0.15);
-      }
-      ant.group.visible = p < 0.3;
+      /* ── ant (scroll only) ── */
+      const walked = clamp(p / SEG.pan[1]) * 0.14; // metres
+      const heading = ANT_HEADING + Math.sin(walked * 38) * 0.18;
+      ant.group.position.set(
+        ANT_HOME.x + Math.cos(ANT_HEADING) * walked,
+        0,
+        ANT_HOME.z - Math.sin(ANT_HEADING) * walked + Math.sin(walked * 38) * 0.006,
+      );
+      ant.group.rotation.y = heading;
+      animateAnt(ant, walked * 70, 1);
+      ant.group.visible = p < 0.2;
 
       /* ── pivots arrive, then water ── */
       const arrive = (i: number) => ease(clamp((fPiv - i * 0.12) / 0.45));
@@ -542,7 +509,11 @@ export function FarmStory() {
       const heroPos = sph(heroTgt, 0.055, 0.13, -heroAzi);
       const AER_T = v3(4, 0, 0);
       const aerial = (dist: number, elev: number, azi: number) => ({ pos: sph(AER_T, dist, elev, azi), tgt: AER_T.clone() });
-      const cropPose = { pos: v3(30, 2.3, 33), tgt: v3(4, 1.4, 2) };
+      // grabbed onto the edge of pivot 1's arm: just outside the end tower, trailing slightly, looking in along the arm
+      const grab = (th: number) => ({
+        pos: v3(Math.cos(th - 0.15) * (R + 13), 11, Math.sin(th - 0.15) * (R + 13)),
+        tgt: v3(Math.cos(th + 0.05) * R * 0.48, 1.5, Math.sin(th + 0.05) * R * 0.48),
+      });
       let pos: THREE.Vector3, tgt: THREE.Vector3;
       if (p < SEG.pan[0]) {
         pos = heroPos;
@@ -555,33 +526,38 @@ export function FarmStory() {
         tgt = heroTgt.clone().lerp(AER_T, tf);
         pos = sph(tgt, dist, elev, azi);
       } else if (p < SEG.season[0]) {
-        const a = aerial(lerp(235, 200, fPiv), lerp(0.74, 0.62, fPiv), 0.95 + fPiv * 0.35);
-        pos = a.pos;
-        tgt = a.tgt;
+        const a = aerial(lerp(235, 205, fPiv), lerp(0.74, 0.64, fPiv), 0.95 + fPiv * 0.3);
+        const gr = grab(theta);
+        const k = ease(clamp((fPiv - 0.3) / 0.35));
+        pos = a.pos.lerp(gr.pos, k);
+        tgt = a.tgt.lerp(gr.tgt, k);
       } else if (p < SEG.harvest[0]) {
-        const a = aerial(lerp(200, 150, clamp(g / 0.55)), lerp(0.62, 0.5, clamp(g / 0.55)), 1.3 + g * 1.1);
-        const k = ease(clamp((g - 0.55) / 0.35));
-        pos = a.pos.lerp(cropPose.pos, k);
-        tgt = a.tgt.lerp(cropPose.tgt, k);
+        const gr = grab(theta);
+        pos = gr.pos;
+        tgt = gr.tgt;
       } else {
+        // hold where the arm left us while the machines drive in, then ease into following them
+        const hold = grab(Math.PI);
         const m = machines[0];
         const cpos = m.comb.group.position;
         const fwd = v3(Math.cos(m.comb.group.rotation.y), 0, -Math.sin(m.comb.group.rotation.y));
         const side = v3(fwd.z, 0, -fwd.x);
-        const follow = { pos: cpos.clone().add(side.clone().multiplyScalar(-24)).add(fwd.clone().multiplyScalar(-6)).add(v3(0, 7.5, 0)), tgt: cpos.clone().add(fwd.clone().multiplyScalar(6)).add(side.clone().multiplyScalar(3)).add(v3(0, 1.5, 0)) };
-        const k = ease(clamp(h / 0.2));
-        pos = cropPose.pos.clone().lerp(follow.pos, k);
-        tgt = cropPose.tgt.clone().lerp(follow.tgt, k);
+        // from the harvested (outer) side: AXION + grain cart nearest the camera, the combine cutting just beyond
+        const mid = cpos.clone().lerp(m.cart.group.position, 0.5);
+        const follow = {
+          pos: mid.clone().add(side.clone().multiplyScalar(19)).add(fwd.clone().multiplyScalar(-7)).add(v3(0, 5, 0)),
+          tgt: mid.clone().add(fwd.clone().multiplyScalar(2)).add(v3(0, 1.6, 0)),
+        };
+        const k = ease(clamp((h - 0.16) / 0.2));
+        pos = hold.pos.lerp(follow.pos, k);
+        tgt = hold.tgt.lerp(follow.tgt, k);
         if (p >= SEG.end[0]) {
           const fin = aerial(300, 0.95, 2.6);
           pos.lerp(fin.pos, fEnd);
           tgt.lerp(fin.tgt, fEnd);
         }
       }
-      // pointer parallax (scaled to distance)
       const dist = pos.distanceTo(tgt);
-      pos.x += px * dist * 0.06;
-      pos.y += -py * dist * 0.04;
 
       if (p > 0.985 && !freeCam) {
         freeCam = true;
@@ -619,15 +595,15 @@ export function FarmStory() {
       wheatMat.uniforms.uSun.value.copy(sunDir).transformDirection(camera.matrixWorldInverse);
 
       /* ── overlays ── */
-      const heroOut = clamp(p / 0.06);
+      const heroOut = clamp(p / 0.05);
       heroBack.style.opacity = String(1 - heroOut);
-      heroBack.style.transform = `translate3d(${-px * 12}px, ${-heroOut * 60}px, 0)`;
-      heroFront.style.opacity = String(1 - clamp(p / 0.04));
-      heroFront.style.visibility = p < 0.04 ? "visible" : "hidden";
+      heroBack.style.transform = `translate3d(0, ${-heroOut * 60}px, 0)`;
+      heroFront.style.opacity = String(1 - clamp(p / 0.035));
+      heroFront.style.visibility = p < 0.035 ? "visible" : "hidden";
       hint.style.opacity = String(1 - clamp(p / 0.02));
 
-      const panIn = clamp((p - 0.09) / 0.07),
-        panOut = clamp((p - 0.19) / 0.03);
+      const panIn = clamp((p - 0.07) / 0.05),
+        panOut = clamp((p - 0.135) / 0.02);
       panWords.forEach((w, i) => {
         const k = clamp(panIn * 2.2 - (i / panWords.length) * 1.2);
         w.style.opacity = String((0.12 + 0.88 * k) * (1 - panOut));
@@ -635,8 +611,8 @@ export function FarmStory() {
       });
       panBox.style.visibility = panIn > 0 && panOut < 1 ? "visible" : "hidden";
 
-      const pivIn = clamp((p - 0.24) / 0.06),
-        pivOut = clamp((p - 0.345) / 0.02);
+      const pivIn = clamp((p - 0.16) / 0.05),
+        pivOut = clamp((p - 0.285) / 0.02);
       pivWords.forEach((w, i) => {
         const k = clamp(pivIn * 2.2 - (i / pivWords.length) * 1.2);
         w.style.opacity = String((0.12 + 0.88 * k) * (1 - pivOut));
@@ -648,10 +624,10 @@ export function FarmStory() {
       seasonEls.forEach((s, k) => {
         const o = inSeason ? sw[k] : 0;
         s.style.opacity = String(o);
-        s.style.transform = `translate3d(-50%, ${(1 - o) * 24}px, 0)`;
+        s.style.transform = `translate3d(0, ${(1 - o) * 24}px, 0)`;
         s.style.filter = `blur(${(1 - o) * 8}px)`;
       });
-      const hudOn = clamp((p - 0.3) * 20) * (1 - clamp((p - 0.74) * 25));
+      const hudOn = clamp((p - 0.22) * 20) * (1 - clamp((p - 0.72) * 25));
       hud.style.opacity = String(hudOn);
       const dayN = Math.round(g * 270);
       hudDay.textContent = String(dayN).padStart(3, "0");
@@ -661,7 +637,7 @@ export function FarmStory() {
       hudHeight.textContent = (grow * 0.92).toFixed(2);
 
       // hotspots: projected from the world, live values
-      const hsOn = p > 0.29 && p < 0.7;
+      const hsOn = p > 0.22 && p < 0.68;
       hotspots.forEach((hs, i) => {
         const w = hsWorld[i].clone().project(camera);
         const visible = hsOn && w.z < 1 && Math.abs(w.x) < 0.95 && Math.abs(w.y) < 0.9;
@@ -673,15 +649,15 @@ export function FarmStory() {
       hsVals[2].textContent = `${moisture} %`;
 
       // harvest: giant letters slide behind the machines (in the sky layer), strip slides in from the right
-      const hv = clamp((p - 0.74) / 0.16);
+      const hv = clamp((p - 0.72) / 0.17);
       const gw = giant.offsetWidth;
       giant.style.transform = `translate3d(${window.innerWidth - hv * (gw + window.innerWidth)}px, 0, 0)`;
       giant.style.visibility = hv > 0 && hv < 1 ? "visible" : "hidden";
-      const hIn = clamp((p - 0.735) / 0.04),
-        hOut = clamp((p - 0.83) / 0.03);
+      const hIn = clamp((p - 0.715) / 0.04),
+        hOut = clamp((p - 0.81) / 0.03);
       harvBox.style.opacity = String(hIn * (1 - hOut));
       harvBox.style.transform = `translate3d(0, ${(1 - hIn) * 30}px, 0)`;
-      const sr = clamp((p - 0.8) / 0.13);
+      const sr = clamp((p - 0.79) / 0.14);
       const sW = strip.scrollWidth;
       strip.style.transform = `translate3d(${window.innerWidth - sr * (sW + window.innerWidth * 0.2)}px, 0, 0)`;
       strip.style.visibility = sr > 0 && sr < 1 ? "visible" : "hidden";
@@ -705,8 +681,6 @@ export function FarmStory() {
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
       ro.disconnect();
       st?.kill();
       stRef.current = null;
@@ -776,7 +750,7 @@ export function FarmStory() {
           <p className="max-w-xs text-sm leading-relaxed font-light text-white/85 [text-shadow:0_1px_12px_rgba(40,20,0,.5)] sm:max-w-md sm:text-base md:text-lg">{t.sub}</p>
           <button
             type="button"
-            onClick={() => jump(0.2)}
+            onClick={() => jump(0.13)}
             className="liquid-glass pointer-events-auto mt-7 rounded-full px-8 py-3.5 text-xs tracking-[0.2em] text-white/90 uppercase sm:px-10 sm:py-4"
           >
             {t.begin}
@@ -797,8 +771,8 @@ export function FarmStory() {
         </div>
 
         {SEASONS[lang].map(([name, sub], k) => (
-          <div key={name} data-season className="pointer-events-none absolute top-[17vh] left-1/2 text-center text-white opacity-0 [text-shadow:0_2px_30px_rgba(10,10,5,.45)]">
-            <p className="font-garamond text-[clamp(56px,9vw,140px)] leading-none">{name}</p>
+          <div key={name} data-season className="pointer-events-none absolute end-[var(--gutter)] top-24 text-end text-white opacity-0 [text-shadow:0_2px_30px_rgba(10,10,5,.45)] md:top-28">
+            <p className="font-garamond text-[clamp(40px,5.2vw,80px)] leading-none">{name}</p>
             <p className="mt-2 font-mono text-xs tracking-[0.3em] text-white/85 uppercase">
               {String(k + 1).padStart(2, "0")} · {sub}
             </p>
