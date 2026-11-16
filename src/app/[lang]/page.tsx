@@ -5,7 +5,7 @@ import { hasLocale, href } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
 import { brands, products } from "@/content/catalog";
 import { services, projects, posts } from "@/content/more";
-import { HeroTractor } from "@/components/scenes/HeroTractor";
+import { HeroReveal } from "@/components/scenes/HeroReveal";
 import { FieldJourney } from "@/components/scenes/FieldJourney";
 import { AttachmentSwap } from "@/components/scenes/AttachmentSwap";
 import { FrameScrub } from "@/components/scenes/FrameScrub";
@@ -27,7 +27,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      <HeroTractor />
+      <HeroReveal />
 
       {/* Name / mission — ZettaJoule dictionary device */}
       <section className="relative overflow-hidden bg-sand-50">

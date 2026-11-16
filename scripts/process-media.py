@@ -199,11 +199,8 @@ def main():
 
     print('sequences')
     a900 = os.path.join(MOVIES, '_Master_AXION_900_Produkfilm_2017_EN.mp4')
-    sequence(a900, 'hero', 74.2, 2.2, fps=30, crop_w=0.75)
     sequence(a900, 'pass', 80.1, 2.3, fps=30, crop_w=0.75)
     sequence(a900, 'axion', 117.5, 2.2, fps=30, crop_w=0.75)
-    # Home hero: Ghargrow's own intro clip (combine crossing a Libyan field)
-    sequence(r'C:\Users\Rayan\OneDrive\Desktop\Ghargrow\Website Intro Trimmed .mp4', 'intro', 0, 7.87, fps=15, crop_w=0.75)
     bg = os.path.join(OUT, 'img', 'hero-background.webp')
     if not os.path.exists(bg):
         save_webp(Image.open(os.path.join(OUT, 'img', 'Hero background.png')).convert('RGB'), bg, 2400, q=80)

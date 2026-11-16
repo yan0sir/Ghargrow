@@ -53,8 +53,8 @@ export function Header() {
     { label: d.nav.about, path: "/about" },
   ];
   const isActive = (p: string) => pathname.startsWith(href(p, lang));
-  // light header over the dark home hero until the page is scrolled
-  const light = pathname === href("/", lang) && !scrolled && !mega;
+  // light variant reserved for pages that open on a dark hero (none at the moment)
+  const light = false;
   const fg = light ? "text-white" : "text-ink-900";
 
   return (
