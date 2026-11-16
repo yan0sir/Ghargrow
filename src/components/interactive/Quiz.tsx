@@ -82,7 +82,6 @@ export function Quiz() {
         </div>
       ) : (
         <div>
-          <p data-in className="eyebrow text-green-300">{d.quiz.result}</p>
           <p data-in className="display mt-4 text-white!">{summary}</p>
           <p data-in className="lead mt-6 max-w-xl text-white/75">
             {d.quiz.resultLead}

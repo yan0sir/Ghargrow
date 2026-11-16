@@ -3,13 +3,13 @@ import { SplitHeading } from "@/components/motion/Reveal";
 
 /** Inner-page opener: sky gradient, giant thin title, optional cutout overlapping the type (ZettaJoule). */
 export function PageHero({
-  eyebrow,
   title,
   lead,
   cutout,
   image,
   children,
 }: {
+  /** @deprecated section labels removed from the design */
   eyebrow?: string;
   title: string;
   lead?: string;
@@ -20,8 +20,7 @@ export function PageHero({
   return (
     <section className="sky-gradient relative overflow-hidden">
       <div className="wrap relative pt-36 pb-16 md:pt-44 md:pb-24">
-        {eyebrow && <p className="eyebrow text-green-700">{eyebrow}</p>}
-        <SplitHeading as="h1" immediate className="display-xl relative z-0 mt-4 max-w-[14ch]">
+        <SplitHeading as="h1" immediate className="display-xl relative z-0 max-w-[14ch]">
           {title}
         </SplitHeading>
         {cutout && (

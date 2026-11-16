@@ -53,6 +53,9 @@ export function Header() {
     { label: d.nav.about, path: "/about" },
   ];
   const isActive = (p: string) => pathname.startsWith(href(p, lang));
+  // light header over the dark home hero until the page is scrolled
+  const light = pathname === href("/", lang) && !scrolled && !mega;
+  const fg = light ? "text-white" : "text-ink-900";
 
   return (
     <>
@@ -64,10 +67,10 @@ export function Header() {
       >
         <div className="wrap flex h-16 items-center justify-between gap-6 md:h-20">
           <Link href={href("/", lang)} className="relative z-10 flex shrink-0 items-center" aria-label="Ghargrow — home">
-            <Image src="/media/logo/lockup.png" alt="Ghargrow Agro-Industries" width={900} height={224} priority className="h-9 w-auto md:h-11" />
+            <Image src={light ? "/media/logo/lockup-light.png" : "/media/logo/lockup.png"} alt="Ghargrow Agro-Industries" width={900} height={224} priority className="h-9 w-auto md:h-11" />
           </Link>
 
-          <nav className="hidden items-center gap-8 text-[15px] text-ink-900 lg:flex">
+          <nav className={`hidden items-center gap-8 text-[15px] lg:flex ${fg}`}>
             <button
               onMouseEnter={() => setMega(true)}
               onFocus={() => setMega(true)}
@@ -87,16 +90,16 @@ export function Header() {
           <div className="flex items-center gap-2 md:gap-4">
             <Link
               href={switchHref}
-              className="flex h-10 items-center px-2 text-sm font-medium text-ink-900 hover:text-green-700"
+              className={`flex h-10 items-center px-2 text-sm font-medium hover:text-green-700 ${fg}`}
               hrefLang={otherLocale(lang)}
               lang={otherLocale(lang)}
             >
               {lang === "en" ? "العربية" : "English"}
             </Link>
-            <button onClick={() => openContact()} className="group hidden h-10 items-center bg-ink-900 px-5 text-sm text-white transition hover:bg-green-700 md:inline-flex">
+            <button onClick={() => openContact()} className={`group hidden h-10 items-center px-5 text-sm transition hover:bg-green-700 hover:text-white md:inline-flex ${light ? "bg-white text-ink-900" : "bg-ink-900 text-white"}`}>
               <Roll>{d.nav.talk}</Roll>
             </button>
-            <button onClick={() => setMenu(true)} className="flex h-10 items-center gap-2 px-2 text-sm text-ink-900 lg:hidden" aria-label={d.nav.menu}>
+            <button onClick={() => setMenu(true)} className={`flex h-10 items-center gap-2 px-2 text-sm lg:hidden ${fg}`} aria-label={d.nav.menu}>
               <span className="flex flex-col gap-[5px]">
                 <span className="block h-px w-6 bg-current" />
                 <span className="block h-px w-6 bg-current" />

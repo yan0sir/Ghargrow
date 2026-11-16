@@ -4,7 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasLocale, href, locales } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
-import { brands, categories, productsIn } from "@/content/catalog";
+import { categories, productsIn } from "@/content/catalog";
 import { PageHero } from "@/components/ui/PageHero";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
@@ -42,9 +42,6 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
             <div className="wrap">
               <div className="grid gap-8 md:grid-cols-12">
                 <div className="md:col-span-4">
-                  <p className="eyebrow text-green-700">
-                    {c.num} · {brands[c.brand].name}
-                  </p>
                   <SplitHeading className="h1 mt-3">{c.title[lang]}</SplitHeading>
                   <p className="mt-5 max-w-sm">{c.intro[lang]}</p>
                   <Link href={href(`/products/${c.slug}`, lang)} className="group mt-8 inline-flex items-center gap-3 text-ink-900 hover:text-green-700">

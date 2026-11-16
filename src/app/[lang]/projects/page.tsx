@@ -30,7 +30,7 @@ export default async function ProjectsPage({ params }: PageProps<"/[lang]/projec
             <Link
               key={p.slug}
               href={href(`/projects/${p.slug}`, lang)}
-              className={`group block ${i % 3 === 0 ? "md:col-span-8" : i % 3 === 1 ? "md:col-span-4 md:mt-40" : "md:col-span-6 md:col-start-4"}`}
+              className={`group block ${i % 3 === 0 ? "md:col-span-6 md:col-start-2" : i % 3 === 1 ? "md:col-span-3 md:col-start-9 md:mt-40" : "md:col-span-4 md:col-start-4"}`}
             >
               <div className={`relative overflow-hidden bg-sand-200 ${i % 3 === 1 ? "aspect-[3/4]" : "aspect-[16/10]"}`}>
                 <Image src={p.cover} alt="" fill sizes="(max-width:768px) 100vw, 66vw" className="object-cover transition duration-1000 group-hover:scale-105" />
@@ -38,7 +38,7 @@ export default async function ProjectsPage({ params }: PageProps<"/[lang]/projec
               <p className="eyebrow mt-5 text-ink-400">
                 {p.type[lang]} · {p.place[lang]}
               </p>
-              <p className="h2 mt-2 group-hover:text-green-700">{p.title[lang]}</p>
+              <p className="h3 mt-2 group-hover:text-green-700">{p.title[lang]}</p>
               <p className="mt-3 max-w-lg">{p.summary[lang]}</p>
             </Link>
           ))}

@@ -35,7 +35,6 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
     <>
       <section className="sky-gradient">
         <div className="wrap pt-36 pb-24 md:pt-44">
-          <p className="eyebrow text-green-700">{d.nav.about}</p>
           <h1 className="display mt-6 max-w-6xl">
             {ar ? (
               <>
@@ -60,7 +59,6 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
             </div>
           </div>
           <div className="flex flex-col justify-center md:col-span-6 md:col-start-7">
-            <p className="eyebrow text-green-700">{site_name(lang)}</p>
             <SplitHeading className="h1 mt-4">{d.about.lead}</SplitHeading>
             <p className="lead mt-8">{d.about.story}</p>
           </div>
@@ -71,7 +69,6 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
         <div className="wrap section-y grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
             <LeafMark light className="w-24" />
-            <p className="eyebrow mt-8 text-green-300">{d.about.missionEyebrow}</p>
           </div>
           <SplitHeading as="p" className="h1 text-white! md:col-span-8">
             {d.about.mission}
@@ -135,7 +132,6 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
 
       <section className="section-y border-t border-ink-900/10 bg-sand-100">
         <div className="wrap">
-          <p className="eyebrow text-green-700">{d.home.mapEyebrow}</p>
           <h2 className="h1 mt-4 mb-14">{d.home.mapTitle}</h2>
           <LibyaMap />
         </div>
@@ -144,6 +140,3 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
   );
 }
 
-function site_name(lang: "en" | "ar") {
-  return lang === "ar" ? "غرغار للاستثمار الزراعي" : "Ghargrow Agro-Industries";
-}

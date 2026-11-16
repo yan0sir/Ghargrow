@@ -57,7 +57,6 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
 
       <section className="section-y bg-sand-100">
         <div className="wrap">
-          <p className="eyebrow text-green-700">{d.home.mapEyebrow}</p>
           <SplitHeading className="h1 mt-4 mb-14">{d.home.mapTitle}</SplitHeading>
           <LibyaMap />
         </div>

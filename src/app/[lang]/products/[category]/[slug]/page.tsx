@@ -54,9 +54,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
               {c.title[lang]}
             </Link>
           </nav>
-          <p className="eyebrow mt-8 text-green-700">
-            {brand.name} · {p.type[lang]}
-          </p>
           <SplitHeading as="h1" immediate className="display-xl relative z-0 mt-3">
             {p.name}
           </SplitHeading>
@@ -90,7 +87,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         <FrameScrub name={p.sequence.name} frames={p.sequence.frames} poster={`/media/seq/${p.sequence.name}/d/0001.webp`} length="+=220%">
           {(p.highlights ?? []).map((h) => (
             <div key={h.key} data-callout className="wrap invisible absolute inset-x-0 bottom-0 pb-[12vh] text-white">
-              <p className="eyebrow text-white/70">{p.name}</p>
               <p className="display mt-3 text-white!">{h.title[lang]}</p>
               <p className="lead mt-4 max-w-lg text-white/85">{h.body[lang]}</p>
             </div>
@@ -101,7 +97,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           <video className="absolute inset-0 size-full object-cover" src={p.video} poster={p.image} autoPlay muted loop playsInline preload="none" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent" />
           <div className="wrap absolute inset-x-0 bottom-0 pb-14 text-white">
-            <p className="eyebrow text-white/70">{brand.name}</p>
             <p className="display mt-3 max-w-4xl text-white!">{p.name}</p>
           </div>
         </section>
@@ -111,7 +106,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
       {p.highlights && (
         <section className="section-y">
           <div className="wrap">
-            <p className="eyebrow text-green-700">{d.products.highlights}</p>
             <div className="mt-10">
               <HighlightTabs items={p.highlights} />
             </div>
@@ -138,7 +132,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         <div className="wrap">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SplitHeading className="h1">{d.products.specs}</SplitHeading>
-            <p className="eyebrow text-ink-400">{p.name}</p>
           </div>
           <Reveal stagger={0.06} className="mt-10 grid gap-px bg-ink-900/10 sm:grid-cols-2 lg:grid-cols-3">
             {p.specs.map((s, i) => (
@@ -156,7 +149,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
       {p.gallery.length > 1 && (
         <section className="pb-24">
           <div className="wrap">
-            <p className="eyebrow mb-8 text-green-700">{d.products.gallery}</p>
             <Reveal stagger={0.1} className="grid grid-cols-2 gap-4 md:grid-cols-12">
               {p.gallery.slice(0, 4).map((g, i) => (
                 <div

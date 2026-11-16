@@ -20,7 +20,6 @@ export default async function QuizPage({ params }: PageProps<"/[lang]/find-your-
   return (
     <section className="min-h-svh bg-green-900 text-white">
       <div className="wrap pt-32 pb-24 md:pt-40">
-        <p className="eyebrow text-green-300">{d.quiz.title}</p>
         <p className="lead mt-3 max-w-xl text-white/70">{d.quiz.lead}</p>
         <div className="mt-14">
           <Quiz />

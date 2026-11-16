@@ -4,7 +4,6 @@ export default function NotFound() {
   return (
     <section className="sky-gradient">
       <div className="wrap flex min-h-[80svh] flex-col justify-end pt-40 pb-24">
-        <p className="eyebrow text-green-700">404</p>
         <h1 className="display-xl mt-4">Off the track.</h1>
         <p className="lead mt-6 max-w-lg">This field is empty. · هذه الصفحة غير موجودة.</p>
         <div className="mt-10 flex gap-4">

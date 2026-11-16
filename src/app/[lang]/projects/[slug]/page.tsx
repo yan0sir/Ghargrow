@@ -32,9 +32,6 @@ export default async function ProjectPage({ params }: PageProps<"/[lang]/project
         <Image src={p.cover} alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-transparent to-ink-900/20" />
         <div className="wrap absolute inset-x-0 bottom-0 pb-14 text-white">
-          <p className="eyebrow text-white/80">
-            {p.type[lang]} · {p.place[lang]}
-          </p>
           <SplitHeading as="h1" immediate className="display mt-4 max-w-5xl text-white!">
             {p.title[lang]}
           </SplitHeading>

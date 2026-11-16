@@ -33,7 +33,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <section className="relative overflow-hidden bg-sand-50">
         <div className="wrap section-y grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="eyebrow text-green-700">01 — {lang === "ar" ? "الاسم" : "The name"}</p>
           </div>
           <div className="md:col-span-7">
             <p className="display">{lang === "ar" ? "غرغار" : "Ghargrow"}</p>
@@ -52,7 +51,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Partners */}
       <section className="border-y border-ink-900/10 bg-sand-50">
         <div className="wrap flex flex-col items-start gap-8 py-10 md:flex-row md:items-center md:justify-between">
-          <p className="eyebrow text-ink-400">{d.home.partners}</p>
           <div className="flex flex-wrap items-center gap-x-14 gap-y-6">
             {(["claas", "western"] as const).map((b) => (
               <Link
@@ -66,7 +64,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <Link href={href("/products/bale-handling", lang)} className="font-display text-2xl font-medium tracking-[0.2em] text-ink-400 hover:text-ink-900 md:text-3xl">
               ARCUSIN
             </Link>
-            <span className="eyebrow max-w-[160px] text-ink-400">{brands.claas.role[lang]}</span>
           </div>
         </div>
       </section>
@@ -77,7 +74,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       <FrameScrub name="pass" frames={70} step={2} poster="/media/seq/pass/d/0001.webp" length="+=140%">
         <div className="absolute inset-x-0 bottom-0 wrap pb-[10vh] text-white">
-          <p className="eyebrow text-white/70">{d.home.driveEyebrow}</p>
           <p className="display mt-4 max-w-4xl text-white!">{d.home.driveTitle}</p>
         </div>
       </FrameScrub>
@@ -97,7 +93,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-green-900/10 via-green-900/20 to-green-900" />
           <div className="wrap absolute inset-x-0 bottom-0 pb-12">
-            <p className="eyebrow text-white/70">{d.home.irrigationEyebrow} · Western</p>
             <SplitHeading className="display mt-4 max-w-5xl text-white!">{d.home.irrigationTitle}</SplitHeading>
           </div>
         </div>
@@ -132,7 +127,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <section className="bg-green-900 text-white/80">
         <div className="wrap section-y">
           <div className="grid gap-8 md:grid-cols-12">
-            <p className="eyebrow text-green-300 md:col-span-4">{d.home.servicesEyebrow}</p>
             <SplitHeading className="h1 text-white! md:col-span-8">{d.home.servicesTitle}</SplitHeading>
           </div>
           <div className="mt-20 divide-y divide-white/15 border-y border-white/15">
@@ -153,7 +147,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Projects — Noho-style editorial grid */}
       <section className="section-y bg-sand-50">
         <div className="wrap">
-          <p className="eyebrow text-green-700">{d.home.projectsEyebrow}</p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
             <SplitHeading className="h1 max-w-3xl">{d.home.projectsTitle}</SplitHeading>
             <Btn href={href("/projects", lang)} variant="ghost">
@@ -165,7 +158,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               <Link
                 key={p.slug}
                 href={href(`/projects/${p.slug}`, lang)}
-                className={`group block ${i === 0 ? "col-span-2 md:col-span-7 md:row-span-2" : i === 1 ? "md:col-span-5 md:mt-24" : "md:col-span-4 md:col-start-8"}`}
+                className={`group block ${i === 0 ? "col-span-2 md:col-span-5 md:col-start-2 md:row-span-2" : i === 1 ? "md:col-span-3 md:col-start-8 md:mt-24" : "md:col-span-3 md:col-start-8"}`}
               >
                 <div className={`relative overflow-hidden bg-sand-200 ${i === 0 ? "aspect-[4/3] md:aspect-[5/6]" : "aspect-[4/5]"}`}>
                   <Image src={p.cover} alt="" fill sizes="(max-width:768px) 50vw, 40vw" className="object-cover transition duration-1000 group-hover:scale-105" />
@@ -183,7 +176,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Map */}
       <section className="section-y border-t border-ink-900/10 bg-sand-100">
         <div className="wrap">
-          <p className="eyebrow text-green-700">{d.home.mapEyebrow}</p>
           <SplitHeading className="h1 mt-4 mb-14 max-w-3xl">{d.home.mapTitle}</SplitHeading>
           <LibyaMap />
         </div>

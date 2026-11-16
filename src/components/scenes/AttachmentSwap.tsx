@@ -206,7 +206,6 @@ export function AttachmentSwap() {
     <section ref={root} className="relative" data-immersive>
       <div data-stage className="relative flex h-svh flex-col overflow-hidden bg-sand-100">
         <div className="wrap pt-24 md:pt-28">
-          <p className="eyebrow text-green-700">{d.home.swapEyebrow}</p>
           <h2 className="h1 mt-3">{d.home.swapTitle}</h2>
         </div>
 
@@ -214,9 +213,6 @@ export function AttachmentSwap() {
           <div className="relative order-2 min-h-[220px] md:order-1 md:col-span-4">
             {items.map((p, i) => (
               <div key={p.slug} data-copy className="absolute inset-0 flex flex-col justify-center" style={i ? { visibility: "hidden" } : undefined}>
-                <p className="eyebrow text-ink-400">
-                  0{i + 1} / 03 · {p.type[lang]}
-                </p>
                 <p className="h2 mt-3">{p.name}</p>
                 <p className="mt-3 max-w-sm">{p.summary[lang]}</p>
                 {p.keySpec && <p className="mt-3 font-mono text-sm text-green-700">{p.keySpec[lang]}</p>}

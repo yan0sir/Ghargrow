@@ -103,7 +103,6 @@ export function FieldJourney() {
   return (
     <section ref={root} className="relative overflow-hidden bg-[#e8dcc4]">
       <div className="wrap section-y relative z-10 pb-0!">
-        <p className="eyebrow text-green-700">{d.home.journeyEyebrow}</p>
         <h2 className="display mt-4 max-w-5xl">{d.home.journeyTitle}</h2>
         <p className="lead mt-6 max-w-xl">{d.home.journeyLead}</p>
       </div>

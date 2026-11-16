@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { hasLocale, locales } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
-import { brands, categories, findCategory, productsIn } from "@/content/catalog";
+import { categories, findCategory, productsIn } from "@/content/catalog";
 import { services } from "@/content/more";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
@@ -31,7 +31,6 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
   if (!hasLocale(lang) || !c) notFound();
   const d = getDict(lang);
   const list = productsIn(c.slug);
-  const brand = brands[c.brand];
 
   return (
     <>
@@ -43,9 +42,6 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-ink-900/10 to-ink-900/30" />
         <div className="wrap absolute inset-x-0 bottom-0 pb-14">
-          <p className="eyebrow text-white/80">
-            {c.num} · {brand.name} · {brand.role[lang]}
-          </p>
           <SplitHeading as="h1" immediate className="display-xl mt-4 max-w-5xl text-white!">
             {c.title[lang]}
           </SplitHeading>
@@ -79,7 +75,6 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
       {c.feature === "pivot-simulator" && (
         <section className="section-y bg-green-900 text-white">
           <div className="wrap">
-            <p className="eyebrow text-green-300">{d.home.irrigationEyebrow}</p>
             <SplitHeading className="h1 mt-3 mb-4 max-w-3xl text-white!">{d.home.irrigationTitle}</SplitHeading>
             <p className="lead mb-12 max-w-xl text-white/75">{d.home.irrigationLead}</p>
             <PivotSimulator dark />
@@ -97,7 +92,6 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
       <section className="section-y border-t border-ink-900/10">
         <div className="wrap grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="eyebrow text-green-700">{d.home.servicesEyebrow}</p>
             <h2 className="h1 mt-3">{d.home.servicesTitle}</h2>
             <div className="mt-8">
               <Btn href={href("/services", lang)} variant="outline">
