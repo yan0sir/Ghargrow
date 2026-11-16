@@ -7,8 +7,6 @@ import { brands, products } from "@/content/catalog";
 import { services, projects, posts } from "@/content/more";
 import { HeroReveal } from "@/components/scenes/HeroReveal";
 import { FarmStory } from "@/components/farm/FarmStory";
-import { AttachmentSwap } from "@/components/scenes/AttachmentSwap";
-import { FrameScrub } from "@/components/scenes/FrameScrub";
 import { PivotSimulator } from "@/components/interactive/PivotSimulator";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
@@ -75,14 +73,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       {/* The 3D journey: from sand to harvest */}
       <FarmStory />
-
-      <AttachmentSwap />
-
-      <FrameScrub name="pass" frames={70} step={2} poster="/media/seq/pass/d/0001.webp" length="+=140%">
-        <div className="absolute inset-x-0 bottom-0 wrap pb-[10vh] text-white">
-          <p className="display mt-4 max-w-4xl text-white!">{d.home.driveTitle}</p>
-        </div>
-      </FrameScrub>
 
       {/* Irrigation: ZettaJoule statement layout + simulator */}
       <section className="relative overflow-hidden bg-green-900 text-white">

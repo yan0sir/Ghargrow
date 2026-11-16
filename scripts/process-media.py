@@ -199,7 +199,6 @@ def main():
 
     print('sequences')
     a900 = os.path.join(MOVIES, '_Master_AXION_900_Produkfilm_2017_EN.mp4')
-    sequence(a900, 'pass', 80.1, 2.3, fps=30, crop_w=0.75)
     sequence(a900, 'axion', 117.5, 2.2, fps=30, crop_w=0.75)
     bg = os.path.join(OUT, 'img', 'hero-background.webp')
     if not os.path.exists(bg):
