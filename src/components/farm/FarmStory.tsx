@@ -209,7 +209,8 @@ export function FarmStory() {
 
     /* world */
     scene.add(buildDesert());
-    scene.add(buildMacroSand(ANT_HOME));
+    const ANT_HEADING = 0.4;
+    scene.add(buildMacroSand(ANT_HOME, ANT_HEADING));
     const ant = buildAnt();
     ant.group.position.copy(ANT_HOME);
     scene.add(ant.group);
@@ -293,7 +294,6 @@ export function FarmStory() {
     scene.add(rain);
 
     /* the ant is driven by scroll only: distance walked = f(progress) */
-    const ANT_HEADING = 0.4;
 
     /* controls (free orbit at the very end) */
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -406,7 +406,7 @@ export function FarmStory() {
         sprayMat.uniforms.uTime.value = time;
         const sprayOn = (p >= SEG.season[0] ? 1 : clamp((fPiv - 0.3) * 6)) * (1 - clamp((p - SEG.harvest[0]) * 40));
         sprayMat.uniforms.uOn.value = sprayOn;
-        pv.mist.opacity = sprayOn * (0.16 + Math.sin(time * 7 + i) * 0.03);
+        pv.mist.opacity = sprayOn * (0.09 + Math.sin(time * 7 + i) * 0.02);
         pv.mist.visible = sprayOn > 0.01;
         sprayMat.uniforms.uPx.value = renderer.getPixelRatio() * (el.clientHeight / 900);
       });
