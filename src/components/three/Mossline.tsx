@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { mosslineCss, mosslineHtml } from "./mosslineContent";
+import { mountFarm } from "./mosslineFarm";
 
 const sans = Inter_Tight({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-ml-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-ml-mono" });
@@ -187,6 +188,9 @@ function mountMossline(rootEl: HTMLElement): () => void {
 
   /* ---------- interactions ---------- */
   const hs = $$(".hs");
+  // product hotspots link into the catalogue in the current language
+  const lang = window.location.pathname.split("/")[1] || "en";
+  $$<HTMLAnchorElement>(".hs a[data-href]").forEach((a) => (a.href = "/" + lang + a.dataset.href));
   hs.forEach((h) =>
     on(h.querySelector(".dot")!, "click", () => {
       const was = h.classList.contains("on");
@@ -244,7 +248,12 @@ function mountMossline(rootEl: HTMLElement): () => void {
     cam = $("#cam"),
     camF = $("#camF"),
     plate = $("#plate"),
-    fog = $("#fog");
+    fog = $("#fog"),
+    veil = $("#veil"),
+    aChip = $("#aChip"),
+    farmCanvas = $<HTMLCanvasElement>("#farm3d");
+  // the farmland the fly-in lands on (built lazily, just before it is needed)
+  let farm: ReturnType<typeof mountFarm> | null = null;
   const L0 = $("#L0"),
     L1 = $("#L1"),
     L2 = $("#L2"),
@@ -345,9 +354,25 @@ function mountMossline(rootEl: HTMLElement): () => void {
       w.style.opacity = String((0.15 + 0.85 * k) * (1 - aOut));
       w.style.filter = "blur(" + ((1 - k) * 6 + aOut * 10) + "px)";
     });
+    aChip.style.opacity = String(clamp(aIn * 2) * (1 - aOut));
+    /* farmland: fades in behind the fog + a mist veil, then the camera lands and pushes in */
+    if (!farm && sp > 0.3) farm = mountFarm(farmCanvas);
+    const fIn = seg(sp, 0.415, 0.465);
+    farmCanvas.style.opacity = String(fIn);
+    vis(farmCanvas, fIn > 0);
+    const vo2 = clamp(1 - Math.abs(sp - 0.44) / 0.04) * 0.92;
+    veil.style.opacity = String(vo2);
+    vis(veil, vo2 > 0);
+    let pins: { id: string; x: number; y: number; on: boolean }[] = [];
+    if (farm && sp > 0.39) pins = farm.update(seg(sp, 0.415, 0.9), now / 1000, sx, sy);
     hs.forEach((el, i) => {
       const k = seg(sp, 0.49 + i * 0.02, 0.53 + i * 0.02);
-      el.style.transform = "translate3d(" + sx * -30 + "px," + sy * -20 + "px,0) scale(" + k * (1 - aOut) + ")";
+      const pin = pins.find((q) => q.id === el.dataset.id);
+      if (pin) {
+        el.style.left = pin.x - 11 + "px";
+        el.style.top = pin.y - 11 + "px";
+      }
+      el.style.transform = "scale(" + k * (1 - aOut) * (pin && !pin.on ? 0 : 1) + ")";
     });
     vis(L3, aIn > 0 && aOut < 1);
 
@@ -377,6 +402,7 @@ function mountMossline(rootEl: HTMLElement): () => void {
   return () => {
     alive = false;
     cancelAnimationFrame(raf);
+    farm?.dispose();
     off.forEach((f) => f());
     video.pause();
     video.removeAttribute("src");
