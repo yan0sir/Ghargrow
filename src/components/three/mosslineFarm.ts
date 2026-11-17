@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { agWheel, buildAxion, buildPivot, fbm } from "@/components/farm/models";
 
 /*
@@ -13,34 +14,6 @@ const SKY = 0xdfe3e0;
 export type FarmAnchor = { id: string; pos: THREE.Vector3 };
 
 /* ───────── textures ───────── */
-function grassTexture() {
-  const c = document.createElement("canvas");
-  c.width = c.height = 512;
-  const g = c.getContext("2d")!;
-  g.fillStyle = "#6c8a45";
-  g.fillRect(0, 0, 512, 512);
-  // thousands of tiny strokes = a close-cropped sward
-  for (let i = 0; i < 26000; i++) {
-    const x = Math.random() * 512,
-      y = Math.random() * 512;
-    const l = 2 + Math.random() * 5;
-    const a = -Math.PI / 2 + (Math.random() - 0.5) * 0.9;
-    const t = Math.random();
-    g.strokeStyle = t < 0.33 ? "#56743a" : t < 0.66 ? "#7f9c55" : t < 0.95 ? "#6e8c4a" : "#a3b87a";
-    g.globalAlpha = 0.55 + Math.random() * 0.45;
-    g.lineWidth = 0.8 + Math.random() * 0.8;
-    g.beginPath();
-    g.moveTo(x, y);
-    g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l);
-    g.stroke();
-  }
-  const t = new THREE.CanvasTexture(c);
-  t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 8;
-  return t;
-}
-
 function labelTexture(lines: { text: string; font: string; y: number; color: string }[], bg: string, band?: string) {
   const c = document.createElement("canvas");
   c.width = 512;
@@ -300,12 +273,267 @@ function buildSurroundings() {
   return g;
 }
 
-/** Close-cropped grass blades near the camera, coloured by the mowing stripe they sit in. */
-function buildBlades(stripe: number) {
+/* ───────── moss world (matches the floating island) ───────── */
+function mossTexture(bright = false) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 512;
+  const g = c.getContext("2d")!;
+  g.fillStyle = bright ? "#7f9c3f" : "#5d7834";
+  g.fillRect(0, 0, 512, 512);
+  const tones = bright
+    ? ["#6c8a33", "#94b04d", "#a9c05a", "#bccb6c", "#5c7a2c", "#8aa444"]
+    : ["#4a6527", "#6f8c3c", "#86a049", "#9cb057", "#3d5622", "#788f3e"];
+  // soft cushions of moss (drawn wrapped so the tile repeats seamlessly)
+  for (let i = 0; i < 1600; i++) {
+    const x = Math.random() * 512,
+      y = Math.random() * 512,
+      r = 3 + Math.random() * 16;
+    for (const ox of [-512, 0, 512])
+      for (const oy of [-512, 0, 512]) {
+        const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r);
+        const col = tones[(Math.random() * tones.length) | 0];
+        gr.addColorStop(0, col);
+        gr.addColorStop(1, "rgba(0,0,0,0)");
+        g.globalAlpha = 0.45;
+        g.fillStyle = gr;
+        g.fillRect(x + ox - r, y + oy - r, r * 2, r * 2);
+      }
+  }
+  // sporophyte specks + tiny grass strokes
+  g.globalAlpha = 0.9;
+  for (let i = 0; i < 5000; i++) {
+    g.fillStyle = Math.random() < 0.7 ? "#a9bb62" : "#c9d48a";
+    g.fillRect(Math.random() * 512, Math.random() * 512, 1, 1);
+  }
+  for (let i = 0; i < 2500; i++) {
+    const x = Math.random() * 512,
+      y = Math.random() * 512;
+    g.strokeStyle = Math.random() < 0.5 ? "#7d9a45" : "#53702c";
+    g.globalAlpha = 0.6;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.lineTo(x + (Math.random() - 0.5) * 3, y - 2 - Math.random() * 4);
+    g.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Ground as a polar grid around the hand-off point: dense near the camera so the dome bend stays smooth. */
+function groundGeometry(cx: number, cz: number) {
+  const RINGS = 150,
+    SEGS = 160;
+  const pos: number[] = [],
+    uv: number[] = [],
+    idx: number[] = [];
+  pos.push(cx, 0, cz);
+  uv.push(cx / 3, -cz / 3);
+  for (let i = 1; i <= RINGS; i++) {
+    const r = 0.25 * (Math.pow(1.052, i) - 1) * 6;
+    for (let j = 0; j < SEGS; j++) {
+      const a = (j / SEGS) * Math.PI * 2;
+      const x = cx + Math.cos(a) * r,
+        z = cz + Math.sin(a) * r;
+      pos.push(x, 0, z);
+      uv.push(x / 3, -z / 3);
+    }
+  }
+  const at = (i: number, j: number) => (i === 0 ? 0 : 1 + (i - 1) * SEGS + (j % SEGS));
+  for (let j = 0; j < SEGS; j++) idx.push(0, at(1, j + 1), at(1, j));
+  for (let i = 1; i < RINGS; i++)
+    for (let j = 0; j < SEGS; j++) {
+      const a = at(i, j),
+        b = at(i, j + 1),
+        c = at(i + 1, j),
+        d = at(i + 1, j + 1);
+      idx.push(a, b, c, b, d, c);
+    }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/** Where the 3D camera picks up from the video: low over the moss, flying forward. */
+const START = new THREE.Vector3(1.0, 1.25, 46);
+/** The island-top patch around the hand-off: dense moss, ferns and pale rock, like the video's last flight frames. */
+const inStartPatch = (x: number, z: number) => Math.abs(x - START.x) < 11 && z > START.z - 18 && z < START.z + 10;
+const nearPath = (x: number) => Math.abs(x - START.x) < 1.3;
+
+/** Keep-out zones: the product clearing and the camera's flight line. */
+const inClearing = (x: number, z: number) => x > -12.5 && x < 10.5 && z > -3 && z < 16;
+const onFlightLine = (x: number, z: number) => Math.abs(x - 0.5) < 1.6 && z > 17 && z < 52;
+
+function scatter(n: number, test: (x: number, z: number) => boolean, xr: number, z0: number, z1: number) {
+  const out: [number, number][] = [];
+  for (let tries = 0; tries < n * 20 && out.length < n; tries++) {
+    const x = (Math.random() - 0.5) * xr,
+      z = z0 + Math.random() * (z1 - z0);
+    if (test(x, z)) out.push([x, z]);
+  }
+  return out;
+}
+
+/** Cushions of moss: lumpy, flattened domes. */
+function buildMossMounds() {
+  let geo: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, 3);
+  geo.deleteAttribute("normal");
+  geo = mergeVertices(geo);
+  const p = geo.attributes.position as THREE.BufferAttribute;
+  const n = new THREE.Vector3();
+  const colors = new Float32Array(p.count * 3);
+  const c = new THREE.Color();
+  for (let i = 0; i < p.count; i++) {
+    n.fromBufferAttribute(p, i).normalize();
+    const r = 1 + (fbm(n.x * 2.2 + 3, n.z * 2.2 + n.y * 1.7, 4) - 0.5) * 0.5 + (fbm(n.x * 9 + n.y * 4, n.z * 9 - n.y * 3, 2) - 0.5) * 0.16;
+    let y = n.y * r;
+    if (y < 0) y *= 0.15;
+    p.setXYZ(i, n.x * r, y, n.z * r);
+    c.set(0xffffff).lerp(new THREE.Color(0xa9b98c), THREE.MathUtils.clamp(fbm(n.x * 4, n.z * 4 + n.y, 3) * 1.6 - 0.4, 0, 1));
+    if (n.y < 0.2) c.multiplyScalar(0.78); // shaded skirts
+    colors.set([c.r, c.g, c.b], i * 3);
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  const spots = [
+    ...scatter(800, (x, z) => (!inClearing(x, z) || Math.random() < 0.08) && !inStartPatch(x, z), 90, -40, 70),
+    ...scatter(420, inStartPatch, 40, START.z - 20, START.z + 12),
+  ];
+  const cushion = mossTexture(true);
+  cushion.repeat.set(3, 2);
+  const mossMat = new THREE.MeshStandardMaterial({ map: cushion, vertexColors: true, roughness: 1, bumpMap: cushion, bumpScale: 2 });
+  const mesh = new THREE.InstancedMesh(geo, mossMat, spots.length);
+  const m = new THREE.Matrix4(),
+    q = new THREE.Quaternion(),
+    s = new THREE.Vector3(),
+    v = new THREE.Vector3();
+  spots.forEach(([x, z], i) => {
+    const patch = inStartPatch(x, z);
+    const near = onFlightLine(x, z) || Math.abs(x) < 4;
+    const w = 0.35 + Math.pow(Math.random(), 2) * (patch ? 1.6 : near ? 1.0 : 2.2);
+    const h = Math.min(w * (0.3 + Math.random() * 0.4), patch && nearPath(x) ? 0.42 : near && !patch ? 0.3 : 0.8);
+    v.set(x, -0.04, z);
+    q.setFromEuler(new THREE.Euler(0, Math.random() * Math.PI * 2, 0));
+    s.set(w, h, w * (0.7 + Math.random() * 0.5));
+    m.compose(v, q, s);
+    mesh.setMatrixAt(i, m);
+  });
+  mesh.receiveShadow = true;
+  mesh.castShadow = true;
+  return mesh;
+}
+
+/** A fern plant: 7 arching fronds of paired leaflets, merged into one geometry. */
+function fernGeometry() {
+  const fronds: THREE.BufferGeometry[] = [];
+  const dark = new THREE.Color(0x3f6a24),
+    light = new THREE.Color(0x8cbf4f);
+  for (let f = 0; f < 7; f++) {
+    const pos: number[] = [],
+      col: number[] = [];
+    const rach = (t: number) => new THREE.Vector3(t, Math.sin(t * Math.PI * 0.85) * 0.42 - t * t * 0.1, 0);
+    const N = 16;
+    for (let i = 1; i < N; i++) {
+      const t = i / N;
+      const a = rach(t),
+        b = rach(t + 0.5 / N);
+      const len = 0.24 * Math.pow(1 - t, 0.6) * Math.min(1, t * 4);
+      for (const side of [-1, 1]) {
+        const tip = new THREE.Vector3(a.x + 0.05, a.y - 0.03, side * len);
+        const mid1 = new THREE.Vector3((a.x + tip.x) / 2 - 0.012, (a.y + tip.y) / 2 + 0.008, side * len * 0.5);
+        const mid2 = new THREE.Vector3((b.x + tip.x) / 2 + 0.012, (b.y + tip.y) / 2 + 0.008, side * len * 0.5);
+        for (const v of [a, mid1, tip, a, tip, b, b, tip, mid2]) pos.push(v.x, v.y, v.z);
+        const cc = dark.clone().lerp(light, 0.3 + t * 0.5 + Math.random() * 0.15);
+        for (let k = 0; k < 9; k++) col.push(cc.r, cc.g, cc.b);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    const sc = 0.75 + Math.random() * 0.45;
+    g.scale(sc, sc * (0.9 + Math.random() * 0.4), sc);
+    g.rotateZ(0.1 + Math.random() * 0.25);
+    g.rotateY((f / 7) * Math.PI * 2 + Math.random() * 0.4);
+    fronds.push(g);
+  }
+  const merged = mergeGeometries(fronds)!;
+  merged.computeVertexNormals();
+  return merged;
+}
+
+function buildFerns() {
+  const spots = [
+    ...scatter(480, (x, z) => !inClearing(x, z) && !inStartPatch(x, z) && (!onFlightLine(x, z) || Math.random() < 0.15), 80, -30, 62),
+    ...scatter(300, (x, z) => inStartPatch(x, z) && !nearPath(x), 40, START.z - 20, START.z + 12),
+  ];
+  const mesh = new THREE.InstancedMesh(fernGeometry(), new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.8 }), spots.length);
+  const m = new THREE.Matrix4(),
+    q = new THREE.Quaternion(),
+    s = new THREE.Vector3(),
+    v = new THREE.Vector3();
+  spots.forEach(([x, z], i) => {
+    v.set(x, 0, z);
+    q.setFromEuler(new THREE.Euler(0, Math.random() * Math.PI * 2, 0));
+    s.setScalar(inStartPatch(x, z) ? 0.8 + Math.random() * 0.9 : onFlightLine(x, z) ? 0.5 : 0.6 + Math.random() * 0.9);
+    m.compose(v, q, s);
+    mesh.setMatrixAt(i, m);
+  });
+  mesh.castShadow = true;
+  return mesh;
+}
+
+/** Pale limestone boulders with moss on their shoulders, half-buried. */
+function buildMossRocks() {
+  let geo: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, 3);
+  geo.deleteAttribute("normal");
+  geo = mergeVertices(geo);
+  const p = geo.attributes.position as THREE.BufferAttribute;
+  const n = new THREE.Vector3();
+  const colors = new Float32Array(p.count * 3);
+  const c = new THREE.Color();
+  for (let i = 0; i < p.count; i++) {
+    n.fromBufferAttribute(p, i).normalize();
+    let r = 1 + (fbm(n.x * 1.8 + 9, n.y * 1.8 + n.z * 1.4, 4) - 0.5) * 0.7;
+    r = Math.min(r, 0.92 / Math.max(0.1, n.x * 0.6 + n.y * 0.7)); // a flat fractured face
+    p.setXYZ(i, n.x * r, n.y * r * 0.7, n.z * r);
+    const moss = THREE.MathUtils.smoothstep(n.y + (fbm(n.x * 5, n.z * 5, 2) - 0.5) * 0.6, 0.25, 0.55);
+    c.set(0xdedad0).multiplyScalar(0.8 + fbm(n.x * 8, n.z * 8 + n.y * 3, 3) * 0.35).lerp(new THREE.Color(0x6f8a3b), moss);
+    colors.set([c.r, c.g, c.b], i * 3);
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  const spots = [
+    ...scatter(60, (x, z) => !inClearing(x, z) && !onFlightLine(x, z) && !inStartPatch(x, z), 90, -30, 60),
+    ...scatter(34, (x, z) => inStartPatch(x, z) && Math.abs(x - START.x) > 1.6, 40, START.z - 20, START.z + 12),
+  ];
+  const mesh = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 }), spots.length);
+  const m = new THREE.Matrix4(),
+    q = new THREE.Quaternion(),
+    s = new THREE.Vector3(),
+    v = new THREE.Vector3();
+  spots.forEach(([x, z], i) => {
+    const sz = 0.35 + Math.pow(Math.random(), 2) * 1.3;
+    v.set(x, -sz * 0.25, z);
+    q.setFromEuler(new THREE.Euler((Math.random() - 0.5) * 0.4, Math.random() * Math.PI * 2, (Math.random() - 0.5) * 0.4));
+    s.set(sz, sz, sz * (0.7 + Math.random() * 0.5));
+    m.compose(v, q, s);
+    mesh.setMatrixAt(i, m);
+  });
+  mesh.castShadow = mesh.receiveShadow = true;
+  return mesh;
+}
+
+/** Grass tufts through the moss (denser near the flight line). */
+function buildTufts() {
   const blade = new THREE.BufferGeometry();
-  blade.setAttribute("position", new THREE.Float32BufferAttribute([-0.006, 0, 0, 0.006, 0, 0, 0.001, 1, 0.004], 3));
+  blade.setAttribute("position", new THREE.Float32BufferAttribute([-0.008, 0, 0, 0.008, 0, 0, 0.001, 1, 0.01], 3));
   blade.computeVertexNormals();
-  const N = 140000;
+  const N = 120000;
   const mesh = new THREE.InstancedMesh(blade, new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }), N);
   const m = new THREE.Matrix4(),
     q = new THREE.Quaternion(),
@@ -313,23 +541,59 @@ function buildBlades(stripe: number) {
     p = new THREE.Vector3(),
     col = new THREE.Color();
   for (let i = 0; i < N; i++) {
-    const z = 30 - 30 * Math.pow(Math.random(), 0.7),
-      x = (Math.random() - 0.5) * (16 + (30 - z) * 1.2);
-    const light = Math.floor(x / stripe + 100) % 2 === 0;
-    p.set(x, 0, z);
-    q.setFromEuler(new THREE.Euler((Math.random() - 0.5) * 0.5 + (light ? -0.25 : 0.25), Math.random() * Math.PI, (Math.random() - 0.5) * 0.4));
-    const h = 0.035 + Math.random() * 0.035;
-    s.set(1, h, 1);
+    // clumps: pick a clump centre, then jitter
+    const z = 52 - 56 * Math.pow(Math.random(), 0.75);
+    const x = (Math.random() - 0.5) * (14 + (52 - z) * 1.1);
+    p.set(x + (Math.random() - 0.5) * 0.15, 0, z + (Math.random() - 0.5) * 0.15);
+    q.setFromEuler(new THREE.Euler((Math.random() - 0.5) * 0.7, Math.random() * Math.PI, (Math.random() - 0.5) * 0.7));
+    s.set(1, 0.05 + Math.random() * (inClearing(x, z) ? 0.05 : 0.14), 1);
     m.compose(p, q, s);
     mesh.setMatrixAt(i, m);
-    col.setHSL(0.24 + Math.random() * 0.03, 0.32, (light ? 0.3 : 0.24) + Math.random() * 0.06);
+    col.setHSL(0.22 + Math.random() * 0.05, 0.45, 0.19 + Math.random() * 0.1);
     mesh.setColorAt(i, col);
   }
   mesh.receiveShadow = true;
   return mesh;
 }
 
+/* ───────── world bend: the island's dome flattening into the earth ───────── */
+const bendUniforms = { uBend: { value: 0 }, uBendC: { value: new THREE.Vector2() } };
+const BEND_DECL = "uniform float uBend;\nuniform vec2 uBendC;\n";
+const BEND_PROJECT = /* glsl */ `
+  vec4 bwp = vec4( transformed, 1.0 );
+  #ifdef USE_INSTANCING
+    bwp = instanceMatrix * bwp;
+  #endif
+  bwp = modelMatrix * bwp;
+  vec2 bd = bwp.xz - uBendC;
+  bwp.y -= uBend * dot( bd, bd );
+  vec4 mvPosition = viewMatrix * bwp;
+  gl_Position = projectionMatrix * mvPosition;
+`;
+function bendMaterial(mat: THREE.Material) {
+  if (mat.userData.bent) return;
+  mat.userData.bent = true;
+  if ((mat as THREE.ShaderMaterial).isShaderMaterial) {
+    const sm = mat as THREE.ShaderMaterial;
+    Object.assign(sm.uniforms, bendUniforms);
+    sm.vertexShader = BEND_DECL + sm.vertexShader.replace(
+      "vec4 mv = modelViewMatrix * vec4(p,1.0);",
+      "vec4 bw = modelMatrix * vec4(p,1.0); vec2 bd = bw.xz - uBendC; bw.y -= uBend * dot(bd, bd); vec4 mv = viewMatrix * bw;",
+    );
+    return;
+  }
+  const prev = mat.onBeforeCompile.bind(mat);
+  mat.onBeforeCompile = (sh, r) => {
+    prev(sh, r);
+    sh.uniforms.uBend = bendUniforms.uBend;
+    sh.uniforms.uBendC = bendUniforms.uBendC;
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\n" + BEND_DECL).replace("#include <project_vertex>", BEND_PROJECT);
+  };
+  mat.customProgramCacheKey = () => "bend";
+}
+
 /* ───────── scene ───────── */
+
 export function mountFarm(canvas: HTMLCanvasElement) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -341,10 +605,10 @@ export function mountFarm(canvas: HTMLCanvasElement) {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(SKY);
-  scene.fog = new THREE.Fog(SKY, 22, 210);
+  scene.fog = new THREE.Fog(SKY, 18, 200);
 
-  scene.add(new THREE.HemisphereLight(0xeef1ee, 0x6a7558, 1.6));
-  const sun = new THREE.DirectionalLight(0xfff6ea, 1.7);
+  scene.add(new THREE.HemisphereLight(0xeef1ee, 0x5f6e44, 1.7));
+  const sun = new THREE.DirectionalLight(0xfff6ea, 1.6);
   sun.position.set(-30, 45, 25);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
@@ -353,11 +617,9 @@ export function mountFarm(canvas: HTMLCanvasElement) {
   sun.shadow.normalBias = 0.02;
   scene.add(sun);
 
-  // mown ground with stripes along the view direction
-  const STRIPE = 3.2;
-  const tex = grassTexture();
-  tex.repeat.set(220, 220);
-  const groundMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.95 });
+  // moss floor; the product clearing is cropped shorter (lighter, finer) and the far field turns to crop
+  const tex = mossTexture();
+  const groundMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 1 });
   groundMat.onBeforeCompile = (sh) => {
     sh.vertexShader = sh.vertexShader
       .replace("#include <common>", "#include <common>\nvarying vec3 vWp;")
@@ -367,18 +629,19 @@ export function mountFarm(canvas: HTMLCanvasElement) {
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
-        float st = mod(floor(vWp.x / ${STRIPE.toFixed(2)} + 100.0), 2.0);
-        float edge = smoothstep(0.0, 0.08, fract(vWp.x / ${STRIPE.toFixed(2)})) * smoothstep(1.0, 0.92, fract(vWp.x / ${STRIPE.toFixed(2)}));
-        diffuseColor.rgb *= mix(0.82, 1.12, st) * mix(0.97, 1.0, edge);
-        // field edge: the mown strip gives way to the crop
-        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.62, 0.56, 0.3), smoothstep(-52.0, -62.0, vWp.z) * 0.5);`,
+        vec2 cq = vec2(clamp(vWp.x, -12.5, 10.5), clamp(vWp.z, -3.0, 16.0));
+        float clearing = 1.0 - smoothstep(0.0, 6.0, length(vWp.xz - cq));
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.06, 1.1, 0.96), clearing);
+        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.62, 0.58, 0.36), smoothstep(-52.0, -66.0, vWp.z) * 0.5);`,
       );
   };
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), groundMat);
-  ground.rotation.x = -Math.PI / 2;
+  const ground = new THREE.Mesh(groundGeometry(START.x, START.z), groundMat);
   ground.receiveShadow = true;
   scene.add(ground);
-  scene.add(buildBlades(STRIPE));
+  scene.add(buildTufts());
+  scene.add(buildMossMounds());
+  scene.add(buildFerns());
+  scene.add(buildMossRocks());
   scene.add(buildSurroundings());
 
   /* products */
@@ -414,6 +677,9 @@ export function mountFarm(canvas: HTMLCanvasElement) {
   scene.traverse((o) => {
     const m = o as THREE.Mesh;
     if (m.isMesh && m !== ground) m.castShadow = true;
+    const mat = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+    if (Array.isArray(mat)) mat.forEach(bendMaterial);
+    else if (mat) bendMaterial(mat);
   });
 
   const armPoint = new THREE.Vector3();
@@ -425,7 +691,7 @@ export function mountFarm(canvas: HTMLCanvasElement) {
     { id: "parts", pos: new THREE.Vector3(3.4, 1.2, 12.2) },
   ];
 
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 900);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 900);
   const size = () => {
     const w = canvas.clientWidth,
       h = canvas.clientHeight;
@@ -441,32 +707,48 @@ export function mountFarm(canvas: HTMLCanvasElement) {
 
   const tmp = new THREE.Vector3();
   const look = new THREE.Vector3();
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
   /**
-   * k: 0 → 1 over the landing (descend from above the field to eye level, then a slow push-in).
+   * k: 0 → 1 from the hand-off to the end of the story.
+   *   0 → .32  carry on the video's forward flight low over the moss; the island's dome flattens into level farmland
+   *   .32 → 1  a slow push-in across the product clearing
    * Returns screen positions (px) of the product anchors.
    */
   const update = (k: number, time: number, sx: number, sy: number) => {
     if (canvas.width !== Math.round(canvas.clientWidth * renderer.getPixelRatio())) size();
-    const land = THREE.MathUtils.smoothstep(k, 0, 0.35);
-    const push = THREE.MathUtils.smoothstep(k, 0.25, 1);
-    camera.position.set(-0.5 + sx * 0.8, THREE.MathUtils.lerp(9, 2.3, land) - sy * 0.3, THREE.MathUtils.lerp(34, 24, land) - push * 4);
-    look.set(0, THREE.MathUtils.lerp(-1, 1.1, land), 0);
+    const a = easeOut(THREE.MathUtils.clamp(k / 0.32, 0, 1));
+    const rise = THREE.MathUtils.smoothstep(a, 0.1, 1);
+    const push = THREE.MathUtils.smoothstep(k, 0.3, 1);
+    camera.position.set(
+      THREE.MathUtils.lerp(START.x, -0.5, a) + sx * 0.6,
+      THREE.MathUtils.lerp(START.y, 2.3, rise) - sy * 0.25,
+      THREE.MathUtils.lerp(START.z, 27, a) - push * 5,
+    );
+    look.set(THREE.MathUtils.lerp(START.x, 0, a), THREE.MathUtils.lerp(-3.6, 1.1, rise), camera.position.z - THREE.MathUtils.lerp(11, 24, a));
     camera.lookAt(look);
+    // dome: radius ~35 m at the hand-off (the island top), flat earth by the time the camera has landed
+    const flat = THREE.MathUtils.smoothstep(k, 0, 0.3);
+    bendUniforms.uBend.value = 0.014 * Math.pow(1 - flat, 2);
+    bendUniforms.uBendC.value.set(camera.position.x, camera.position.z);
 
     pivot.arm.rotation.y = armBase + Math.sin(time * 0.05) * 0.04 + k * 0.12;
     sprayMat.uniforms.uTime.value = time;
     sprayMat.uniforms.uPx.value = renderer.getPixelRatio() * (canvas.clientHeight / 900);
     pivot.wheels.forEach((w) => (w.rotation.z = -k * 3));
-    // irrigation anchor: two-thirds along the arm, at pipe height
+    // irrigation anchor: part-way along the arm, at pipe height
     armPoint.set(34 * 0.55, 4.6, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), pivot.arm.rotation.y).add(pivot.group.position);
     anchors[1].pos.copy(armPoint);
 
     renderer.render(scene, camera);
     const w = canvas.clientWidth,
       h = canvas.clientHeight;
-    return anchors.map((a) => {
-      tmp.copy(a.pos).project(camera);
-      return { id: a.id, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * h, on: tmp.z < 1 };
+    return anchors.map((an) => {
+      tmp.copy(an.pos);
+      const dx = tmp.x - camera.position.x,
+        dz = tmp.z - camera.position.z;
+      tmp.y -= bendUniforms.uBend.value * (dx * dx + dz * dz);
+      tmp.project(camera);
+      return { id: an.id, x: (tmp.x * 0.5 + 0.5) * w, y: (-tmp.y * 0.5 + 0.5) * h, on: tmp.z < 1 };
     });
   };
 

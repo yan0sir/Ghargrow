@@ -36,6 +36,7 @@ function mountMossline(rootEl: HTMLElement): () => void {
 
   /* ---------- video frame cache + canvas scrub ---------- */
   const FPS = 24;
+  const HANDOFF_FRAME = 72;
   const video = $<HTMLVideoElement>("#push");
   // cleanup strips the src to free the decoder; restore it on (re)mount
   const src = video.dataset.src || video.getAttribute("src") || "";
@@ -249,7 +250,6 @@ function mountMossline(rootEl: HTMLElement): () => void {
     camF = $("#camF"),
     plate = $("#plate"),
     fog = $("#fog"),
-    veil = $("#veil"),
     aChip = $("#aChip"),
     farmCanvas = $<HTMLCanvasElement>("#farm3d");
   // the farmland the fly-in lands on (built lazily, just before it is needed)
@@ -289,9 +289,12 @@ function mountMossline(rootEl: HTMLElement): () => void {
     sy += (my - sy) * 0.06;
     const H = window.innerHeight;
 
-    const vp = ease(seg(sp, 0.05, 0.7));
+    // the fly-in runs to 3.0 s (frame 72: low over the island's moss top, before the mast appears),
+    // accelerating into the hand-off so the 3D flight carries the same forward speed
+    const ft = seg(sp, 0.05, 0.3);
+    const vp = ft * (0.4 + 0.6 * ft);
     if (NF) {
-      want = Math.round(vp * (NF - 1));
+      want = Math.round(vp * Math.min(NF - 1, HANDOFF_FRAME));
       drawWant();
     }
     const camT = "translate3d(" + -sx * 18 + "px," + (-sy * 12 + (1 - vp) * H * 0.06) + "px,0) scale(" + (1 + 0.02 * (1 - vp)) + ")";
@@ -356,15 +359,16 @@ function mountMossline(rootEl: HTMLElement): () => void {
     });
     aChip.style.opacity = String(clamp(aIn * 2) * (1 - aOut));
     /* farmland: fades in behind the fog + a mist veil, then the camera lands and pushes in */
-    if (!farm && sp > 0.3) farm = mountFarm(farmCanvas);
-    const fIn = seg(sp, 0.415, 0.465);
+    if (!farm && sp > 0.08) farm = mountFarm(farmCanvas);
+    // quick dissolve on matching motion: the video's last flight frame → the same flight in 3D
+    const fIn = ease(seg(sp, 0.288, 0.312));
     farmCanvas.style.opacity = String(fIn);
     vis(farmCanvas, fIn > 0);
-    const vo2 = clamp(1 - Math.abs(sp - 0.44) / 0.04) * 0.92;
-    veil.style.opacity = String(vo2);
-    vis(veil, vo2 > 0);
+    vis(cam, fIn < 1);
+    const fk = seg(sp, 0.295, 0.9);
+    farmCanvas.style.filter = fk < 0.1 ? "blur(" + (1 - fk / 0.1) * 5 + "px)" : "";
     let pins: { id: string; x: number; y: number; on: boolean }[] = [];
-    if (farm && sp > 0.39) pins = farm.update(seg(sp, 0.415, 0.9), now / 1000, sx, sy);
+    if (farm && sp > 0.27) pins = farm.update(fk, now / 1000, sx, sy);
     hs.forEach((el, i) => {
       const k = seg(sp, 0.49 + i * 0.02, 0.53 + i * 0.02);
       const pin = pins.find((q) => q.id === el.dataset.id);
