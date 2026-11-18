@@ -8,7 +8,6 @@ import { branches, site } from "@/content/site";
 import { categories } from "@/content/catalog";
 import { href } from "@/lib/i18n";
 import { LeafMark } from "@/components/motion/LeafMark";
-import { GrowingCrops } from "@/components/motion/GrowingCrops";
 
 export function Footer() {
   const { d, lang, lite, setLite } = useSite();
@@ -19,8 +18,7 @@ export function Footer() {
   );
   return (
     <footer className="relative overflow-hidden bg-green-900 text-white/80">
-      <GrowingCrops className="absolute inset-x-0 top-0 h-28 text-green-700/60" tone="dark" density={70} />
-      <div className="wrap relative pt-40 pb-10">
+      <div className="wrap relative pt-20 pb-10">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
             <LeafMark light className="w-20" />

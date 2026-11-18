@@ -10,7 +10,6 @@ import { FarmStory } from "@/components/farm/FarmStory";
 import { PivotSimulator } from "@/components/interactive/PivotSimulator";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
-import { GrowingCrops } from "@/components/motion/GrowingCrops";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Rail } from "@/components/ui/Rail";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
@@ -194,19 +193,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* Quiz prompt */}
-      <section className="bg-wheat-400/30">
-        <Link href={href("/find-your-machine", lang)} className="wrap group flex flex-col justify-between gap-6 py-14 md:flex-row md:items-center">
-          <p className="h1">{d.home.quizTitle}</p>
-          <span className="inline-flex items-center gap-4 text-lg text-ink-900">
-            {d.cta.takeQuiz}
-            <span className="grid size-14 place-items-center rounded-lg bg-ink-900 text-white transition group-hover:bg-green-700">
-              <IconArrow className="size-5" />
-            </span>
-          </span>
-        </Link>
-      </section>
-
       {/* News */}
       <section className="section-y bg-sand-50">
         <div className="wrap">
@@ -232,7 +218,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       {/* Closing CTA */}
       <section className="sky-gradient relative overflow-hidden">
-        <div className="wrap relative z-10 pt-36 pb-56 text-center md:pb-72">
+        <div className="wrap relative z-10 py-36 text-center">
           <SplitHeading className="display-xl mx-auto max-w-6xl">{d.home.closingTitle}</SplitHeading>
           <p className="lead mx-auto mt-8 max-w-xl text-ink-700">{d.home.closingLead}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
@@ -240,7 +226,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <ContactButton variant="dark">{d.cta.inquire}</ContactButton>
           </div>
         </div>
-        <GrowingCrops className="absolute inset-x-0 bottom-0 h-48 w-full md:h-64" density={90} seed={21} />
       </section>
     </>
   );

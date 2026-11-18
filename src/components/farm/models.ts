@@ -788,6 +788,7 @@ export function wheatMaterial(R: number) {
       uWind: { value: 1 },
       uSun: { value: new THREE.Vector3(0, 1, 0) },
       uDay: { value: 1 },
+      uLush: { value: 0 },
     },
     vertexShader: /* glsl */ `
       attribute float aRand; attribute vec2 aPolar; attribute float aTop; attribute float aHead;
@@ -817,7 +818,7 @@ export function wheatMaterial(R: number) {
         #include <fog_vertex>
       }`,
     fragmentShader: /* glsl */ `
-      uniform float uGold, uDay; uniform vec3 uSun;
+      uniform float uGold, uDay, uLush; uniform vec3 uSun;
       varying float vTop, vHead, vG, vCut, vR, vHeadShow; varying vec3 vN;
       #include <common>
       #include <fog_pars_fragment>
@@ -831,6 +832,8 @@ export function wheatMaterial(R: number) {
         c = mix(c, gold * (0.88 + 0.24 * vR), clamp(uGold * (0.75 + 0.5 * vR), 0.0, 1.0));
         if (vHead > 0.5) c = mix(c, mix(vec3(0.52, 0.62, 0.26), vec3(0.95, 0.79, 0.43), uGold), 0.85);
         c = mix(c, vec3(0.8, 0.69, 0.45), vCut);
+        // finale: everything turns a deep, lush green
+        c = mix(c, mix(vec3(0.2, 0.5, 0.1), vec3(0.36, 0.7, 0.18), vR), uLush);
         c *= mix(0.5, 1.05, vTop);
         vec3 n = normalize(vN);
         float l = abs(dot(n, normalize(uSun)));
@@ -859,6 +862,7 @@ export function fieldMaterial(R: number) {
       uR: { value: R },
       uN: { value: 5 },
       uDay: { value: 1 },
+      uLush: { value: 0 },
     },
     vertexShader: /* glsl */ `
       varying vec2 vP;
@@ -873,7 +877,7 @@ export function fieldMaterial(R: number) {
         #include <fog_vertex>
       }`,
     fragmentShader: /* glsl */ `
-      uniform float uSweep, uGreen, uGold, uCut, uR, uN, uDay;
+      uniform float uSweep, uGreen, uGold, uCut, uR, uN, uDay, uLush;
       varying vec2 vP;
       #include <common>
       #include <fog_pars_fragment>
@@ -891,6 +895,7 @@ export function fieldMaterial(R: number) {
         c = mix(c, vec3(0.6, 0.5, 0.27), uGold);
         float cut = (uCut > 0.0001 && harvestParam(d, a, uR, uN) < uCut) ? 1.0 : 0.0;
         c = mix(c, vec3(0.78, 0.67, 0.43), cut);
+        c = mix(c, vec3(0.22, 0.5, 0.12), uLush);
         c *= 0.9 + 0.1 * sin(d * 5.7);
         // wheel tracks
         for (int i = 1; i <= 3; i++) { float tr = uR * float(i) / 3.0; c *= 1.0 - 0.25 * (1.0 - smoothstep(0.0, 0.5, abs(d - tr - 2.0))); }

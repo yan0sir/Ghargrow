@@ -33,9 +33,10 @@ const serif = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], variable
  *   0.11–0.24  three centre pivots roll in and spray (the wet sector follows each arm)
  *   0.24–0.70  aerial time-lapse: autumn sowing → winter rain → spring growth → golden summer;
  *              at the very end the camera latches onto a pivot arm's edge and rides it round
- *   0.70–0.92  the view returns to normal as the machines drive in, then follows them; combines spiral in,
- *              AXION tractors with grain carts alongside, bales drop. The pivot arm always stays opposite.
- *   0.92–1.00  pull up over the harvested circles, then drag to explore
+ *   0.70–0.92  like the pivots: close up on the machines as they drive in, then the camera pulls out to a
+ *              bird's-eye view while combines spiral in, AXION tractors with grain carts alongside, bales drop.
+ *              The pivot arm always stays opposite.
+ *   0.92–1.00  the land turns lush green as the view settles high over the circles, then drag to explore
  */
 const SEG = { hero: [0, 0.05], pan: [0.05, 0.11], piv: [0.11, 0.24], season: [0.24, 0.7], harvest: [0.7, 0.92], end: [0.92, 1] } as const;
 const R = 40;
@@ -208,7 +209,12 @@ export function FarmStory() {
     scene.add(sun, sun.target);
 
     /* world */
-    scene.add(buildDesert());
+    const desert = buildDesert();
+    scene.add(desert);
+    // the open land around the fields: sand that turns green for the finale
+    const groundMat = (desert.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+    const SAND = new THREE.Color(0xf2dcb0);
+    const LUSH = new THREE.Color(0x6fd245);
     const ANT_HEADING = 0.4;
     scene.add(buildMacroSand(ANT_HOME, ANT_HEADING));
     const ant = buildAnt();
@@ -421,6 +427,11 @@ export function FarmStory() {
       fieldMat.uniforms.uGreen.value = clamp((g - 0.12) / 0.4);
       fieldMat.uniforms.uGold.value = gold;
       fieldWheat.forEach((w) => (w.visible = p >= SEG.season[0] - 0.002));
+      // finale: the whole landscape greens up
+      const lush = smooth(clamp((p - 0.9) / 0.08));
+      wheatMat.uniforms.uLush.value = lush;
+      fieldMat.uniforms.uLush.value = lush;
+      groundMat.color.copy(SAND).lerp(LUSH, lush);
 
       // day/night: one cycle per season during the time-lapse
       const base = lerp(0.07, 0.17, fPan);
@@ -453,6 +464,7 @@ export function FarmStory() {
       sky.style.background = `linear-gradient(180deg, ${top} 0%, ${hor} 62%, ${hor} 100%)`;
       stars.style.opacity = String(clamp(1 - day * 1.6));
       (scene.fog as THREE.Fog).color.set(hor);
+      if (p > 0.9) (scene.fog as THREE.Fog).color.lerp(new THREE.Color(0xcfe3c0), smooth(clamp((p - 0.9) / 0.08)));
       sun.intensity = 2.6 * day + 0.05;
       sun.color.set(day < 0.5 ? 0xffb37a : 0xfff0d6);
       hemi.intensity = 0.25 + 0.85 * day;
@@ -553,9 +565,14 @@ export function FarmStory() {
           pos: mid.clone().add(side.clone().multiplyScalar(19)).add(fwd.clone().multiplyScalar(-7)).add(v3(0, 5, 0)),
           tgt: mid.clone().add(fwd.clone().multiplyScalar(2)).add(v3(0, 1.6, 0)),
         };
-        const k = ease(clamp((h - 0.16) / 0.2));
+        const k = ease(clamp((h - 0.12) / 0.14));
         pos = hold.pos.lerp(follow.pos, k);
         tgt = hold.tgt.lerp(follow.tgt, k);
+        // then, like the pivots, expand from the close-up to a bird's-eye view over all three circles
+        const up = ease(clamp((h - 0.3) / 0.45));
+        const bird = aerial(lerp(150, 260, up), lerp(0.55, 1.12, up), 2.2 + up * 0.4);
+        pos = pos.lerp(bird.pos, up);
+        tgt = tgt.lerp(bird.tgt, up);
         if (p >= SEG.end[0]) {
           const fin = aerial(300, 0.95, 2.6);
           pos.lerp(fin.pos, fEnd);
