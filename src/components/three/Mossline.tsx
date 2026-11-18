@@ -199,14 +199,6 @@ function mountMossline(rootEl: HTMLElement): () => void {
       if (!was) h.classList.add("on");
     }),
   );
-  const rows = $$("#feats a");
-  rows.forEach((r) =>
-    on(r, "click", () => {
-      const was = r.classList.contains("on");
-      rows.forEach((o) => o.classList.remove("on"));
-      if (!was) r.classList.add("on");
-    }),
-  );
   $$(".sc").forEach((c) => {
     on(c, "pointermove", ((e: PointerEvent) => {
       const b = c.getBoundingClientRect(),
@@ -257,22 +249,14 @@ function mountMossline(rootEl: HTMLElement): () => void {
   const L0 = $("#L0"),
     L1 = $("#L1"),
     L2 = $("#L2"),
-    L3 = $("#L3"),
-    L4 = $("#L4");
+    L3 = $("#L3");
   const hud = $("#hud"),
     caption = $("#caption"),
     hint = $("#hint"),
     vChip = $("#vChip"),
     vP = $("#vP");
-  const cred = $("#cred"),
-    card = $("#card"),
-    num = $("#num"),
-    prog = $("#prog");
-  const spark = $<SVGPolylineElement>("#spark");
+  const prog = $("#prog");
   const rocks = $$(".rock");
-  const sparkLen = spark.getTotalLength();
-  spark.style.strokeDasharray = String(sparkLen);
-  spark.style.strokeDashoffset = String(sparkLen);
   let sp = 0,
     last = performance.now(),
     raf = 0;
@@ -349,8 +333,9 @@ function mountMossline(rootEl: HTMLElement): () => void {
     vChip.style.transform = vP.style.transform = "translateY(" + -vOut * 50 + "px)";
     vis(L2, vIn > 0 && vOut < 1);
 
+    // the story ends here: the solutions paragraph and product hotspots stay up to the end
     const aIn = seg(sp, 0.45, 0.55),
-      aOut = seg(sp, 0.63, 0.68),
+      aOut = 0,
       n = aWords.length;
     aWords.forEach((w, i) => {
       const k = clamp(aIn * 2.2 - (i / n) * 1.2);
@@ -380,22 +365,6 @@ function mountMossline(rootEl: HTMLElement): () => void {
     });
     vis(L3, aIn > 0 && aOut < 1);
 
-    const sIn = seg(sp, 0.72, 0.82),
-      cIn = ease(seg(sp, 0.74, 0.86));
-    cred.style.opacity = String(sIn);
-    cred.style.transform = "translateY(" + (1 - sIn) * 30 + "px)";
-    cred.style.filter = "blur(" + (1 - sIn) * 8 + "px)";
-    card.style.opacity = String(cIn);
-    card.style.transform =
-      "translate3d(" + sx * -14 + "px," + ((1 - cIn) * 60 + sy * -10) + "px,0) rotateY(" + sx * 8 + "deg) rotateX(" + -sy * 8 + "deg)";
-    num.textContent = String(Math.round(24 * seg(sp, 0.76, 0.9)));
-    spark.style.strokeDashoffset = String(sparkLen * (1 - seg(sp, 0.77, 0.92)));
-    rows.forEach((rw, i) => {
-      const k = ease(seg(sp, 0.76 + i * 0.025, 0.82 + i * 0.025));
-      rw.style.opacity = String(k);
-      rw.style.transform = "translateX(" + (1 - k) * 40 + "px)";
-    });
-    vis(L4, sIn > 0 || cIn > 0);
     prog.style.transform = "scaleX(" + sp + ")";
 
     if (!counted && sol.getBoundingClientRect().top < H * 0.6) countUp();
