@@ -167,7 +167,8 @@ span.h2 {
   padding-inline: var(--gutter);
 }
 @utility section-y {
-  padding-block: clamp(88px, 12vw, 168px);
+  /* one rhythm for every section: generous but never more than 96px each side */
+  padding-block: clamp(64px, 7.5vw, 96px);
 }
 
 html[lang="ar"] .display-xl,

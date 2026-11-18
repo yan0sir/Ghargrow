@@ -16,8 +16,8 @@ import { mountFarm } from "@/components/three/mosslineFarm";
  * farm; the product hotspots and the closing dictionary entry then hold so they can be read.
  */
 const PHOTO = "/media/img/hero-background.webp";
-/** Farm flight position of the resting frame (low over the moss, just after the island hand-off). */
-const K0 = 0.05;
+/** Farm flight position of the resting frame: just landed, the machines and the pivot in view. */
+const K0 = 0.22;
 const K1 = 0.8;
 
 const SPOTS = [
@@ -34,7 +34,8 @@ export function HeroReveal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const spotsRef = useRef<HTMLDivElement>(null);
   /** Scroll-driven state shared with the render loop. */
-  const flight = useRef({ k: K0, spots: 0 });
+  // frame: 1 while the 3D sits in the small window (view centred on it, gaze lowered), 0 once full screen
+  const flight = useRef({ k: K0, spots: 0, frame: 1 });
 
   /* 3D farm: mounted once, rendered only while the hero is on screen */
   useEffect(() => {
@@ -50,12 +51,12 @@ export function HeroReveal() {
     const loop = (now: number) => {
       if (!alive) return;
       if (visible) {
-        const { k, spots } = flight.current;
-        const pins = farm.update(k, now / 1000, 0, 0);
+        const { k, spots, frame } = flight.current;
+        const desktop = window.innerWidth >= 768;
+        const rtl = document.documentElement.dir === "rtl";
+        const cx = desktop ? (rtl ? 0.2525 : 0.7475) : 0.5;
+        const pins = farm.update(k, now / 1000, 0, 0, { cx: 0.5 + (cx - 0.5) * frame, tilt: (desktop ? 2 : 1) * frame });
         canvas.dataset.ready = "1";
-        // the resting frame keeps the soft motion blur of the 3D page's hand-off, clearing as the flight starts
-        const b = 1.6 * (1 - Math.min(1, (k - K0) / 0.06));
-        canvas.style.filter = b > 0.02 ? `blur(${b.toFixed(2)}px)` : "";
         spotEls.forEach((el, i) => {
           const pin = pins.find((p) => p.id === el.dataset.id);
           if (!pin) return;
@@ -116,6 +117,8 @@ export function HeroReveal() {
                 // the camera flies in and lands while the frame grows, then drifts on slowly
                 flight.current.k = K0 + (K1 - K0) * gsap.parseEase("power1.out")(Math.min(1, Math.max(0, (p - 0.02) / 0.8)));
                 flight.current.spots = Math.min(1, Math.max(0, (p - 0.5) / 0.15));
+                // the window finishes growing at ~42% of the pinned scroll
+                flight.current.frame = 1 - gsap.parseEase("power2.inOut")(Math.min(1, Math.max(0, (p - 0.03) / 0.39)));
               },
             },
           });

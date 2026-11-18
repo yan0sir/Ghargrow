@@ -59,7 +59,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </section>
 
       {/* ZettaJoule "duck egg" section: light heading left, copy + icon button right, wide parallax image with a dark info card */}
-      <section className="bg-[#f1f5f8] pt-[clamp(72px,11vw,160px)] pb-[clamp(48px,6vw,96px)]">
+      <section className="section-y bg-[#f1f5f8]">
         <div className="wrap">
           <div className="grid gap-8 md:grid-cols-12">
             <SplitHeading className="text-[clamp(34px,4.2vw,60px)]! leading-none! font-[250]! tracking-[-0.03em] whitespace-pre-line text-black md:col-span-5">
@@ -81,7 +81,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </div>
           </div>
 
-          <div className="relative mt-[clamp(48px,6vw,96px)] aspect-[4/5] overflow-hidden rounded-[3px] bg-[#dfe6ea] md:aspect-[952/623]">
+          <div className="relative mx-auto mt-12 aspect-[4/5] overflow-hidden rounded-[3px] bg-[#dfe6ea] md:aspect-[952/623] md:w-[80%]">
             <ParallaxImage src="/media/img/claas-field.webp" alt="CLAAS AXION tractor with front and side mowers cutting alfalfa" sizes="(max-width:768px) 100vw, 92vw" />
             <div className="absolute inset-x-4 bottom-4 md:inset-x-auto md:start-6 md:bottom-6 md:w-[min(440px,34%)]">
               <div className="rounded-[3px] bg-black p-5 text-[#cfcdc9] md:p-6">
@@ -112,7 +112,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               <Pill href={href("/products", lang)}>{d.nav.allProducts}</Pill>
             </div>
           </div>
-          <div className="mt-10">
+          <div className="mt-12">
             <Rail label={d.home.featured}>
               {featured.map((p) => (
                 <div key={p.slug} className="w-[78vw] shrink-0 snap-start overflow-hidden sm:w-[44vw] lg:w-[28vw] [&_.relative]:rounded-lg">
@@ -126,7 +126,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       {/* Aftersales — title left, description right, ZettaJoule industry cards below */}
       <section className="bg-[#1d211c] text-white">
-        <div className="wrap py-[clamp(56px,7vw,104px)]">
+        <div className="wrap section-y">
           <div className="grid gap-8 md:grid-cols-12 md:items-start">
             <SplitHeading className="h1 text-white! md:col-span-5">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</SplitHeading>
             <div className="md:col-span-5 md:col-start-8">
@@ -174,7 +174,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Map */}
       <section className="section-y border-t border-ink-900/10 bg-sand-100">
         <div className="wrap">
-          <SplitHeading className="h1 mb-14 max-w-3xl">{d.home.mapTitle}</SplitHeading>
+          <SplitHeading className="h1 mb-12 max-w-3xl">{d.home.mapTitle}</SplitHeading>
           <LibyaMap />
         </div>
       </section>
@@ -216,7 +216,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           aria-hidden
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/45 via-ink-900/35 to-ink-900/70" />
-        <div className="wrap relative z-10 py-[clamp(120px,14vw,200px)] text-center">
+        <div className="wrap section-y relative z-10 text-center">
           <SplitHeading className="display-xl mx-auto max-w-6xl text-white!">{d.home.closingTitle}</SplitHeading>
           <p className="lead mx-auto mt-8 max-w-xl text-white/85">{d.home.closingLead}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">

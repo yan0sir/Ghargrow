@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import Image from "next/image";
 import { useSite } from "@/components/providers/SiteProvider";
 import { branches, site } from "@/content/site";
 import { categories } from "@/content/catalog";
@@ -10,7 +9,7 @@ import { href } from "@/lib/i18n";
 import { LeafMark } from "@/components/motion/LeafMark";
 
 export function Footer() {
-  const { d, lang, lite, setLite } = useSite();
+  const { d, lang } = useSite();
   const year = useSyncExternalStore(
     () => () => {},
     () => new Date().getFullYear(),
@@ -92,16 +91,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 text-xs md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <Image src="/media/logo/lockup-light.png" alt="Ghargrow" width={900} height={224} className="h-8 w-auto opacity-90" />
-          </div>
+        <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 text-xs md:flex-row md:items-center md:justify-end">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <label className="flex cursor-pointer items-center gap-2">
-              <input type="checkbox" checked={lite} onChange={(e) => setLite(e.target.checked)} className="peer sr-only" />
-              <span className="relative h-5 w-9 bg-white/20 transition peer-checked:bg-green-500 after:absolute after:top-0.5 after:start-0.5 after:size-4 after:bg-white after:transition peer-checked:after:translate-x-4 rtl:peer-checked:after:-translate-x-4" />
-              {d.footer.lighter}
-            </label>
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
               Facebook
             </a>

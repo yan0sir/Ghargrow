@@ -714,8 +714,17 @@ export function mountFarm(canvas: HTMLCanvasElement) {
    *   .32 → 1  a slow push-in across the product clearing
    * Returns screen positions (px) of the product anchors.
    */
-  const update = (k: number, time: number, sx: number, sy: number) => {
+  /**
+   * frame (optional, for the home hero's framed window): `cx` is the horizontal centre of the visible
+   * window as a fraction of the canvas (the view is shifted so it is centred there) and `tilt` lowers
+   * the gaze in metres so the ground fills a small window. Both ease back to 0.5 / 0 as the window grows.
+   */
+  const update = (k: number, time: number, sx: number, sy: number, frame?: { cx: number; tilt: number }) => {
     if (canvas.width !== Math.round(canvas.clientWidth * renderer.getPixelRatio())) size();
+    const cw = canvas.clientWidth,
+      ch = canvas.clientHeight;
+    if (frame && Math.abs(frame.cx - 0.5) > 0.001) camera.setViewOffset(cw, ch, -(frame.cx - 0.5) * cw, 0, cw, ch);
+    else if (camera.view?.enabled) camera.clearViewOffset();
     const a = easeOut(THREE.MathUtils.clamp(k / 0.32, 0, 1));
     const rise = THREE.MathUtils.smoothstep(a, 0.1, 1);
     const push = THREE.MathUtils.smoothstep(k, 0.3, 1);
@@ -724,7 +733,11 @@ export function mountFarm(canvas: HTMLCanvasElement) {
       THREE.MathUtils.lerp(START.y, 2.3, rise) - sy * 0.25,
       THREE.MathUtils.lerp(START.z, 27, a) - push * 5,
     );
-    look.set(THREE.MathUtils.lerp(START.x, 0, a), THREE.MathUtils.lerp(-3.6, 1.1, rise), camera.position.z - THREE.MathUtils.lerp(11, 24, a));
+    look.set(
+      THREE.MathUtils.lerp(START.x, 0, a),
+      THREE.MathUtils.lerp(-3.6, 1.1, rise) - (frame?.tilt ?? 0),
+      camera.position.z - THREE.MathUtils.lerp(11, 24, a),
+    );
     camera.lookAt(look);
     // dome: radius ~35 m at the hand-off (the island top), flat earth by the time the camera has landed
     const flat = THREE.MathUtils.smoothstep(k, 0, 0.3);

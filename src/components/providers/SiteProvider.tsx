@@ -37,14 +37,13 @@ export function SiteProvider({ lang, children }: { lang: Locale; children: React
   const lenis = useRef<Lenis | null>(null);
   const pathname = usePathname();
 
-  // Lighter mode: stored preference, or the OS reduced-motion setting
+  // Lighter mode follows the OS reduced-motion setting (the footer toggle was removed,
+  // so any preference stored by it is cleared rather than left stuck on)
   useEffect(() => {
-    let stored: string | null = null;
     try {
-      stored = localStorage.getItem(LITE_KEY);
+      localStorage.removeItem(LITE_KEY);
     } catch {}
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const v = stored ? stored === "1" : reduced;
+    const v = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only state read after hydration
     setLiteState(v);
   }, []);
