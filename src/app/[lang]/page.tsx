@@ -10,6 +10,7 @@ import { FarmStory } from "@/components/farm/FarmStory";
 import { PivotSimulator } from "@/components/interactive/PivotSimulator";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Rail } from "@/components/ui/Rail";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
@@ -58,15 +59,45 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ZettaJoule split: short paragraph left, large rounded image right */}
-      <section className="section-y bg-sand-50">
-        <div className="wrap grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-3">
-            <p className="text-[15px] leading-relaxed text-ink-700">{d.about.story}</p>
+      {/* ZettaJoule "duck egg" section: light heading left, copy + icon button right, wide parallax image with a dark info card */}
+      <section className="bg-[#f1f5f8] pt-[clamp(72px,11vw,160px)] pb-[clamp(48px,6vw,96px)]">
+        <div className="wrap">
+          <div className="grid gap-8 md:grid-cols-12">
+            <SplitHeading className="text-[clamp(34px,4.2vw,60px)]! leading-none! font-[250]! tracking-[-0.03em] whitespace-pre-line text-black md:col-span-5">
+              {lang === "ar" ? "آلات مجرّبة،\nودعم محلي" : "Proven Machinery,\nLocal Support"}
+            </SplitHeading>
+            <div className="md:col-span-4 md:col-start-9">
+              <p className="text-[clamp(15px,1.25vw,18px)] leading-[1.3] text-pretty text-[#524f4b]">{d.about.story}</p>
+              <Link
+                href={href("/about", lang)}
+                className="group mt-7 inline-flex h-12 items-stretch overflow-hidden rounded-[3px] text-[15px] font-medium text-black"
+              >
+                <span className="grid w-12 place-items-center bg-[#d7ecb4] transition-colors group-hover:bg-green-700 group-hover:text-white">
+                  <IconArrow className="size-4" />
+                </span>
+                <span className="flex items-center border border-s-0 border-black/15 px-4 transition-colors group-hover:border-black/40">
+                  {d.cta.learnMore}
+                </span>
+              </Link>
+            </div>
           </div>
-          <Reveal className="relative aspect-[16/9] overflow-hidden rounded-lg bg-sand-200 md:col-span-8 md:col-start-5">
-            <Image src="/media/img/pivot-circles.webp" alt="" fill sizes="(max-width:768px) 100vw, 66vw" className="object-cover" />
-          </Reveal>
+
+          <div className="relative mt-[clamp(48px,6vw,96px)] aspect-[4/5] overflow-hidden rounded-[3px] bg-[#dfe6ea] md:aspect-[952/623]">
+            <ParallaxImage src="/media/img/claas-field.webp" alt="CLAAS AXION tractor with front and side mowers cutting alfalfa" sizes="(max-width:768px) 100vw, 92vw" />
+            <div className="absolute inset-x-4 bottom-4 md:inset-x-auto md:start-6 md:bottom-6 md:w-[min(440px,34%)]">
+              <div className="rounded-[3px] bg-black p-5 text-[#cfcdc9] md:p-6">
+                <p className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.14em] text-white uppercase">
+                  <span className="size-2 rounded-full bg-[#c6f35c]" />
+                  {lang === "ar" ? "في الحقل، معك" : "In the field, with you"}
+                </p>
+                <p className="mt-4 text-[15px] leading-[1.35] text-pretty">
+                  {lang === "ar"
+                    ? "من الحشّ إلى الري، تُسلَّم كل آلة وتُجهَّز وتُصان على أيدي فرقنا في بنغازي وسبها وجالو."
+                    : "From mowing to irrigation, every machine is delivered, set up and serviced by our own teams in Benghazi, Sabha and Jalu."}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
