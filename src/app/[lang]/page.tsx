@@ -4,10 +4,9 @@ import { notFound } from "next/navigation";
 import { hasLocale, href } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
 import { brands, products } from "@/content/catalog";
-import { services, projects, posts } from "@/content/more";
+import { services, posts } from "@/content/more";
 import { HeroReveal } from "@/components/scenes/HeroReveal";
 import { FarmStory } from "@/components/farm/FarmStory";
-import { PivotSimulator } from "@/components/interactive/PivotSimulator";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
@@ -104,32 +103,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* The 3D journey: from sand to harvest */}
       <FarmStory />
 
-      {/* Irrigation: ZettaJoule statement layout + simulator */}
-      <section className="relative overflow-hidden bg-green-900 text-white">
-        <div className="relative h-[70svh] min-h-[420px]">
-          <video
-            className="absolute inset-0 size-full object-cover"
-            src="/media/video/pivot-sunset.mp4"
-            poster="/media/video/pivot-sunset.webp"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="none"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-green-900/10 via-green-900/20 to-green-900" />
-          <div className="wrap absolute inset-x-0 bottom-0 pb-12">
-            <SplitHeading className="display mt-4 max-w-5xl text-white!">{d.home.irrigationTitle}</SplitHeading>
-          </div>
-        </div>
-        <div className="wrap grid gap-10 pt-10 pb-28 md:grid-cols-12">
-          <p className="text-[15px] leading-relaxed text-white/70 md:col-span-3">{d.home.irrigationLead}</p>
-          <div className="md:col-span-9">
-            <PivotSimulator dark />
-          </div>
-        </div>
-      </section>
-
       {/* Featured machines */}
       <section className="section-y bg-sand-50">
         <div className="wrap">
@@ -151,18 +124,25 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* Services — ZettaJoule industry cards: image + dark panel, in a horizontal rail */}
+      {/* Aftersales — title left, description right, ZettaJoule industry cards below */}
       <section className="bg-[#1d211c] text-white">
-        <div className="wrap section-y">
-          <div className="grid gap-8 md:grid-cols-12 md:items-end">
-            <SplitHeading className="h1 text-white! md:col-span-8">{d.home.servicesTitle}</SplitHeading>
-            <div className="md:col-span-4 md:text-end">
-              <Pill href={href("/services", lang)} light>
-                {d.nav.services}
-              </Pill>
+        <div className="wrap py-[clamp(56px,7vw,104px)]">
+          <div className="grid gap-8 md:grid-cols-12 md:items-start">
+            <SplitHeading className="h1 text-white! md:col-span-5">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</SplitHeading>
+            <div className="md:col-span-5 md:col-start-8">
+              <p className="text-[clamp(16px,1.3vw,19px)] leading-[1.4] text-pretty text-white/75">
+                {lang === "ar"
+                  ? "نبقى في الحقل بعد البيع: تدريب على المعدات، وصيانة دورية، وقطع غيار أصلية، ومهندسون جاهزون للاستجابة في كل فروعنا في ليبيا."
+                  : "We stay in the field after the sale: operator training, scheduled maintenance, genuine parts and engineers on call from every one of our branches across Libya."}
+              </p>
+              <div className="mt-6">
+                <Pill href={href("/services", lang)} light>
+                  {d.nav.services}
+                </Pill>
+              </div>
             </div>
           </div>
-          <div className="mt-14 [&_button]:border-white/25 [&_button]:text-white">
+          <div className="mt-12 [&_button]:border-white/25 [&_button]:text-white">
             <Rail label={d.nav.services}>
               {services.map((s) => (
                 <Link
@@ -188,31 +168,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               ))}
             </Rail>
           </div>
-        </div>
-      </section>
-
-      {/* Projects — compact grid */}
-      <section className="section-y bg-sand-50">
-        <div className="wrap">
-          <div className="grid gap-8 md:grid-cols-12 md:items-end">
-            <SplitHeading className="h1 md:col-span-8">{d.home.projectsTitle}</SplitHeading>
-            <div className="md:col-span-4 md:text-end">
-              <Pill href={href("/projects", lang)}>{d.projects.all}</Pill>
-            </div>
-          </div>
-          <Reveal stagger={0.08} className="mt-12 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-4">
-            {projects.map((p) => (
-              <Link key={p.slug} href={href(`/projects/${p.slug}`, lang)} className="group block">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-sand-200">
-                  <Image src={p.cover} alt="" fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover transition duration-700 group-hover:scale-105" />
-                </div>
-                <p className="mt-3 text-[13px] text-ink-400">
-                  {p.type[lang]} · {p.place[lang]}
-                </p>
-                <p className="mt-1 text-[17px] leading-snug text-ink-900 group-hover:text-green-700">{p.title[lang]}</p>
-              </Link>
-            ))}
-          </Reveal>
         </div>
       </section>
 
@@ -247,14 +202,26 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* Closing CTA */}
-      <section className="sky-gradient relative overflow-hidden">
-        <div className="wrap relative z-10 py-36 text-center">
-          <SplitHeading className="display-xl mx-auto max-w-6xl">{d.home.closingTitle}</SplitHeading>
-          <p className="lead mx-auto mt-8 max-w-xl text-ink-700">{d.home.closingLead}</p>
+      {/* Closing CTA over a CLAAS JAGUAR harvest clip */}
+      <section className="relative overflow-hidden bg-ink-900 text-white">
+        <video
+          className="absolute inset-0 size-full object-cover"
+          src="/media/video/jaguar-harvest.mp4"
+          poster="/media/video/jaguar-harvest.webp"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink-900/45 via-ink-900/35 to-ink-900/70" />
+        <div className="wrap relative z-10 py-[clamp(120px,14vw,200px)] text-center">
+          <SplitHeading className="display-xl mx-auto max-w-6xl text-white!">{d.home.closingTitle}</SplitHeading>
+          <p className="lead mx-auto mt-8 max-w-xl text-white/85">{d.home.closingLead}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <WhatsAppButton />
-            <ContactButton variant="dark">{d.cta.inquire}</ContactButton>
+            <ContactButton variant="light">{d.cta.inquire}</ContactButton>
           </div>
         </div>
       </section>

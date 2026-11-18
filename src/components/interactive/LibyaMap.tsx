@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import { useSite } from "@/components/providers/SiteProvider";
 import { branches, type Branch } from "@/content/site";
 import { projects } from "@/content/more";
@@ -32,26 +33,52 @@ const outlinePath = "M" + outline.map(([lo, la]) => px(lo, la).map((n) => n.toFi
 export function LibyaMap() {
   const { d, lang } = useSite();
   const [active, setActive] = useState<Branch>(branches[0]);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  /* the border draws itself in one continuous stroke, then the land, labels and branches settle in */
+  useGSAP(
+    () => {
+      const svg = svgRef.current!;
+      if (document.documentElement.classList.contains("lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const q = gsap.utils.selector(svg);
+      const tl = gsap.timeline({ scrollTrigger: { trigger: svg, start: "top 78%", once: true } });
+      tl.fromTo(q("[data-border]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.8, ease: "power1.inOut" })
+        .fromTo(q("[data-land]"), { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "power2.out" }, "-=0.5")
+        .fromTo(q("[data-after]"), { opacity: 0 }, { opacity: 1, duration: 0.6, stagger: 0.08, ease: "power2.out" }, "-=0.6");
+    },
+    { scope: svgRef },
+  );
 
   return (
     <div className="grid gap-10 md:grid-cols-12 md:items-center">
       <div className="md:col-span-7">
-        <svg viewBox={`0 0 ${VW} ${VH}`} className="mx-auto w-[60%]" role="img" aria-label="Map of Libya with Ghargrow branches">
+        <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="mx-auto w-[60%]" role="img" aria-label="Map of Libya with Ghargrow branches">
           <defs>
             <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse">
               <circle cx="5" cy="5" r="1.4" fill="#43780e" opacity="0.35" />
             </pattern>
           </defs>
-          <path d={outlinePath} fill="url(#dots)" stroke="#43780e" strokeWidth={1.5} strokeLinejoin="round" />
+          <path data-land d={outlinePath} fill="url(#dots)" stroke="none" />
+          <path
+            data-border
+            d={outlinePath}
+            pathLength={1}
+            strokeDasharray="1 1"
+            fill="none"
+            stroke="#43780e"
+            strokeWidth={1.8}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
           {/* Mediterranean label */}
-          <text x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#8a867f" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
+          <text data-after x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#8a867f" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
             {lang === "ar" ? "البحر المتوسط" : "MEDITERRANEAN SEA"}
           </text>
           {/* Tripoli reference */}
           {(() => {
             const [tx, ty] = px(13.19, 32.89);
             return (
-              <g>
+              <g data-after>
                 <circle cx={tx} cy={ty} r={3} fill="#8a867f" />
                 <text x={tx + 8} y={ty + 16} fontSize={12} fill="#8a867f">
                   {lang === "ar" ? "طرابلس" : "Tripoli"}
@@ -63,13 +90,13 @@ export function LibyaMap() {
             .filter((p) => p.coords)
             .map((p) => {
               const [qx, qy] = px(p.coords!.lon, p.coords!.lat);
-              return <rect key={p.slug} x={qx - 4} y={qy - 4} width={8} height={8} fill="#d9b26a" transform={`rotate(45 ${qx} ${qy})`} />;
+              return <rect data-after key={p.slug} x={qx - 4} y={qy - 4} width={8} height={8} fill="#d9b26a" transform={`rotate(45 ${qx} ${qy})`} />;
             })}
           {branches.map((b) => {
             const [bx, by] = px(b.lon, b.lat);
             const on = b.id === active.id;
             return (
-              <g key={b.id} className="cursor-pointer" onClick={() => setActive(b)} onMouseEnter={() => setActive(b)}>
+              <g data-after key={b.id} className="cursor-pointer" onClick={() => setActive(b)} onMouseEnter={() => setActive(b)}>
                 <circle cx={bx} cy={by} r={on ? 26 : 16} fill="#43780e" opacity={0.15}>
                   <animate attributeName="r" values={on ? "16;30;16" : "12;18;12"} dur="2.4s" repeatCount="indefinite" />
                 </circle>
