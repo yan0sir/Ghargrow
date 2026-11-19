@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { useEffect, useRef } from "react";
 import { useSite } from "@/components/providers/SiteProvider";
 import {
   categories,
@@ -17,8 +16,8 @@ import { IconArrow } from "@/components/ui/Icons";
 /**
  * Machine showcase (KERN "technology" style): a split stage where the category photo on the left and
  * the product card on the right read as one piece. The photo is sticky; the cards are sticky too and
- * stack — as you scroll, each next card slides up over the previous one (which sinks back slightly),
- * and the photo on the left switches to that card's category.
+ * stack — as you scroll, each next card slides up over the previous one (which eases back slightly),
+ * and the photo on the left switches to that card's category. Light sand cards on the brand green.
  */
 
 /** The category's flagship (or first) product, with a photo that differs from the category photo. */
@@ -38,85 +37,63 @@ export function MachineShowcase() {
   const steps = categories.map((c) => ({ cat: c, ...pick(c) }));
   const n = steps.length;
 
-  useGSAP(
-    () => {
-      const el = root.current!;
-      const q = gsap.utils.selector(el);
-      const setActive = (i: number) => {
-        if (el.dataset.active === String(i)) return;
-        el.dataset.active = String(i);
-        q("[data-photo]").forEach((p) =>
-          p.toggleAttribute(
-            "data-on",
-            p.getAttribute("data-photo") === String(i),
-          ),
-        );
-      };
-      const cards = q("[data-card]");
-      const col = q("[data-cards]")[0];
-      // A card deck: every card is sticky, each one sticking a little lower than the one before
-      // (so the covered cards' top edges peek out). Card i lands on the deck once the column has
-      // scrolled i·step, where step = card height + gap − the extra sticky offset per card.
-      const step = () => {
-        const c0 = getComputedStyle(cards[0]);
-        const delta = cards[1]
-          ? parseFloat(getComputedStyle(cards[1]).top) - parseFloat(c0.top)
-          : 0;
-        return (
-          cards[0].offsetHeight + parseFloat(c0.marginBottom) - delta ||
-          window.innerHeight
-        );
-      };
-      ScrollTrigger.create({
-        trigger: col,
-        start: "top top",
-        end: "bottom bottom",
-        invalidateOnRefresh: true,
-        // the photo follows the card that is landing / on top
-        onUpdate: (self) =>
-          setActive(
-            Math.min(
-              n - 1,
-              Math.max(
-                0,
-                Math.floor((self.scroll() - self.start) / step() + 0.5),
-              ),
-            ),
-          ),
+  useEffect(() => {
+    const el = root.current!;
+    const photos = Array.from(el.querySelectorAll<HTMLElement>("[data-photo]"));
+    const cards = Array.from(el.querySelectorAll<HTMLElement>("[data-card]"));
+    const col = el.querySelector<HTMLElement>("[data-cards]")!;
+    const calm = document.documentElement.classList.contains("lite");
+    let active = -1,
+      raf = 0;
+    const setActive = (i: number) => {
+      if (i === active) return;
+      active = i;
+      el.dataset.active = String(i);
+      photos.forEach((p, k) => p.toggleAttribute("data-on", k === i));
+    };
+    // Cards are sticky siblings in one tall column: card i+1 slides up over card i while the column
+    // scrolls from i·step to (i+1)·step past the top of the stage (step = one card height).
+    const update = () => {
+      raf = 0;
+      const step = cards[0].offsetHeight || window.innerHeight;
+      const stickTop = parseFloat(getComputedStyle(cards[0]).top) || 0;
+      const x = stickTop - col.getBoundingClientRect().top; // how far the column has scrolled under the stage
+      // the photo switches when the next card is half way up
+      setActive(Math.min(n - 1, Math.max(0, Math.round(x / step))));
+      if (calm) return;
+      cards.forEach((card, i) => {
+        const k =
+          i < n - 1 ? Math.min(1, Math.max(0, (x - i * step) / step)) : 0;
+        // a covered card eases back a touch; it never fades, so the card on top always reads clearly
+        card.style.transform = k > 0 ? `scale(${1 - 0.05 * k})` : "";
+        const shade = card.querySelector<HTMLElement>("[data-shade]");
+        if (shade) shade.style.opacity = String(0.12 * k);
       });
-      if (!document.documentElement.classList.contains("lite")) {
-        cards.slice(0, -1).forEach((card, i) => {
-          // while the next card slides up over it, a card shrinks back into the deck and darkens
-          const sc = () => ({
-            trigger: col,
-            start: () => `top+=${i * step()} top`,
-            end: () => `top+=${(i + 1) * step()} top`,
-            scrub: true,
-            invalidateOnRefresh: true,
-          });
-          gsap.to(card, { scale: 0.94, ease: "none", scrollTrigger: sc() });
-          gsap.to(card.querySelector("[data-shade]"), {
-            opacity: 0.55,
-            ease: "none",
-            scrollTrigger: sc(),
-          });
-        });
-      }
-    },
-    { scope: root },
-  );
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [n]);
 
   return (
     <section
       ref={root}
       data-active="0"
-      className="relative bg-black text-white"
+      className="relative bg-green-900 text-ink-900"
       aria-label={d.home.featured}
     >
       <div className="grid md:grid-cols-2">
         {/* left: sticky category photo, swaps with the card on top */}
-        <div className="sticky top-0 z-0 h-[40svh] md:relative md:h-auto">
-          <div className="sticky top-0 h-[40svh] overflow-hidden md:h-svh">
+        <div className="sticky top-0 z-0 h-[46svh] md:relative md:h-auto">
+          <div className="sticky top-0 h-[46svh] overflow-hidden md:h-svh">
             {steps.map(({ cat }, i) => (
               <div
                 key={cat.slug}
@@ -155,40 +132,38 @@ export function MachineShowcase() {
         </div>
 
         {/* right: stacking sticky cards — each next card slides up over the last */}
-        <div
-          data-cards
-          className="relative px-[clamp(14px,2.4vw,40px)] pt-3 md:pt-[12svh]"
-        >
+        <div data-cards className="relative">
           {steps.map(({ cat, prod, photo }, i) => (
             <article
               key={cat.slug}
               data-card
-              style={{ zIndex: i + 1, ["--i" as string]: i }}
-              className="sticky top-[calc(40svh+12px+var(--i)*12px)] mb-[14svh] flex h-[52svh] origin-top flex-col justify-between overflow-hidden rounded-xl border border-white/12 bg-[#151814] px-[clamp(18px,2.8vw,44px)] py-[clamp(16px,4vh,40px)] shadow-[0_-24px_48px_rgba(0,0,0,0.55)] will-change-transform last:mb-0 md:top-[calc(12svh+var(--i)*28px)] md:mb-[22svh] md:h-[min(74svh,720px)]"
+              style={{ zIndex: i + 1 }}
+              className="sticky top-[46svh] flex h-[54svh] origin-top flex-col justify-between overflow-hidden border-t border-ink-900/10 bg-sand-50 px-[clamp(20px,3.4vw,56px)] py-[clamp(18px,6vh,64px)] shadow-[0_-18px_40px_rgba(31,58,7,0.18)] will-change-transform md:top-0 md:h-svh"
             >
               <div>
-                <p className="flex items-baseline justify-between gap-6 border-b border-white/20 pb-3 text-[13px] tracking-[0.14em] text-white/60 uppercase">
-                  <span className="text-[20px] tracking-normal text-white tabular-nums">
+                <p className="flex items-baseline justify-between gap-6 border-b border-ink-900/15 pb-3 text-[13px] tracking-[0.14em] text-ink-400 uppercase">
+                  <span className="flex items-center gap-2 text-[20px] tracking-normal text-green-700 tabular-nums">
+                    <span className="size-2 rounded-full bg-green-700" />
                     {cat.num}
                   </span>
                   <span>{cat.short[lang]}</span>
                 </p>
-                <h4 className="mt-3 text-[clamp(28px,3.2vw,52px)] leading-[1] font-medium tracking-[-0.03em] md:mt-5">
+                <h4 className="mt-4 text-[clamp(32px,3.6vw,56px)] leading-[1] font-medium tracking-[-0.03em] text-ink-900 md:mt-6">
                   {prod.name}
                 </h4>
-                <p className="mt-2 hidden text-[15px] text-white/55 md:block">
+                <p className="mt-2 hidden text-[15px] text-green-700 md:block">
                   {prod.type[lang]}
                 </p>
-                <p className="mt-2 line-clamp-3 max-w-[46ch] text-[14px] leading-[1.5] text-pretty text-white/85 md:mt-4 md:text-[16px]">
+                <p className="mt-3 max-w-[46ch] text-[15px] leading-[1.5] text-pretty text-ink-700 md:mt-5 md:text-[16px]">
                   {prod.summary[lang]}
                 </p>
               </div>
               <Link
                 href={href(`/products/${prod.category}/${prod.slug}`, lang)}
-                className="group mt-4 flex min-h-0 flex-1 flex-col md:mt-6"
+                className="group mt-6 block"
                 aria-label={prod.name}
               >
-                <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-md bg-white/5">
+                <div className="relative aspect-[502/280] w-full overflow-hidden rounded-md bg-sand-200">
                   <Image
                     src={photo}
                     alt={prod.name}
@@ -197,19 +172,16 @@ export function MachineShowcase() {
                     className="object-cover transition duration-700 group-hover:scale-105"
                   />
                 </div>
-                <span className="mt-3 inline-flex items-center gap-2 text-[14px] text-white transition group-hover:gap-3 md:mt-4">
+                <span className="mt-4 inline-flex items-center gap-2 text-[14px] font-medium text-green-700 transition group-hover:gap-3">
                   {d.cta.learnMore} <IconArrow className="size-4" />
                 </span>
               </Link>
               <div
                 data-shade
-                className="pointer-events-none absolute inset-0 bg-black opacity-0"
+                className="pointer-events-none absolute inset-0 bg-green-900 opacity-0"
               />
             </article>
           ))}
-          {/* hold: sticky cards are bounded by the column's content box, so this keeps the full deck
-              on screen for a beat after the last card lands */}
-          <div aria-hidden className="h-[24svh] md:h-[46svh]" />
         </div>
       </div>
     </section>
