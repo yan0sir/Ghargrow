@@ -14,24 +14,42 @@ import { IconArrow, IconClose } from "@/components/ui/Icons";
 export function Header() {
   const { d, lang, openContact } = useSite();
   const pathname = usePathname();
-  const [, setScrolled] = useState(false);
+  const [onDark, setOnDark] = useState(false);
   const [hiddenBar, setHiddenBar] = useState(false);
   const [menu, setMenu] = useState(false);
   const [mega, setMega] = useState(false);
   const overlay = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let last = 0;
+    let last = 0,
+      raf = 0;
+    // sections on a dark background carry data-tone="dark"; whichever one sits under the bar flips it to light text
+    const probe = () => {
+      raf = 0;
+      const y = 40;
+      setOnDark(
+        Array.from(document.querySelectorAll<HTMLElement>('[data-tone="dark"]')).some((el) => {
+          const r = el.getBoundingClientRect();
+          return r.top <= y && r.bottom >= y && r.height > 0;
+        }),
+      );
+    };
     const onScroll = () => {
       const y = window.scrollY;
-      setScrolled(y > 40);
       setHiddenBar(y > 400 && y > last);
       last = y;
+      if (!raf) raf = requestAnimationFrame(probe);
     };
     onScroll();
+    probe();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- close menus on navigation
@@ -53,14 +71,14 @@ export function Header() {
     { label: d.nav.about, path: "/about" },
   ];
   const isActive = (p: string) => pathname.startsWith(href(p, lang));
-  // light variant reserved for pages that open on a dark hero (none at the moment)
-  const light = false;
+  // light text over dark sections; the open mega menu has its own light panel, so it stays dark there
+  const light = onDark && !mega;
   const fg = light ? "text-white" : "text-ink-900";
 
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-60 transition-all duration-500 ${hiddenBar && !mega ? "-translate-y-full" : ""} ${
+        className={`fixed inset-x-0 top-0 z-60 transition-[transform,background-color,color] duration-500 ${hiddenBar && !mega ? "-translate-y-full" : ""} ${
           mega ? "bg-sand-50/95 backdrop-blur-md" : ""
         }`}
         onMouseLeave={() => setMega(false)}

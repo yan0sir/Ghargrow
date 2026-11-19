@@ -719,7 +719,7 @@ export function mountFarm(canvas: HTMLCanvasElement) {
    * window as a fraction of the canvas (the view is shifted so it is centred there) and `tilt` lowers
    * the gaze in metres so the ground fills a small window. Both ease back to 0.5 / 0 as the window grows.
    */
-  const update = (k: number, time: number, sx: number, sy: number, frame?: { cx: number; tilt: number }) => {
+  const update = (k: number, time: number, sx: number, sy: number, frame?: { cx: number; tilt: number; back?: number }) => {
     if (canvas.width !== Math.round(canvas.clientWidth * renderer.getPixelRatio())) size();
     const cw = canvas.clientWidth,
       ch = canvas.clientHeight;
@@ -731,8 +731,9 @@ export function mountFarm(canvas: HTMLCanvasElement) {
     camera.position.set(
       THREE.MathUtils.lerp(START.x, -0.5, a) + sx * 0.6,
       THREE.MathUtils.lerp(START.y, 2.3, rise) - sy * 0.25,
-      THREE.MathUtils.lerp(START.z, 27, a) - push * 5,
+      THREE.MathUtils.lerp(START.z, 27, a) - push * 5 + (frame?.back ?? 0),
     );
+    camera.position.y += (frame?.back ?? 0) * 0.12;
     look.set(
       THREE.MathUtils.lerp(START.x, 0, a),
       THREE.MathUtils.lerp(-3.6, 1.1, rise) - (frame?.tilt ?? 0),

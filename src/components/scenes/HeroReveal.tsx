@@ -61,7 +61,7 @@ export function HeroReveal() {
         const rtl = document.documentElement.dir === "rtl";
         // on desktop the scene sits a little toward the end side while the headline is up
         const cx = desktop ? 0.5 + (rtl ? -0.24 : 0.24) * shift : 0.5;
-        const pins = farm.update(k, now / 1000, 0, 0, { cx, tilt: desktop ? 0 : 0.6 * shift });
+        const pins = farm.update(k, now / 1000, 0, 0, { cx, tilt: desktop ? 0 : 0.6 * shift, back: 10 * shift });
         canvas.dataset.ready = "1";
         spotEls.forEach((el, i) => {
           const pin = pins.find((p) => p.id === el.dataset.id);
@@ -115,7 +115,6 @@ export function HeroReveal() {
           },
         });
         tl.to(q("[data-copy]"), { opacity: 0, x: desktop ? (rtl ? 60 : -60) : 0, y: desktop ? 0 : -40, filter: "blur(6px)", duration: 0.25 }, 0)
-          .to(q("[data-wash]"), { opacity: 0, duration: 0.25 }, 0)
           .to(q("[data-shade]"), { opacity: 1, duration: 0.3 }, 0.5)
           .fromTo(q("[data-outro]"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.25 }, 0.62)
           // hold so the products and the closing entry can be read before the page moves on
@@ -139,26 +138,25 @@ export function HeroReveal() {
             className="absolute inset-0 size-full opacity-0 transition-opacity duration-700 data-[ready]:opacity-100"
           />
         </div>
-        {/* a soft wash behind the copy so it reads over the sky and the field */}
-        <div
-          data-wash
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(241,238,233,.82)_0%,rgba(241,238,233,.55)_32%,rgba(241,238,233,0)_58%)] rtl:bg-[linear-gradient(270deg,rgba(241,238,233,.82)_0%,rgba(241,238,233,.55)_32%,rgba(241,238,233,0)_58%)] max-md:bg-[linear-gradient(180deg,rgba(241,238,233,.85)_0%,rgba(241,238,233,.5)_45%,rgba(241,238,233,0)_70%)]"
-        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-ink-900/45 to-transparent" />
         <div data-shade className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/65 via-ink-900/5 to-transparent opacity-0" />
 
         {/* headline over the scene, on the start side */}
-        <div data-copy className="relative z-10 flex h-full flex-col px-[var(--gutter)] pt-28 md:w-[52%] md:justify-center md:pt-0">
-          <h1 data-rise className="display-xl max-w-[10ch]">
+        <div
+          data-copy
+          className="relative z-10 flex h-full flex-col justify-end px-[var(--gutter)] pb-4 text-sand-50 [text-shadow:0_2px_28px_rgba(20,30,10,.45)] md:w-[56%] md:pb-6"
+        >
+          <h1 data-rise className="display-xl max-w-[10ch] text-sand-50!">
             {lang === "ar" ? "ازرع بثقة" : "Grow with Trust"}
           </h1>
-          <p data-rise className="lead mt-6 max-w-md text-ink-700">
+          <p data-rise className="lead mt-5 max-w-md text-sand-50/90">
             {d.home.heroLine}
           </p>
-          <div data-rise className="mt-8 flex flex-wrap gap-3">
+          <div data-rise className="mt-7 flex flex-wrap gap-3 [text-shadow:none]">
             <Btn href={href("/products", lang)} variant="primary">
               {d.cta.explore}
             </Btn>
-            <ContactButton variant="outline">{d.nav.talk}</ContactButton>
+            <ContactButton variant="light">{d.nav.talk}</ContactButton>
           </div>
         </div>
 

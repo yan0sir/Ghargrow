@@ -11,7 +11,6 @@ import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
-import { Rail } from "@/components/ui/Rail";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { IconArrow } from "@/components/ui/Icons";
 
@@ -106,7 +105,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <MachineShowcase />
 
       {/* Aftersales — title left, description right, ZettaJoule industry cards below */}
-      <section className="bg-[#1d211c] text-white">
+      <section data-tone="dark" className="bg-[#1d211c] text-white">
         <div className="wrap section-y">
           <div className="grid gap-8 md:grid-cols-12 md:items-start">
             <SplitHeading className="h1 text-white! md:col-span-5">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</SplitHeading>
@@ -123,13 +122,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </div>
             </div>
           </div>
-          <div className="mt-12 [&_button]:border-white/25 [&_button]:text-white">
-            <Rail label={d.nav.services}>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
               {services.map((s) => (
                 <Link
                   key={s.id}
                   href={href(`/services#${s.id}`, lang)}
-                  className="group flex w-[82vw] shrink-0 snap-start flex-col bg-green-900 p-3.5 sm:w-[420px]"
+                  className="group flex flex-col bg-green-900 p-3.5"
                 >
                   {/* photo inset in the card, ZettaJoule news-card style */}
                   <div className="relative aspect-[61/38] w-full overflow-hidden">
@@ -152,7 +150,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                   </div>
                 </Link>
               ))}
-            </Rail>
           </div>
         </div>
       </section>
@@ -189,7 +186,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </section>
 
       {/* Closing CTA over a CLAAS JAGUAR harvest clip */}
-      <section className="relative overflow-hidden bg-ink-900 text-white">
+      <section data-tone="dark" className="relative overflow-hidden bg-ink-900 text-white">
         <video
           className="absolute inset-0 size-full object-cover"
           src="/media/video/jaguar-harvest.mp4"

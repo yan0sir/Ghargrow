@@ -16,7 +16,7 @@ export function Footer() {
     () => 2026,
   );
   return (
-    <footer className="relative overflow-hidden bg-green-900 text-white/80">
+    <footer data-tone="dark" className="relative overflow-hidden bg-green-900 text-white/80">
       <div className="wrap relative pt-20 pb-10">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">

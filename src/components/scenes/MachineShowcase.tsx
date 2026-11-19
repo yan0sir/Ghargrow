@@ -87,6 +87,7 @@ export function MachineShowcase() {
     <section
       ref={root}
       data-active="0"
+      data-tone="dark"
       className="relative bg-green-900 text-ink-900"
       aria-label={d.home.featured}
     >
