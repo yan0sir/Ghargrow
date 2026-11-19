@@ -53,13 +53,14 @@ export const parts: Part[] = [
 ];
 
 /* ───────────── Services ───────────── */
-export type Service = { id: string; num: string; title: L; body: L; points: L[]; image: string };
+export type Service = { id: string; num: string; title: L; short: L; body: L; points: L[]; image: string };
 
 export const services: Service[] = [
   {
     id: "after-sales",
     num: "01",
     title: { en: "After-sales service", ar: "خدمة ما بعد البيع" },
+    short: { en: "Ongoing support to ensure your equipment performs at its best.", ar: "دعم مستمر لضمان أفضل أداء لمعداتك." },
     body: {
       en: "Support doesn't end at delivery. Our technicians come to your farm, diagnose quickly and keep your machines and pivots running through the season.",
       ar: "الدعم لا ينتهي عند التسليم. فنيونا يصلون إلى مزرعتك، يشخّصون بسرعة ويحافظون على عمل معداتك وأنظمة الري طوال الموسم.",
@@ -75,6 +76,7 @@ export const services: Service[] = [
     id: "training",
     num: "02",
     title: { en: "Product training", ar: "التدريب على المنتجات" },
+    short: { en: "Practical training to help farmers operate with confidence.", ar: "تدريب عملي يساعد المزارعين على التشغيل بثقة." },
     body: {
       en: "Certified engineers and product specialists train your operators on installation, operation and daily maintenance — so every machine performs from day one.",
       ar: "مهندسون معتمدون وأخصائيو منتجات يدربون مشغليك على التركيب والتشغيل والصيانة اليومية — ليعمل كل جهاز بكفاءة من اليوم الأول.",
@@ -90,6 +92,7 @@ export const services: Service[] = [
     id: "maintenance",
     num: "03",
     title: { en: "Maintenance", ar: "الصيانة" },
+    short: { en: "Reliable care to maximize efficiency and minimize downtime.", ar: "عناية موثوقة لرفع الكفاءة وتقليل التوقف." },
     body: {
       en: "Scheduled inspections, preventive maintenance and complete overhauls that protect your investment and avoid downtime at harvest.",
       ar: "فحوصات مجدولة وصيانة وقائية وإصلاحات شاملة تحمي استثمارك وتمنع التوقف في موسم الحصاد.",

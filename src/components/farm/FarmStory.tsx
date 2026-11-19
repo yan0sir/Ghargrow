@@ -98,12 +98,12 @@ const COPY = {
     sim: "Simulation",
     day: "Day",
     season: "Season",
-    moisture: "Soil moisture",
-    height: "Crop height",
     hs: [
-      ["Western pivot", "Arm angle"],
-      ["Crop height", "Wheat"],
-      ["Soil moisture", "Field 02"],
+      ["Western centre pivot", "Irrigation", "Western"],
+      ["Alfalfa & wheat seed", "Seeds & fertilizers", "Ghargrow"],
+      ["CLAAS combine", "Harvest", "CLAAS LEXION"],
+      ["AXION + grain cart", "Tractors", "CLAAS AXION"],
+      ["Bale handling", "Bales", "Arcusin"],
     ],
     jump: ["Desert", "Water", "Sow", "Grow", "Ripen", "Harvest"],
     cards: [
@@ -129,12 +129,12 @@ const COPY = {
     sim: "محاكاة",
     day: "اليوم",
     season: "الموسم",
-    moisture: "رطوبة التربة",
-    height: "ارتفاع المحصول",
     hs: [
-      ["نظام Western", "زاوية الذراع"],
-      ["ارتفاع المحصول", "قمح"],
-      ["رطوبة التربة", "الحقل 02"],
+      ["نظام Western المحوري", "الري", "Western"],
+      ["بذور البرسيم والقمح", "البذور والأسمدة", "غرغار"],
+      ["حصادة CLAAS", "الحصاد", "CLAAS LEXION"],
+      ["AXION مع عربة الحبوب", "الجرارات", "CLAAS AXION"],
+      ["مناولة البالات", "البالات", "Arcusin"],
     ],
     jump: ["الصحراء", "الماء", "البذر", "النمو", "النضج", "الحصاد"],
     cards: [
@@ -353,8 +353,6 @@ export function FarmStory() {
     const hud = q("[data-hud]");
     const hudDay = q("[data-hud-day]");
     const hudSeason = q("[data-hud-season]");
-    const hudMoist = q("[data-hud-moist]");
-    const hudHeight = q("[data-hud-height]");
     const giant = q("[data-giant]");
     const harvBox = q("[data-harv]");
     const strip = q("[data-strip]");
@@ -363,9 +361,17 @@ export function FarmStory() {
     const prog = q("[data-prog]");
     const hint = q("[data-hint]");
     const hotspots = qa("[data-hs]");
-    const hsVals = qa("[data-hs-val]");
     const jumps = qa("[data-jump]");
-    const hsWorld = [v3(0, 5.2, 0), v3(18, 1.1, 10), FIELDS[1].clone().add(v3(-12, 0.6, 14))];
+    // product anchors, refreshed every frame (the machines move), and when each one is on stage
+    const hsWorld = [v3(0, 5.2, 0), v3(18, 1.1, 10), v3(0, 0, 0), v3(0, 0, 0), v3(0, 0, 0)];
+    const HS_WINDOW: [number, number][] = [
+      [0.16, 0.7], // pivot: watering through the seasons
+      [0.3, 0.68], // seed: once the crop is up
+      [0.74, 0.93], // combine
+      [0.74, 0.93], // tractor + cart
+      [0.8, 0.95], // bales on the ground
+    ];
+    const baleMtx = new THREE.Matrix4();
 
     const clock = new THREE.Clock();
     let raf = 0;
@@ -658,21 +664,20 @@ export function FarmStory() {
       const dayN = Math.round(g * 270);
       hudDay.textContent = String(dayN).padStart(3, "0");
       hudSeason.textContent = p < SEG.season[0] ? (lang === "ar" ? "—" : "—") : SEASONS[lang][seasonIdx][0];
-      const moisture = p < SEG.piv[0] + 0.06 ? 4 : Math.round(30 + 9 * Math.sin(theta * 1.0) + winter * 14);
-      hudMoist.textContent = String(moisture);
-      hudHeight.textContent = (grow * 0.92).toFixed(2);
 
       // hotspots: projected from the world, live values
-      const hsOn = p > 0.16 && p < 0.6;
+      const m0 = machines[0];
+      hsWorld[2].copy(m0.comb.group.position).add(v3(0, 4.4, 0));
+      hsWorld[3].copy(m0.cart.group.position).add(v3(0, 3.8, 0));
+      m0.bales.getMatrixAt(0, baleMtx);
+      hsWorld[4].setFromMatrixPosition(baleMtx).add(v3(0, 1.1, 0));
       hotspots.forEach((hs, i) => {
+        const [a, b] = HS_WINDOW[i];
         const w = hsWorld[i].clone().project(camera);
-        const visible = hsOn && w.z < 1 && Math.abs(w.x) < 0.95 && Math.abs(w.y) < 0.9;
+        const visible = p > a && p < b && w.z < 1 && Math.abs(w.x) < 0.95 && Math.abs(w.y) < 0.9;
         hs.style.visibility = visible ? "visible" : "hidden";
         hs.style.transform = `translate3d(${((w.x + 1) / 2) * el.clientWidth}px, ${((1 - w.y) / 2) * el.clientHeight}px, 0)`;
       });
-      hsVals[0].textContent = `${Math.round(((theta * 180) / Math.PI) % 360)}°`;
-      hsVals[1].textContent = `${(grow * 0.92).toFixed(2)} m`;
-      hsVals[2].textContent = `${moisture} %`;
 
       // harvest: giant letters slide behind the machines (in the sky layer), strip slides in from the right
       const hv = clamp((p - 0.72) / 0.17);
@@ -813,16 +818,10 @@ export function FarmStory() {
           <p>
             {t.season} — <span data-hud-season>—</span>
           </p>
-          <p>
-            {t.moisture} <span data-hud-moist>0</span>%
-          </p>
-          <p>
-            {t.height} <span data-hud-height>0.00</span> m
-          </p>
         </div>
 
         {/* world-anchored hotspots */}
-        {t.hs.map(([label, sub]) => (
+        {t.hs.map(([label, sub, brand]) => (
           <div key={label} data-hs className="invisible absolute top-0 left-0" onClick={(e) => (e.currentTarget as HTMLElement).classList.toggle("on")}>
             <div className="flex -translate-x-[11px] -translate-y-[11px] cursor-pointer items-start gap-2">
               <span className="relative grid size-[22px] shrink-0 place-items-center rounded-full bg-green-700 text-sand-50 ring-2 ring-sand-50 transition hover:scale-110">
@@ -833,7 +832,7 @@ export function FarmStory() {
                 {label}
                 <span className="block text-green-700">{sub}</span>
                 <em data-hs-val className="block max-h-0 overflow-hidden text-green-700 not-italic transition-[max-height] duration-500">
-                  —
+                  {brand}
                 </em>
               </span>
             </div>

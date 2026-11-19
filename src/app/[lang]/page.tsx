@@ -129,19 +129,22 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 <Link
                   key={s.id}
                   href={href(`/services#${s.id}`, lang)}
-                  className="group flex w-[82vw] shrink-0 snap-start flex-col bg-green-900 p-3.5 sm:w-[420px] md:min-h-[600px]"
+                  className="group flex w-[82vw] shrink-0 snap-start flex-col bg-green-900 p-3.5 sm:w-[420px]"
                 >
                   {/* photo inset in the card, ZettaJoule news-card style */}
                   <div className="relative aspect-[61/38] w-full overflow-hidden">
                     <Image src={s.image} alt="" fill sizes="(max-width:640px) 82vw, 400px" className="object-cover transition duration-700 group-hover:scale-105" />
                   </div>
-                  <div className="flex flex-1 flex-col justify-end px-4 pt-16 pb-4 md:px-5">
+                  <div className="flex flex-1 flex-col px-4 pt-6 pb-4 md:px-5">
                     <p className="flex items-center gap-6 text-[13px] font-medium tracking-[0.12em] uppercase">
                       <span className="text-sand-50">{lang === "ar" ? "خدمة" : "Service"}</span>
                       <span className="text-green-300">{s.num}</span>
                     </p>
-                    <div className="mt-5 flex items-end justify-between gap-6">
-                      <p className="text-[clamp(24px,2.1vw,30px)] font-display leading-[1.12] font-normal tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
+                    <div className="mt-4 flex items-end justify-between gap-6">
+                      <div>
+                        <p className="text-[clamp(24px,2.1vw,30px)] font-display leading-[1.12] font-normal tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
+                        <p className="mt-2 text-[15px] leading-[1.5] text-pretty text-sand-50/75">{s.short[lang]}</p>
+                      </div>
                       <span className="grid size-[60px] shrink-0 place-items-center bg-green-300 text-green-900 transition-colors group-hover:bg-sand-50">
                         <IconArrow className="size-6 transition-transform group-hover:translate-x-0.5" />
                       </span>

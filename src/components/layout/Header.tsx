@@ -14,7 +14,7 @@ import { IconArrow, IconClose } from "@/components/ui/Icons";
 export function Header() {
   const { d, lang, openContact } = useSite();
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
+  const [, setScrolled] = useState(false);
   const [hiddenBar, setHiddenBar] = useState(false);
   const [menu, setMenu] = useState(false);
   const [mega, setMega] = useState(false);
@@ -61,7 +61,7 @@ export function Header() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-60 transition-all duration-500 ${hiddenBar && !mega ? "-translate-y-full" : ""} ${
-          scrolled || mega ? "bg-sand-50/85 backdrop-blur-md" : ""
+          mega ? "bg-sand-50/95 backdrop-blur-md" : ""
         }`}
         onMouseLeave={() => setMega(false)}
       >
