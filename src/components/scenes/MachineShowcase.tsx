@@ -111,16 +111,16 @@ export function MachineShowcase() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/25" />
                 <div className="absolute inset-x-[var(--gutter)] bottom-[clamp(24px,5vh,48px)]">
-                  <p className="flex items-center gap-2.5 text-[14px] text-white/80">
+                  <p className="flex items-center gap-2.5 text-[14px] font-medium text-white/85">
                     <span className="size-1.5 rounded-full bg-[#c6f35c]" />
                     {cat.num} / {String(n).padStart(2, "0")}
                   </p>
-                  <h3 className="mt-2 text-[clamp(40px,5.6vw,80px)] leading-[0.95] font-medium tracking-[-0.04em]">
+                  <h3 className="mt-2 text-[clamp(40px,5.6vw,80px)] leading-[0.95] font-semibold tracking-[-0.04em] text-sand-50 drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
                     {cat.title[lang]}
                   </h3>
                   <Link
                     href={href(`/products/${cat.slug}`, lang)}
-                    className="mt-4 inline-flex items-center gap-2 border-b border-white/40 pb-1 text-[13px] tracking-wide hover:border-white"
+                    className="mt-4 inline-flex items-center gap-2 border-b border-white/50 pb-1 text-[13px] font-medium tracking-wide text-sand-50 hover:border-white"
                   >
                     {lang === "ar" ? "تصفّح الفئة" : "View the range"}{" "}
                     <IconArrow className="size-3.5" />
@@ -148,7 +148,7 @@ export function MachineShowcase() {
                   </span>
                   <span>{cat.short[lang]}</span>
                 </p>
-                <h4 className="mt-4 text-[clamp(32px,3.6vw,56px)] leading-[1] font-medium tracking-[-0.03em] text-ink-900 md:mt-6">
+                <h4 className="mt-4 text-[clamp(32px,3.6vw,56px)] leading-[1] font-semibold tracking-[-0.03em] text-ink-900 md:mt-6">
                   {prod.name}
                 </h4>
                 <p className="mt-2 hidden text-[15px] text-green-700 md:block">

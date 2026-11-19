@@ -129,21 +129,23 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 <Link
                   key={s.id}
                   href={href(`/services#${s.id}`, lang)}
-                  className="group grid w-[86vw] shrink-0 snap-start overflow-hidden rounded-lg md:w-[min(920px,72vw)] md:grid-cols-2"
+                  className="group flex w-[82vw] shrink-0 snap-start flex-col bg-green-900 p-3.5 sm:w-[420px] md:min-h-[600px]"
                 >
-                  <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[420px]">
-                    <Image src={s.image} alt="" fill sizes="(max-width:768px) 86vw, 460px" className="object-cover transition duration-700 group-hover:scale-105" />
+                  {/* photo inset in the card, ZettaJoule news-card style */}
+                  <div className="relative aspect-[61/38] w-full overflow-hidden">
+                    <Image src={s.image} alt="" fill sizes="(max-width:640px) 82vw, 400px" className="object-cover transition duration-700 group-hover:scale-105" />
                   </div>
-                  <div className="flex flex-col bg-[#3a3d38] p-7 md:p-9">
-                    <p className="flex items-center gap-2 text-[13px] text-white/80">
-                      <span className="size-2 rounded-full bg-green-300" />
-                      {s.num}
+                  <div className="flex flex-1 flex-col justify-end px-4 pt-16 pb-4 md:px-5">
+                    <p className="flex items-center gap-6 text-[13px] font-medium tracking-[0.12em] uppercase">
+                      <span className="text-sand-50">{lang === "ar" ? "خدمة" : "Service"}</span>
+                      <span className="text-green-300">{s.num}</span>
                     </p>
-                    <p className="h3 mt-6 text-white! md:text-[34px]!">{s.title[lang]}</p>
-                    <p className="mt-4 text-[15px] leading-relaxed text-white/70">{s.body[lang]}</p>
-                    <span className="mt-auto inline-flex w-fit items-center gap-2 rounded-md border border-white/25 px-4 py-2 pt-2 text-[13px] text-white transition group-hover:bg-white group-hover:text-ink-900">
-                      {d.cta.learnMore} <IconArrow className="size-3.5" />
-                    </span>
+                    <div className="mt-5 flex items-end justify-between gap-6">
+                      <p className="text-[clamp(24px,2.1vw,30px)] leading-[1.12] font-semibold tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
+                      <span className="grid size-[60px] shrink-0 place-items-center bg-green-300 text-green-900 transition-colors group-hover:bg-sand-50">
+                        <IconArrow className="size-6 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
                   </div>
                 </Link>
               ))}
