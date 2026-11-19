@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useSite } from "@/components/providers/SiteProvider";
 import { branches, type Branch } from "@/content/site";
-import { projects } from "@/content/more";
 import { waLink } from "@/lib/whatsapp";
 import { IconPhone, IconWhatsApp } from "@/components/ui/Icons";
 
@@ -35,16 +34,36 @@ export function LibyaMap() {
   const [active, setActive] = useState<Branch>(branches[0]);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  /* the border draws itself in one continuous stroke, then the land, labels and branches settle in */
+  /*
+   * When the map is actually on screen: the border draws itself in one continuous stroke, the land and
+   * labels fade in, then the three branch cities pop up one after another.
+   * (An IntersectionObserver rather than a ScrollTrigger: the pinned 3D sections above shift the page after
+   * ScrollTrigger measures it, which made the drawing fire long before the map was visible.)
+   */
   useGSAP(
     () => {
       const svg = svgRef.current!;
       if (document.documentElement.classList.contains("lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const q = gsap.utils.selector(svg);
-      const tl = gsap.timeline({ scrollTrigger: { trigger: svg, start: "top 78%", once: true } });
-      tl.fromTo(q("[data-border]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.8, ease: "power1.inOut" })
-        .fromTo(q("[data-land]"), { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "power2.out" }, "-=0.5")
-        .fromTo(q("[data-after]"), { opacity: 0 }, { opacity: 1, duration: 0.6, stagger: 0.08, ease: "power2.out" }, "-=0.6");
+      gsap.set(q("[data-border]"), { strokeDashoffset: 1 });
+      gsap.set(q("[data-land], [data-label]"), { opacity: 0 });
+      gsap.set(q("[data-city]"), { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
+      const tl = gsap
+        .timeline({ paused: true })
+        .to(q("[data-border]"), { strokeDashoffset: 0, duration: 2.6, ease: "power1.inOut" })
+        .to(q("[data-land]"), { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.3")
+        .to(q("[data-label]"), { opacity: 1, duration: 0.5, ease: "power2.out" }, "<")
+        .to(q("[data-city]"), { opacity: 1, scale: 1, duration: 0.7, stagger: 0.25, ease: "back.out(2)" }, "-=0.2");
+      const io = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting) return;
+          tl.play();
+          io.disconnect();
+        },
+        { threshold: 0.45 },
+      );
+      io.observe(svg);
+      return () => io.disconnect();
     },
     { scope: svgRef },
   );
@@ -71,14 +90,14 @@ export function LibyaMap() {
             strokeLinecap="round"
           />
           {/* Mediterranean label */}
-          <text data-after x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#8a867f" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
+          <text data-label x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#8a867f" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
             {lang === "ar" ? "البحر المتوسط" : "MEDITERRANEAN SEA"}
           </text>
           {/* Tripoli reference */}
           {(() => {
             const [tx, ty] = px(13.19, 32.89);
             return (
-              <g data-after>
+              <g data-label>
                 <circle cx={tx} cy={ty} r={3} fill="#8a867f" />
                 <text x={tx + 8} y={ty + 16} fontSize={12} fill="#8a867f">
                   {lang === "ar" ? "طرابلس" : "Tripoli"}
@@ -86,17 +105,11 @@ export function LibyaMap() {
               </g>
             );
           })()}
-          {projects
-            .filter((p) => p.coords)
-            .map((p) => {
-              const [qx, qy] = px(p.coords!.lon, p.coords!.lat);
-              return <rect data-after key={p.slug} x={qx - 4} y={qy - 4} width={8} height={8} fill="#d9b26a" transform={`rotate(45 ${qx} ${qy})`} />;
-            })}
           {branches.map((b) => {
             const [bx, by] = px(b.lon, b.lat);
             const on = b.id === active.id;
             return (
-              <g data-after key={b.id} className="cursor-pointer" onClick={() => setActive(b)} onMouseEnter={() => setActive(b)}>
+              <g data-city key={b.id} className="cursor-pointer" onClick={() => setActive(b)} onMouseEnter={() => setActive(b)}>
                 <circle cx={bx} cy={by} r={on ? 26 : 16} fill="#43780e" opacity={0.15}>
                   <animate attributeName="r" values={on ? "16;30;16" : "12;18;12"} dur="2.4s" repeatCount="indefinite" />
                 </circle>
@@ -140,9 +153,6 @@ export function LibyaMap() {
               <IconWhatsApp /> {d.cta.whatsapp}
             </a>
           </div>
-          <p className="mt-8 flex items-center gap-2 text-sm text-ink-400">
-            <span className="inline-block size-2 rotate-45 bg-wheat-400" /> {d.projects.title}
-          </p>
         </div>
       </div>
     </div>
