@@ -41,7 +41,12 @@ export function HeroReveal() {
   useEffect(() => {
     if (lite || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current!;
-    const farm = mountFarm(canvas);
+    let farm: ReturnType<typeof mountFarm>;
+    try {
+      farm = mountFarm(canvas);
+    } catch {
+      return; // WebGL unavailable: the poster photo stays
+    }
     let raf = 0,
       visible = true,
       alive = true;

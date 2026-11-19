@@ -186,7 +186,13 @@ export function FarmStory() {
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     /* renderer / scene */
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+    } catch {
+      rootEl.style.display = "none"; // WebGL unavailable: skip the 3D journey rather than break the page
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.shadowMap.enabled = true;

@@ -3,14 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { hasLocale, href } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
-import { brands, products } from "@/content/catalog";
+import { brands } from "@/content/catalog";
 import { services, posts } from "@/content/more";
 import { HeroReveal } from "@/components/scenes/HeroReveal";
+import { MachineShowcase } from "@/components/scenes/MachineShowcase";
 import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
-import { ProductCard } from "@/components/ui/ProductCard";
 import { Rail } from "@/components/ui/Rail";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { IconArrow } from "@/components/ui/Icons";
@@ -34,7 +34,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const d = getDict(lang);
-  const featured = products.filter((p) => p.flagship);
 
   return (
     <>
@@ -103,26 +102,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* The 3D journey: from sand to harvest */}
       <FarmStory />
 
-      {/* Featured machines */}
-      <section className="section-y bg-sand-50">
-        <div className="wrap">
-          <div className="grid gap-8 md:grid-cols-12 md:items-end">
-            <SplitHeading className="h1 md:col-span-8">{d.home.featured}</SplitHeading>
-            <div className="md:col-span-4 md:text-end">
-              <Pill href={href("/products", lang)}>{d.nav.allProducts}</Pill>
-            </div>
-          </div>
-          <div className="mt-12">
-            <Rail label={d.home.featured}>
-              {featured.map((p) => (
-                <div key={p.slug} className="w-[78vw] shrink-0 snap-start overflow-hidden sm:w-[44vw] lg:w-[28vw] [&_.relative]:rounded-lg">
-                  <ProductCard p={p} lang={lang} size="lg" />
-                </div>
-              ))}
-            </Rail>
-          </div>
-        </div>
-      </section>
+      {/* Machines — KERN-style pinned showcase: category photo left, product cards sliding in on the right */}
+      <MachineShowcase />
 
       {/* Aftersales — title left, description right, ZettaJoule industry cards below */}
       <section className="bg-[#1d211c] text-white">

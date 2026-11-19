@@ -245,7 +245,8 @@ function mountMossline(rootEl: HTMLElement): () => void {
     aChip = $("#aChip"),
     farmCanvas = $<HTMLCanvasElement>("#farm3d");
   // the farmland the fly-in lands on (built lazily, just before it is needed)
-  let farm: ReturnType<typeof mountFarm> | null = null;
+  let farm: ReturnType<typeof mountFarm> | null = null,
+    farmFailed = false;
   const L0 = $("#L0"),
     L1 = $("#L1"),
     L2 = $("#L2"),
@@ -344,7 +345,13 @@ function mountMossline(rootEl: HTMLElement): () => void {
     });
     aChip.style.opacity = String(clamp(aIn * 2) * (1 - aOut));
     /* farmland: fades in behind the fog + a mist veil, then the camera lands and pushes in */
-    if (!farm && sp > 0.08) farm = mountFarm(farmCanvas);
+    if (!farm && !farmFailed && sp > 0.08) {
+      try {
+        farm = mountFarm(farmCanvas);
+      } catch {
+        farmFailed = true; // WebGL unavailable: the story stays on the video frames
+      }
+    }
     // quick dissolve on matching motion: the video's last flight frame → the same flight in 3D
     const fIn = ease(seg(sp, 0.288, 0.312));
     farmCanvas.style.opacity = String(fIn);
