@@ -94,13 +94,13 @@ html.lenis body {
 }
 
 /* ───────────────────────── Type utilities ─────────────────────────
-   One heading style everywhere: same family, weight, tracking and leading.
+   One heading style everywhere: same family, weight (500), tracking and leading; .h3 card titles lighter.
    Headings (h1/h2, .display-xl/.display/.h1/.h2) = 80px max.
    A paragraph using a heading class (p.display, p.h1 …) = 50px max.
    .h3 is the small heading for cards/lists. Body text and .lead share one size. */
 @utility display-xl {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(40px, 6.25vw, 80px);
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -108,7 +108,7 @@ html.lenis body {
 }
 @utility display {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(40px, 6.25vw, 80px);
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -116,7 +116,7 @@ html.lenis body {
 }
 @utility h1 {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(40px, 6.25vw, 80px);
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -124,7 +124,7 @@ html.lenis body {
 }
 @utility h2 {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(40px, 6.25vw, 80px);
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -178,7 +178,10 @@ html[lang="ar"] .h2,
 html[lang="ar"] .h3 {
   letter-spacing: 0;
   line-height: 1.15;
-  font-weight: 300;
+  font-weight: 500;
+}
+html[lang="ar"] .h3 {
+  font-weight: 400;
 }
 html[lang="ar"] .eyebrow {
   letter-spacing: 0;

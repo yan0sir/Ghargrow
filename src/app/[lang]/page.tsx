@@ -61,7 +61,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <section className="section-y bg-[#f1f5f8]">
         <div className="wrap">
           <div className="grid gap-8 md:grid-cols-12">
-            <SplitHeading className="text-[clamp(34px,4.2vw,60px)]! leading-none! font-[250]! tracking-[-0.03em] whitespace-pre-line text-black md:col-span-5">
+            <SplitHeading className="text-[clamp(34px,4.2vw,60px)]! leading-none! font-medium! tracking-[-0.03em] whitespace-pre-line text-black md:col-span-5">
               {lang === "ar" ? "آلات مجرّبة،\nودعم محلي" : "Proven Machinery,\nLocal Support"}
             </SplitHeading>
             <div className="md:col-span-4 md:col-start-9">
@@ -141,7 +141,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                       <span className="text-green-300">{s.num}</span>
                     </p>
                     <div className="mt-5 flex items-end justify-between gap-6">
-                      <p className="text-[clamp(24px,2.1vw,30px)] leading-[1.12] font-semibold tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
+                      <p className="text-[clamp(24px,2.1vw,30px)] font-display leading-[1.12] font-normal tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
                       <span className="grid size-[60px] shrink-0 place-items-center bg-green-300 text-green-900 transition-colors group-hover:bg-sand-50">
                         <IconArrow className="size-6 transition-transform group-hover:translate-x-0.5" />
                       </span>

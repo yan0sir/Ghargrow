@@ -186,10 +186,10 @@ export function HeroReveal() {
                   href={href(to, lang)}
                   className="group invisible absolute top-0 left-0 flex origin-[11px_11px] items-start gap-2 will-change-transform"
                 >
-                  <span className="relative grid size-[22px] shrink-0 place-items-center rounded-full bg-[#c6f35c] text-ink-900 shadow-[0_0_0_6px_rgba(198,243,92,.25)] transition group-hover:scale-110">
+                  <span className="relative grid size-[22px] shrink-0 place-items-center rounded-full bg-green-700 text-sand-50 ring-2 ring-sand-50 shadow-[0_0_0_8px_rgba(67,120,14,.28)] transition group-hover:scale-110">
                     <span className="text-[15px] leading-none">+</span>
                   </span>
-                  <span className="rounded bg-[rgba(246,248,245,.78)] px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.14em] whitespace-nowrap text-ink-900 uppercase backdrop-blur-md">
+                  <span className="rounded bg-sand-50/90 px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.14em] whitespace-nowrap text-ink-900 uppercase backdrop-blur-md">
                     {label}
                   </span>
                 </a>

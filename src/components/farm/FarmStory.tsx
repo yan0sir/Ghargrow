@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { EB_Garamond } from "next/font/google";
 import Link from "next/link";
 import { ScrollTrigger } from "@/lib/gsap";
 import { useSite } from "@/components/providers/SiteProvider";
@@ -24,7 +23,6 @@ import {
   v3,
 } from "./models";
 
-const serif = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-garamond" });
 
 /*
  * "From sand to harvest" — one pinned, scroll-driven Three.js story:
@@ -732,10 +730,10 @@ export function FarmStory() {
     ));
 
   return (
-    <section ref={root} className={`relative bg-[#0b0f0a] ${serif.variable}`} data-immersive>
+    <section ref={root} className="relative bg-[#0b0f0a]" data-immersive>
       <style>{`
         @keyframes fs-in { to { opacity: 1 } }
-        .font-garamond { font-family: var(--font-garamond), "Garamond", "Times New Roman", serif; }
+        .font-garamond { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.03em; }
         .liquid-glass { background: rgba(255,255,255,.04); background-blend-mode: luminosity; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
           box-shadow: inset 0 1px 1px rgba(255,255,255,.12); position: relative; overflow: hidden; transition: background .3s, transform .2s; }
         .liquid-glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.4px;
@@ -808,7 +806,7 @@ export function FarmStory() {
         ))}
 
         <div data-hud className="pointer-events-none absolute start-[var(--gutter)] top-24 font-mono text-[11px] leading-[1.9] tracking-[0.14em] text-white uppercase opacity-0 [text-shadow:0_1px_8px_rgba(0,0,0,.45)] md:top-28">
-          <p className="mb-1 inline-block bg-[#c6f35c] px-2 text-[10px] text-[#14140f] [text-shadow:none]">{t.sim}</p>
+          <p className="mb-1 inline-block bg-green-700 px-2 text-[10px] text-sand-50 [text-shadow:none]">{t.sim}</p>
           <p>
             {t.day} <span data-hud-day>000</span> / 270
           </p>
@@ -827,14 +825,14 @@ export function FarmStory() {
         {t.hs.map(([label, sub]) => (
           <div key={label} data-hs className="invisible absolute top-0 left-0" onClick={(e) => (e.currentTarget as HTMLElement).classList.toggle("on")}>
             <div className="flex -translate-x-[11px] -translate-y-[11px] cursor-pointer items-start gap-2">
-              <span className="relative grid size-[22px] shrink-0 place-items-center rounded-full bg-[#c6f35c] text-[#10291a] transition hover:scale-110">
-                <span className="absolute inset-0 animate-ping rounded-full bg-[#c6f35c]/50" />
+              <span className="relative grid size-[22px] shrink-0 place-items-center rounded-full bg-green-700 text-sand-50 ring-2 ring-sand-50 transition hover:scale-110">
+                <span className="absolute inset-0 animate-ping rounded-full bg-green-700/45" />
                 <span className="relative text-sm leading-none">+</span>
               </span>
-              <span className="rounded bg-[rgba(246,248,245,.78)] px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.14em] text-[#10291a] uppercase backdrop-blur">
+              <span className="rounded bg-sand-50/90 px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.14em] text-ink-900 uppercase backdrop-blur">
                 {label}
-                <span className="block text-[#4f8a12] opacity-70">{sub}</span>
-                <em data-hs-val className="block max-h-0 overflow-hidden text-[#4f8a12] not-italic transition-[max-height] duration-500">
+                <span className="block text-green-700">{sub}</span>
+                <em data-hs-val className="block max-h-0 overflow-hidden text-green-700 not-italic transition-[max-height] duration-500">
                   —
                 </em>
               </span>
