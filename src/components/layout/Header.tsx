@@ -136,7 +136,7 @@ export function Header() {
               <div key={c.slug}>
                 <Link href={href(`/products/${c.slug}`, lang)} className="group block">
                   <div className="relative aspect-[4/3] overflow-hidden bg-sand-200">
-                    <Image src={c.image} alt="" fill sizes="25vw" className="object-cover transition duration-700 group-hover:scale-105" />
+                    <Image src={c.card ?? c.image} alt="" fill sizes="25vw" className="object-cover transition duration-700 group-hover:scale-105" />
                   </div>
                   <p className="eyebrow mt-4 text-ink-400">{c.num}</p>
                   <p className="h3 mt-1 group-hover:text-green-700">{c.title[lang]}</p>

@@ -63,6 +63,8 @@ export type Category = {
   short: L;
   intro: L;
   image: string;
+  /** square photo from the original ghargrow.com, used on cards */
+  card?: string;
   video?: string;
   brand: BrandId;
   feature?: "attachment-swap" | "pivot-simulator" | "bale-flow";
@@ -79,6 +81,7 @@ export const categories: Category[] = [
       ar: "جرارات وحصادات ومحشات ومجمّعات ومكابس CLAAS — السلسلة الكاملة من التربة إلى البالة، مع خدمة غرغار.",
     },
     image: m("img/axion-road.webp"),
+    card: m("img/og-c-tractors.webp"),
     video: m("video/axion-field.mp4"),
     brand: "claas",
     feature: "attachment-swap",
@@ -93,6 +96,7 @@ export const categories: Category[] = [
       ar: "أنظمة Western المحورية والخطية وللحقول الصغيرة التي تحوّل الصحراء إلى دوائر خضراء — تصميم وتركيب وصيانة بأيدي مهندسينا.",
     },
     image: m("img/pivot-sunrise.webp"),
+    card: m("img/og-c-irrigation.webp"),
     video: m("video/pivot-sunset.mp4"),
     brand: "western",
     feature: "pivot-simulator",
@@ -107,6 +111,7 @@ export const categories: Category[] = [
       ar: "جامعات ورافعات Arcusin التي تلتقط البالات وتحزمها وترصّها ليصبح الحقل جاهزاً قبل الحشّة التالية.",
     },
     image: m("img/bale-stack.webp"),
+    card: m("img/og-c-bale-handling.webp"),
     brand: "arcusin",
     feature: "bale-flow",
   },
@@ -120,6 +125,7 @@ export const categories: Category[] = [
       ar: "بذور برسيم عالية الإنتاجية وأسمدة محسّنة للتربة لتحقيق أقصى استفادة من كل هكتار مروي.",
     },
     image: m("img/seeds-alfalfa.webp"),
+    card: m("img/og-c-seeds.webp"),
     brand: "ghargrow",
   },
 ];
@@ -136,6 +142,8 @@ export type Product = {
   type: L;
   summary: L;
   image: string;
+  /** square product photo from the original ghargrow.com, used on cards */
+  card?: string;
   cutout?: string;
   gallery: string[];
   video?: string;
@@ -166,6 +174,7 @@ export const products: Product[] = [
       ar: "جرار سداسي الأسطوانات متعدد المهام للحراثة الثقيلة والنقل وأعمال عمود الإدارة — مريح في الأيام الطويلة واقتصادي في الوقود.",
     },
     image: m("img/axion-road.webp"),
+    card: m("img/og-p-axion-820.webp"),
     cutout: m("cutout/axion.webp"),
     gallery: [m("img/axion-road.webp"), m("img/axion-cab.webp"), m("img/disco-field.webp"), m("img/field-aerial.webp")],
     video: m("video/axion-field.mp4"),
@@ -226,6 +235,7 @@ export const products: Product[] = [
       ar: "جرار متوسط الحجم: قوة كافية للحقل وحجم مناسب للساحة وأعمال اللودر الأمامي.",
     },
     image: m("img/disco-front.webp"),
+    card: m("img/og-p-arion-640c.webp"),
     gallery: [m("img/disco-front.webp"), m("img/liner-aerial.webp")],
     keySpec: { en: "155 hp · QUADRISHIFT 16/16", ar: "155 حصان · QUADRISHIFT 16/16" },
     specs: [
@@ -247,6 +257,7 @@ export const products: Product[] = [
       ar: "حصادة بخمسة هزازات بنظام دراس أكبر وخزان حبوب أكبر وقوة أعلى — مصممة لمواسم القمح والشعير.",
     },
     image: m("img/dominator-wheat.webp"),
+    card: m("img/og-p-dominator-260.webp"),
     gallery: [m("img/dominator-wheat.webp"), m("img/combine-field.webp"), m("img/combine-dust.webp"), m("img/field-coast.webp")],
     video: m("video/dominator.mp4"),
     flagship: true,
@@ -304,6 +315,7 @@ export const products: Product[] = [
       ar: "حشّ أمامي وخلفي بعرض يتجاوز تسعة أمتار لمساحات البرسيم الكبيرة تحت أنظمة الري المحوري.",
     },
     image: m("img/disco-field.webp"),
+    card: m("img/og-p-disco.webp"),
     gallery: [m("img/disco-field.webp"), m("img/disco-studio.webp"), m("img/disco-front.webp")],
     video: m("video/disco.mp4"),
     keySpec: { en: "9.10 / 8.90 m working width", ar: "عرض عمل 9.10 / 8.90 م" },
@@ -325,6 +337,7 @@ export const products: Product[] = [
       ar: "محشة مقطورة بذراع جر مركزي لقصّ نظيف ومتساوٍ في الحقول المتوسطة.",
     },
     image: m("img/disco-studio.webp"),
+    card: m("img/og-p-disco.webp"),
     gallery: [m("img/disco-studio.webp"), m("img/disco-field.webp")],
     keySpec: { en: "3.40 m · 8 discs", ar: "3.40 م · 8 أقراص" },
     specs: [
@@ -345,6 +358,7 @@ export const products: Product[] = [
       ar: "صفوف نظيفة ولطيفة على العلف لجودة أفضل وكبس أسرع.",
     },
     image: m("img/liner-aerial.webp"),
+    card: m("img/og-p-liner-2800.webp"),
     gallery: [m("img/liner-aerial.webp"), m("img/liner-detail.webp")],
     keySpec: { en: "7.40 – 8.20 m · 2 rotors", ar: "7.40 – 8.20 م · دواران" },
     specs: [
@@ -365,6 +379,7 @@ export const products: Product[] = [
       ar: "الأكثر انتشاراً في حقول البرسيم الليبية: بالات مربعة صغيرة موثوقة وسهلة المناولة والبيع.",
     },
     image: m("img/markant-side.webp"),
+    card: m("img/og-p-markant-650.webp"),
     gallery: [m("img/markant-side.webp"), m("img/markant-close.webp"), m("img/baler-pivot.webp"), m("img/aerial-baler.webp")],
     keySpec: { en: "Small square bales", ar: "بالات مربعة صغيرة" },
     specs: [
@@ -383,6 +398,7 @@ export const products: Product[] = [
       ar: "بالات مربعة كبيرة عالية الكثافة مع تحكم آلي بالضغط — للمقاولين ومشاريع الأعلاف الكبيرة.",
     },
     image: m("img/baler-pivot-3.webp"),
+    card: m("img/og-p-quadrant-5200.webp"),
     gallery: [m("img/baler-pivot-3.webp"), m("img/bale-stack-2.webp"), m("img/aerial-baler-2.webp")],
     video: m("video/quadrant.mp4"),
     flagship: true,
@@ -437,6 +453,7 @@ export const products: Product[] = [
       ar: "نظام ري ذاتي الحركة يروي دائرة كاملة بتوزيع متساوٍ وكفاءة عالية — الدوائر الخضراء التي تراها من الجو.",
     },
     image: m("img/pivot-sunrise.webp"),
+    card: m("img/og-p-pivot-center.webp"),
     gallery: [m("img/pivot-sunrise.webp"), m("img/pivot-spray.webp"), m("img/pivot-wheel.webp"), m("img/pivot-circles.webp")],
     video: m("video/pivot-sunset.mp4"),
     flagship: true,
@@ -489,6 +506,7 @@ export const products: Product[] = [
       ar: "يروي الحقول المستطيلة من الطرف إلى الطرف — بلا زوايا جافة.",
     },
     image: m("img/linear-pivot.webp"),
+    card: m("img/og-p-pivot-linear.webp"),
     gallery: [m("img/linear-pivot.webp"), m("img/pivot-long.webp")],
     keySpec: { en: "Rectangular fields", ar: "للحقول المستطيلة" },
     specs: [
@@ -507,6 +525,7 @@ export const products: Product[] = [
       ar: "كفاءة الري المحوري للمزارع الصغيرة بتكلفة أقل وتشغيل بسيط.",
     },
     image: m("img/pivot-small.webp"),
+    card: m("img/og-p-pivot-small.webp"),
     gallery: [m("img/pivot-small.webp"), m("img/pivot-pink.webp")],
     keySpec: { en: "For smaller farms", ar: "للمزارع الصغيرة" },
     specs: [
@@ -525,6 +544,7 @@ export const products: Product[] = [
       ar: "راقب وشغّل أنظمة الري من هاتفك — الحالة والتنبيهات والتشغيل والإيقاف دون الذهاب إلى الحقل.",
     },
     image: m("img/icontrol-sunset.webp"),
+    card: m("img/og-p-icontrol.webp"),
     gallery: [m("img/icontrol-sunset.webp"), m("img/icontrol-field.webp"), m("img/icontrol-open.webp")],
     keySpec: { en: "Remote monitoring", ar: "مراقبة عن بُعد" },
     specs: [
@@ -544,6 +564,7 @@ export const products: Product[] = [
       ar: "يجمع البالات المربعة الصغيرة ويرصّها آلياً في كتل محكمة — سائق واحد يفرغ الحقل.",
     },
     image: m("img/bale-stack.webp"),
+    card: m("img/og-p-autostack-xp.webp"),
     gallery: [m("img/bale-stack.webp"), m("img/bale-stack-2.webp")],
     flagship: true,
     keySpec: { en: "Collect · pack · stack", ar: "جمع · حزم · رصّ" },
@@ -560,6 +581,7 @@ export const products: Product[] = [
     type: { en: "Bale grab", ar: "ماسك بالات" },
     summary: { en: "Loads packs of bales onto trucks fast and safely.", ar: "تحميل حزم البالات على الشاحنات بسرعة وأمان." },
     image: m("img/bale-stack-2.webp"),
+    card: m("img/og-p-grabpack.webp"),
     gallery: [m("img/bale-stack-2.webp")],
     keySpec: { en: "Loader attachment", ar: "ملحق للودر" },
     specs: [{ label: { en: "Use", ar: "الاستخدام" }, value: { en: "Loading bale packs", ar: "تحميل حزم البالات" } }],
@@ -572,6 +594,7 @@ export const products: Product[] = [
     type: { en: "Bale stacking fork", ar: "شوكة رصّ البالات" },
     summary: { en: "Stacks and moves bale blocks in the yard or field.", ar: "رصّ ونقل كتل البالات في الساحة أو الحقل." },
     image: m("img/baler-pivot-2.webp"),
+    card: m("img/og-p-forstack.webp"),
     gallery: [m("img/baler-pivot-2.webp")],
     keySpec: { en: "Yard & field stacking", ar: "رصّ في الساحة والحقل" },
     specs: [{ label: { en: "Use", ar: "الاستخدام" }, value: { en: "Stacking bale blocks", ar: "رصّ كتل البالات" } }],
@@ -588,6 +611,7 @@ export const products: Product[] = [
       ar: "بذور برسيم لأعلاف عالية البروتين متعددة الحشّات تحت الري المحوري.",
     },
     image: m("img/seeds-alfalfa.webp"),
+    card: m("img/og-p-alfalfa.webp"),
     gallery: [m("img/seeds-alfalfa.webp"), m("img/pivot-circles.webp")],
     keySpec: { en: "Multi-cut forage", ar: "علف متعدد الحشّات" },
     specs: [{ label: { en: "Crop", ar: "المحصول" }, value: { en: "Alfalfa (lucerne)", ar: "برسيم حجازي" } }],
@@ -603,6 +627,7 @@ export const products: Product[] = [
       ar: "حبيبات كبريت عنصري بنسبة 90% تخفض حموضة التربة وتحرر العناصر الغذائية في الترب القلوية.",
     },
     image: m("img/fertilizer.webp"),
+    card: m("img/og-p-sulphur.webp"),
     gallery: [m("img/fertilizer.webp"), m("img/fertilizer-2.webp")],
     keySpec: { en: "90% sulphur", ar: "90% كبريت" },
     specs: [{ label: { en: "Sulphur content", ar: "نسبة الكبريت" }, value: "90%" }],

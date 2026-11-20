@@ -70,7 +70,7 @@ export const services: Service[] = [
       { en: "Technical advice by phone and WhatsApp", ar: "استشارة فنية عبر الهاتف وواتساب" },
       { en: "Genuine spare parts in stock", ar: "قطع غيار أصلية متوفرة" },
     ],
-    image: m("img/team-line.webp"),
+    image: m("img/og-s-after-sales.webp"),
   },
   {
     id: "training",
@@ -86,7 +86,7 @@ export const services: Service[] = [
       { en: "Pivot panel and iControl training", ar: "تدريب على لوحات الري وiControl" },
       { en: "Safe operation and daily checks", ar: "التشغيل الآمن والفحوصات اليومية" },
     ],
-    image: m("img/team-field.webp"),
+    image: m("img/og-s-training.webp"),
   },
   {
     id: "maintenance",
@@ -102,7 +102,7 @@ export const services: Service[] = [
       { en: "Preventive maintenance plans", ar: "خطط صيانة وقائية" },
       { en: "Full system overhauls", ar: "إصلاح شامل للأنظمة" },
     ],
-    image: m("img/icontrol-open.webp"),
+    image: m("img/og-s-maintenance.webp"),
   },
 ];
 

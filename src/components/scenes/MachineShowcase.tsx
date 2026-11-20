@@ -25,9 +25,10 @@ function pick(cat: Category): { prod: Product; photo: string } {
   const inCat = products.filter((p) => p.category === cat.slug);
   const prod = inCat.find((p) => p.flagship) ?? inCat[0];
   const photo =
-    prod.image !== cat.image
+    prod.card ??
+    (prod.image !== cat.image
       ? prod.image
-      : (prod.gallery.find((g) => g !== cat.image) ?? prod.image);
+      : (prod.gallery.find((g) => g !== cat.image) ?? prod.image));
   return { prod, photo };
 }
 
@@ -103,7 +104,7 @@ export function MachineShowcase() {
                 className="msx-fade absolute inset-0"
               >
                 <Image
-                  src={cat.image}
+                  src={cat.card ?? cat.image}
                   alt=""
                   fill
                   sizes="(max-width:768px) 100vw, 50vw"
