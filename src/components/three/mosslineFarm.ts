@@ -4,7 +4,7 @@ import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferG
 import { agWheel, buildAxion, buildPivot, fbm } from "@/components/farm/models";
 
 /*
- * The landing for the Mossline fly-in: once the camera is down at eye level the moss
+ * The 3D farm behind the home hero: as the camera comes down to eye level the moss
  * landscape gives way to neat, freshly mown farmland with Ghargrow's product lines on it.
  * Units are metres; the camera looks down -Z.
  */

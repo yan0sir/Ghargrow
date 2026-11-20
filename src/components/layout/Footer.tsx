@@ -63,11 +63,6 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <Link className="hover:text-white" href={href("/3d", lang)}>
-                    3D
-                  </Link>
-                </li>
               </ul>
             </div>
             <div className="col-span-2 md:col-span-1">
