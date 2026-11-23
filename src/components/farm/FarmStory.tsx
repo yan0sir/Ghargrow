@@ -763,9 +763,9 @@ export function FarmStory() {
           }}
         />
         <div data-hero-back className="pointer-events-none absolute inset-x-0 top-[17%] px-4 text-center text-white md:top-[15%]">
-          <h1 className="font-garamond text-[13vw] leading-[1.02] font-normal tracking-tight [text-shadow:0_2px_40px_rgba(80,50,10,.25)] md:text-[8.4vw]">
+          <h2 className="font-garamond text-[13vw] leading-[1.02] font-normal tracking-tight [text-shadow:0_2px_40px_rgba(80,50,10,.25)] md:text-[8.4vw]">
             <Stagger text={t.title} delay={0.3} />
-          </h1>
+          </h2>
         </div>
         <div
           data-giant
@@ -881,7 +881,7 @@ export function FarmStory() {
                 type="button"
                 data-jump
                 onClick={() => jump(JUMP_AT[i])}
-                className="shrink-0 rounded-full px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] text-white/85 uppercase transition hover:bg-white/20 md:px-4"
+                className="inline-flex min-h-11 shrink-0 items-center rounded-full px-3 font-mono text-[10px] tracking-[0.14em] text-white/85 uppercase transition hover:bg-white/20 md:px-4"
               >
                 {j}
               </button>

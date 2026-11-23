@@ -26,21 +26,21 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-8 text-sm md:col-span-7 md:grid-cols-3">
             <div>
               <p className="eyebrow mb-4 text-white/70">{d.footer.explore}</p>
-              <ul className="space-y-2">
+              <ul className="space-y-0.5">
                 {categories.map((c) => (
                   <li key={c.slug}>
-                    <Link className="hover:text-white" href={href(`/products/${c.slug}`, lang)}>
+                    <Link className="inline-block py-1.5 hover:text-white" href={href(`/products/${c.slug}`, lang)}>
                       {c.title[lang]}
                     </Link>
                   </li>
                 ))}
                 <li>
-                  <Link className="hover:text-white" href={href("/spare-parts", lang)}>
+                  <Link className="inline-block py-1.5 hover:text-white" href={href("/spare-parts", lang)}>
                     {d.nav.parts}
                   </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-white" href={href("/find-your-machine", lang)}>
+                  <Link className="inline-block py-1.5 hover:text-white" href={href("/find-your-machine", lang)}>
                     {d.nav.quiz}
                   </Link>
                 </li>
@@ -48,7 +48,7 @@ export function Footer() {
             </div>
             <div>
               <p className="eyebrow mb-4 text-white/70">{d.footer.company}</p>
-              <ul className="space-y-2">
+              <ul className="space-y-0.5">
                 {[
                   [d.nav.about, "/about"],
                   [d.nav.services, "/services"],
@@ -58,7 +58,7 @@ export function Footer() {
                   [d.nav.contact, "/contact"],
                 ].map(([l, p]) => (
                   <li key={p}>
-                    <Link className="hover:text-white" href={href(p, lang)}>
+                    <Link className="inline-block py-1.5 hover:text-white" href={href(p, lang)}>
                       {l}
                     </Link>
                   </li>
@@ -67,17 +67,17 @@ export function Footer() {
             </div>
             <div className="col-span-2 md:col-span-1">
               <p className="eyebrow mb-4 text-white/70">{d.footer.branches}</p>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {branches.map((b) => (
                   <li key={b.id}>
                     <span className="block text-white">{b.city[lang]}</span>
-                    <a dir="ltr" href={`tel:${b.phone}`} className="font-mono text-xs hover:text-white">
+                    <a dir="ltr" href={`tel:${b.phone}`} className="inline-block py-1.5 font-mono text-xs hover:text-white">
                       {b.phoneDisplay}
                     </a>
                   </li>
                 ))}
                 <li>
-                  <a href={`mailto:${site.email}`} className="hover:text-white">
+                  <a href={`mailto:${site.email}`} className="inline-block py-1.5 hover:text-white">
                     {site.email}
                   </a>
                 </li>
@@ -88,13 +88,13 @@ export function Footer() {
 
         <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 text-xs md:flex-row md:items-center md:justify-end">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               Facebook
             </a>
-            <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+            <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               Instagram
             </a>
-            <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+            <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               LinkedIn
             </a>
             <span>

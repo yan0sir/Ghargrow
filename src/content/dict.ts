@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n";
 /** UI strings. Arabic is a first draft — TODO(client): native review before launch. */
 const en = {
   nav: {
+    skip: "Skip to content",
     products: "Products",
     services: "Services",
     parts: "Spare parts",
@@ -192,6 +193,7 @@ export type Dict = typeof en;
 
 const ar: Dict = {
   nav: {
+    skip: "تخطَّ إلى المحتوى",
     products: "المنتجات",
     services: "الخدمات",
     parts: "قطع الغيار",

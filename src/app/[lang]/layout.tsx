@@ -48,7 +48,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <SiteProvider lang={lang}>
           <Loader />
           <Header />
-          <main id="main">{children}</main>
+          <main id="main" tabIndex={-1} className="outline-none">{children}</main>
           <Footer />
           <ContactPill />
           <ContactSheet />

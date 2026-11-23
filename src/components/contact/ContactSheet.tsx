@@ -15,6 +15,8 @@ export function ContactSheet() {
   const shade = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [err, setErr] = useState("");
+  /** fields that failed the last submit, so they can be marked and described for screen readers */
+  const [bad, setBad] = useState<{ name?: boolean; phone?: boolean }>({});
   const open = !!contact;
 
   useEffect(() => {
@@ -22,6 +24,7 @@ export function ContactSheet() {
   // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only state read after hydration
     setState("idle");
     setErr("");
+    setBad({});
     const mobile = window.matchMedia("(max-width: 767px)").matches;
     const rtl = document.documentElement.dir === "rtl";
     gsap.fromTo(shade.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
@@ -45,10 +48,18 @@ export function ContactSheet() {
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    if (!String(fd.get("name") || "").trim() || !String(fd.get("phone") || "").trim()) {
+    const invalid = {
+      name: !String(fd.get("name") || "").trim(),
+      // the field starts as "+218 ", so a number needs more digits than the prefix
+      phone: String(fd.get("phone") || "").replace(/\D/g, "").length < 7,
+    };
+    if (invalid.name || invalid.phone) {
+      setBad(invalid);
       setErr(d.contact.required);
+      e.currentTarget.querySelector<HTMLInputElement>(`[name="${invalid.name ? "name" : "phone"}"]`)?.focus();
       return;
     }
+    setBad({});
     setErr("");
     setState("sending");
     try {
@@ -139,11 +150,20 @@ export function ContactSheet() {
               </div>
             ) : (
               <form onSubmit={submit} className="space-y-4" noValidate>
-                <Field label={d.contact.name} name="name" autoComplete="name" required />
-                <Field label={d.contact.phone} name="phone" type="tel" autoComplete="tel" defaultValue="+218 " required dir="ltr" />
+                <Field label={d.contact.name} name="name" autoComplete="name" required error={bad.name ? "contact-err" : undefined} />
+                <Field
+                  label={d.contact.phone}
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  defaultValue="+218 "
+                  required
+                  dir="ltr"
+                  error={bad.phone ? "contact-err" : undefined}
+                />
                 <label className="block">
                   <span className="mb-1 block text-sm text-ink-700">{d.contact.branch}</span>
-                  <select name="branch" className="h-12 w-full border border-ink-900/45 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none">
+                  <select name="branch" className="h-12 w-full border border-ink-900/45 bg-white px-3 text-ink-900 focus:border-green-700">
                     {branches.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.city[lang]}
@@ -154,11 +174,19 @@ export function ContactSheet() {
                 <Field label={d.contact.farm} name="farm" />
                 <label className="block">
                   <span className="mb-1 block text-sm text-ink-700">{d.contact.message}</span>
-                  <textarea name="message" rows={3} className="w-full border border-ink-900/45 bg-white p-3 text-ink-900 focus:border-green-700 focus:outline-none" />
+                  <textarea name="message" rows={3} className="w-full border border-ink-900/45 bg-white p-3 text-ink-900 focus:border-green-700" />
                 </label>
                 <input type="text" name="company_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-                {err && <p className="text-sm text-red-700">{err}</p>}
-                {state === "error" && <p className="text-sm text-red-700">{d.contact.error}</p>}
+                {err && (
+                  <p id="contact-err" role="alert" className="text-sm text-red-700">
+                    {err}
+                  </p>
+                )}
+                {state === "error" && (
+                  <p role="alert" className="text-sm text-red-700">
+                    {d.contact.error}
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={state === "sending"}
@@ -175,14 +203,20 @@ export function ContactSheet() {
   );
 }
 
-function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+/** `error`: id of the message describing why this field is invalid (marks it aria-invalid and red) */
+function Field({ label, error, ...rest }: { label: string; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
       <span className="mb-1 block text-sm text-ink-700">
         {label}
         {rest.required && " *"}
       </span>
-      <input {...rest} className="h-12 w-full border border-ink-900/45 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none" />
+      <input
+        {...rest}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error}
+        className={`h-12 w-full border bg-white px-3 text-ink-900 focus:border-green-700 ${error ? "border-red-700" : "border-ink-900/45"}`}
+      />
     </label>
   );
 }

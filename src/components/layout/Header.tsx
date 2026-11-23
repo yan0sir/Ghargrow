@@ -81,6 +81,13 @@ export function Header() {
 
   return (
     <>
+      {/* first Tab stop on every page: jumps keyboard users past the navigation */}
+      <a
+        href="#main"
+        className="fixed start-4 top-4 z-[200] -translate-y-[200%] bg-green-900 px-5 py-3 text-sm whitespace-nowrap text-sand-50 transition focus:translate-y-0"
+      >
+        {d.nav.skip}
+      </a>
       <header
         className={`fixed inset-x-0 top-0 z-60 transition-[transform,background-color,color] duration-500 ${hiddenBar && !mega ? "-translate-y-full" : ""} ${
           mega ? "bg-sand-50/95 backdrop-blur-md" : ""
