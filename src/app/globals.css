@@ -270,6 +270,33 @@ html:not(.lite) .lite-only {
   outline-color: var(--green-300);
 }
 
+/* ── Header: each item takes the tone of what is right behind it (data-on is set by Header's probe) ── */
+[data-tone-item] {
+  color: var(--ink-900);
+  transition: color 0.35s ease;
+}
+[data-tone-item][data-on="dark"] {
+  color: #fff;
+}
+[data-tone-item][data-active],
+[data-tone-item]:hover {
+  color: var(--green-700);
+}
+[data-tone-item][data-on="dark"][data-active],
+[data-tone-item][data-on="dark"]:hover {
+  color: var(--green-300);
+}
+[data-tone-item][data-on="dark"]:focus-visible {
+  outline-color: var(--green-300);
+}
+[data-tone-item] .logo-on-dark,
+[data-tone-item][data-on="dark"] .logo-on-light {
+  display: none;
+}
+[data-tone-item][data-on="dark"] .logo-on-dark {
+  display: block;
+}
+
 /* ── Machine showcase (KERN-style pinned stage) ── */
 .msx-fade {
   opacity: 0;

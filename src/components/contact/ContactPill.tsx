@@ -35,6 +35,7 @@ export function ContactPill() {
   if (contact) return null;
   return (
     <div
+      data-tone-ignore
       className={`fixed bottom-4 end-4 z-50 flex items-stretch shadow-[0_10px_30px_-10px_rgba(20,20,15,0.45)] transition-all duration-500 md:bottom-6 md:end-6 ${
         hidden ? "pointer-events-none translate-y-24 opacity-0" : ""
       }`}

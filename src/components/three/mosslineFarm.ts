@@ -719,6 +719,8 @@ export function mountFarm(canvas: HTMLCanvasElement) {
    * window as a fraction of the canvas (the view is shifted so it is centred there) and `tilt` lowers
    * the gaze in metres so the ground fills a small window. Both ease back to 0.5 / 0 as the window grows.
    */
+  let frames = 0;
+  const px1 = new Uint8Array(4);
   const update = (k: number, time: number, sx: number, sy: number, frame?: { cx: number; tilt: number; back?: number }) => {
     if (canvas.width !== Math.round(canvas.clientWidth * renderer.getPixelRatio())) size();
     const cw = canvas.clientWidth,
@@ -754,6 +756,19 @@ export function mountFarm(canvas: HTMLCanvasElement) {
     anchors[1].pos.copy(armPoint);
 
     renderer.render(scene, camera);
+    // every few frames, note the colours along the header's line (40px down) so the header can match them
+    if (++frames % 12 === 0) {
+      const gl = renderer.getContext();
+      const W = gl.drawingBufferWidth,
+        H = gl.drawingBufferHeight;
+      const yy = Math.max(0, H - Math.round(40 * renderer.getPixelRatio()));
+      const cols: string[] = [];
+      for (let i = 0; i < 9; i++) {
+        gl.readPixels(Math.round(((i + 0.5) / 9) * (W - 1)), yy, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px1);
+        cols.push(`${px1[0]},${px1[1]},${px1[2]}`);
+      }
+      canvas.dataset.line = cols.join(";");
+    }
     const w = canvas.clientWidth,
       h = canvas.clientHeight;
     return anchors.map((an) => {

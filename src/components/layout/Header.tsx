@@ -8,6 +8,7 @@ import { useSite } from "@/components/providers/SiteProvider";
 import { categories, productsIn } from "@/content/catalog";
 import { href, otherLocale } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
+import { toneAt } from "@/lib/backdropTone";
 import { gsap } from "@/lib/gsap";
 import { Roll } from "@/components/ui/Btn";
 import { IconArrow, IconClose } from "@/components/ui/Icons";
@@ -15,25 +16,29 @@ import { IconArrow, IconClose } from "@/components/ui/Icons";
 export function Header() {
   const { d, lang, openContact } = useSite();
   const pathname = usePathname();
-  const [onDark, setOnDark] = useState(false);
   const [hiddenBar, setHiddenBar] = useState(false);
   const [menu, setMenu] = useState(false);
   const [mega, setMega] = useState(false);
   const overlay = useRef<HTMLDivElement>(null);
+  const bar = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let last = 0,
       raf = 0;
-    // sections on a dark background carry data-tone="dark"; whichever one sits under the bar flips it to light text
+    // every item in the bar (logo, each link, the language switch, the menu button) reads what is actually
+    // right behind it (photo, video, 3D sky, section colour) and turns light on dark, dark on light.
+    // Set as data-on="dark|light" straight on the element; the colours live in globals.css.
+    const ignore = (el: Element) => !!el.closest("header, [data-tone-ignore]");
     const probe = () => {
       raf = 0;
-      const y = 40;
-      setOnDark(
-        Array.from(document.querySelectorAll<HTMLElement>('[data-tone="dark"]')).some((el) => {
-          const r = el.getBoundingClientRect();
-          return r.top <= y && r.bottom >= y && r.height > 0;
-        }),
-      );
+      const items = bar.current?.querySelectorAll<HTMLElement>("[data-tone-item]") ?? [];
+      items.forEach((el) => {
+        if (mega) return void (el.dataset.on = "light"); // the open mega menu has its own sand panel
+        const r = el.getBoundingClientRect();
+        if (!r.width) return;
+        const t = toneAt(r.left + r.width / 2, r.top + r.height / 2, ignore);
+        if (t) el.dataset.on = t;
+      });
     };
     const onScroll = () => {
       const y = window.scrollY;
@@ -45,12 +50,17 @@ export function Header() {
     probe();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    // videos, the farm's day/night sky and late-loading photos change without a scroll
+    const tick = window.setInterval(() => {
+      if (!document.hidden && !raf) raf = requestAnimationFrame(probe);
+    }, 400);
     return () => {
+      window.clearInterval(tick);
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [pathname]);
+  }, [pathname, mega]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- close menus on navigation
@@ -75,9 +85,6 @@ export function Header() {
     { label: d.nav.about, path: "/about" },
   ];
   const isActive = (p: string) => pathname.startsWith(href(p, lang));
-  // light text over dark sections; the open mega menu has its own light panel, so it stays dark there
-  const light = onDark && !mega;
-  const fg = light ? "text-white" : "text-ink-900";
 
   return (
     <>
@@ -89,28 +96,40 @@ export function Header() {
         {d.nav.skip}
       </a>
       <header
+        ref={bar}
         className={`fixed inset-x-0 top-0 z-60 transition-[transform,background-color,color] duration-500 ${hiddenBar && !mega ? "-translate-y-full" : ""} ${
           mega ? "bg-sand-50/95 backdrop-blur-md" : ""
         }`}
         onMouseLeave={() => setMega(false)}
       >
         <div className="wrap flex h-16 items-center justify-between gap-6 md:h-20">
-          <Link href={href("/", lang)} className="relative z-10 flex shrink-0 items-center" aria-label="Ghargrow — home">
-            <Image src={light ? "/media/logo/lockup-light.png" : "/media/logo/lockup.png"} alt="Ghargrow Agro-Industries" width={900} height={224} priority className="h-9 w-auto md:h-11" />
+          <Link href={href("/", lang)} data-tone-item className="relative z-10 flex shrink-0 items-center" aria-label="Ghargrow — home">
+            {/* both logos are in the page; data-on picks which one shows */}
+            <Image src="/media/logo/lockup.png" alt="Ghargrow Agro-Industries" width={900} height={224} priority className="logo-on-light h-9 w-auto md:h-11" />
+            <Image src="/media/logo/lockup-light.png" alt="" width={900} height={224} priority className="logo-on-dark h-9 w-auto md:h-11" />
           </Link>
 
-          <nav className={`hidden items-center gap-8 text-[15px] lg:flex ${fg}`}>
+          <nav className="hidden items-center gap-8 text-[15px] lg:flex">
             <button
               onMouseEnter={() => setMega(true)}
               onFocus={() => setMega(true)}
               onClick={() => setMega((v) => !v)}
-              className={`group hover:text-green-700 ${isActive("/products") ? "text-green-700" : ""}`}
+              data-tone-item
+              data-active={isActive("/products") || undefined}
+              className="group"
               aria-expanded={mega}
             >
               <Roll>{d.nav.products}</Roll>
             </button>
             {nav.map((n) => (
-              <Link key={n.path} href={href(n.path, lang)} className={`group hover:text-green-700 ${isActive(n.path) ? "text-green-700" : ""}`}>
+              <Link
+                key={n.path}
+                href={href(n.path, lang)}
+                data-tone-item
+                data-active={isActive(n.path) || undefined}
+                aria-current={isActive(n.path) ? "page" : undefined}
+                className="group"
+              >
                 <Roll>{n.label}</Roll>
               </Link>
             ))}
@@ -119,7 +138,8 @@ export function Header() {
           <div className="flex items-center gap-2 md:gap-4">
             <Link
               href={switchHref}
-              className={`flex h-10 items-center px-2 text-sm font-medium hover:text-green-700 ${fg}`}
+              data-tone-item
+              className="flex h-10 items-center px-2 text-sm font-medium"
               hrefLang={otherLocale(lang)}
               lang={otherLocale(lang)}
             >
@@ -127,7 +147,8 @@ export function Header() {
             </Link>
             <button
               onClick={() => setMenu(true)}
-              className={`flex h-11 items-center gap-2 px-2 text-sm lg:hidden ${fg}`}
+              data-tone-item
+              className="flex h-11 items-center gap-2 px-2 text-sm lg:hidden"
               aria-label={d.nav.menu}
               aria-expanded={menu}
               aria-controls="mobile-menu"
