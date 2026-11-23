@@ -34,7 +34,7 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
 
   return (
     <>
-      <section className="relative h-[92svh] min-h-[560px] overflow-hidden bg-ink-900 text-white">
+      <section data-tone="dark" className="relative h-[92svh] min-h-[560px] overflow-hidden bg-ink-900 text-white">
         {c.video ? (
           <video className="absolute inset-0 size-full object-cover" src={c.video} poster={c.image} autoPlay muted loop playsInline />
         ) : (
@@ -73,7 +73,7 @@ export default async function CategoryPage({ params }: PageProps<"/[lang]/produc
 
       {c.feature === "attachment-swap" && <AttachmentSwap />}
       {c.feature === "pivot-simulator" && (
-        <section className="section-y bg-green-900 text-white">
+        <section data-tone="dark" className="section-y bg-green-900 text-white">
           <div className="wrap">
             <SplitHeading className="h1 mt-3 mb-4 max-w-3xl text-white!">{d.home.irrigationTitle}</SplitHeading>
             <p className="lead mb-12 max-w-xl text-white/75">{d.home.irrigationLead}</p>

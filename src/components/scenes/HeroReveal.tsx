@@ -114,9 +114,10 @@ export function HeroReveal() {
             },
           },
         });
-        tl.to(q("[data-copy]"), { opacity: 0, x: desktop ? (rtl ? 60 : -60) : 0, y: desktop ? 0 : -40, filter: "blur(6px)", duration: 0.25 }, 0)
+        tl.to(q("[data-copy]"), { autoAlpha: 0, x: desktop ? (rtl ? 60 : -60) : 0, y: desktop ? 0 : -40, filter: "blur(6px)", duration: 0.25 }, 0)
           .to(q("[data-shade]"), { opacity: 1, duration: 0.3 }, 0.5)
-          .fromTo(q("[data-outro]"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.25 }, 0.62)
+          .fromTo(q("[data-outro]"), { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.25 }, 0.62)
+          // (autoAlpha also sets visibility, so buttons that are faded out can't be reached with Tab)
           // hold so the products and the closing entry can be read before the page moves on
           .to({}, { duration: 0.5 });
       });
@@ -185,7 +186,7 @@ export function HeroReveal() {
         </div>
 
         {/* the dictionary entry for the name */}
-        <div data-outro className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-[var(--gutter)] pb-[10vh] text-white opacity-0">
+        <div data-outro className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-[var(--gutter)] pb-[10vh] text-white opacity-0 invisible">
           <div className="pointer-events-auto mx-auto grid max-w-[1440px] gap-8 md:grid-cols-12 md:items-end">
             <div className="md:col-span-6">
               <p className="display text-white!">{lang === "ar" ? "غرغار" : "Ghargrow"}</p>

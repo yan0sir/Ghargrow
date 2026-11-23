@@ -44,7 +44,7 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
                 <div className="md:col-span-4">
                   <SplitHeading className="h1 mt-3">{c.title[lang]}</SplitHeading>
                   <p className="mt-5 max-w-sm">{c.intro[lang]}</p>
-                  <Link href={href(`/products/${c.slug}`, lang)} className="group mt-8 inline-flex items-center gap-3 text-ink-900 hover:text-green-700">
+                  <Link href={href(`/products/${c.slug}`, lang)} className="group mt-8 inline-flex items-center gap-3 text-ink-900 underline decoration-ink-900/40 underline-offset-[6px] hover:text-green-700 hover:decoration-green-700">
                     {d.cta.viewCategory} <IconArrow />
                   </Link>
                   <p className="mt-2 font-mono text-xs text-ink-400">
@@ -62,7 +62,7 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
         );
       })}
 
-      <section className="bg-green-900 text-white">
+      <section data-tone="dark" className="bg-green-900 text-white">
         <Link href={href("/find-your-machine", lang)} className="wrap group grid items-center gap-8 py-20 md:grid-cols-2">
           <p className="display text-white!">{d.home.quizTitle}</p>
           <div className="flex items-center justify-between gap-6 md:justify-end">

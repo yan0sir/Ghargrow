@@ -90,7 +90,7 @@ export function LibyaMap() {
             strokeLinecap="round"
           />
           {/* Mediterranean label */}
-          <text data-label x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#8a867f" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
+          <text data-label x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#67635c" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
             {lang === "ar" ? "البحر المتوسط" : "MEDITERRANEAN SEA"}
           </text>
           {/* Tripoli reference */}
@@ -98,8 +98,8 @@ export function LibyaMap() {
             const [tx, ty] = px(13.19, 32.89);
             return (
               <g data-label>
-                <circle cx={tx} cy={ty} r={3} fill="#8a867f" />
-                <text x={tx + 8} y={ty + 16} fontSize={12} fill="#8a867f">
+                <circle cx={tx} cy={ty} r={3} fill="#67635c" />
+                <text x={tx + 8} y={ty + 16} fontSize={12} fill="#67635c">
                   {lang === "ar" ? "طرابلس" : "Tripoli"}
                 </text>
               </g>

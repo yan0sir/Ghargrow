@@ -18,7 +18,7 @@ export default async function QuizPage({ params }: PageProps<"/[lang]/find-your-
   if (!hasLocale(lang)) notFound();
   const d = getDict(lang);
   return (
-    <section className="min-h-svh bg-green-900 text-white">
+    <section data-tone="dark" className="min-h-svh bg-green-900 text-white">
       <div className="wrap pt-32 pb-24 md:pt-40">
         <p className="lead mt-3 max-w-xl text-white/70">{d.quiz.lead}</p>
         <div className="mt-14">

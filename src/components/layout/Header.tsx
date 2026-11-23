@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSite } from "@/components/providers/SiteProvider";
 import { categories, productsIn } from "@/content/catalog";
 import { href, otherLocale } from "@/lib/i18n";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 import { gsap } from "@/lib/gsap";
 import { Roll } from "@/components/ui/Btn";
 import { IconArrow, IconClose } from "@/components/ui/Icons";
@@ -63,6 +64,9 @@ export function Header() {
     gsap.from(overlay.current.querySelectorAll("[data-item]"), { yPercent: 100, opacity: 0, stagger: 0.05, duration: 0.8, delay: 0.15 });
   }, [menu]);
 
+  // the mobile menu: Escape closes it, Tab stays inside, focus goes back to the Menu button
+  useFocusTrap(menu, overlay, () => setMenu(false));
+
   const switchHref = pathname.replace(/^\/(en|ar)/, `/${otherLocale(lang)}`);
   const nav = [
     { label: d.nav.services, path: "/services" },
@@ -117,7 +121,13 @@ export function Header() {
             <button onClick={() => openContact()} className={`group hidden h-10 items-center px-5 text-sm transition hover:bg-green-700 hover:text-white md:inline-flex ${light ? "bg-white text-ink-900" : "bg-ink-900 text-white"}`}>
               <Roll>{d.nav.talk}</Roll>
             </button>
-            <button onClick={() => setMenu(true)} className={`flex h-10 items-center gap-2 px-2 text-sm lg:hidden ${fg}`} aria-label={d.nav.menu}>
+            <button
+              onClick={() => setMenu(true)}
+              className={`flex h-11 items-center gap-2 px-2 text-sm lg:hidden ${fg}`}
+              aria-label={d.nav.menu}
+              aria-expanded={menu}
+              aria-controls="mobile-menu"
+            >
               <span className="flex flex-col gap-[5px]">
                 <span className="block h-px w-6 bg-current" />
                 <span className="block h-px w-6 bg-current" />
@@ -157,7 +167,16 @@ export function Header() {
 
       {/* Mobile overlay menu */}
       {menu && (
-        <div ref={overlay} className="fixed inset-0 z-[70] flex flex-col overflow-y-auto bg-green-900 text-white" data-lenis-prevent>
+        <div
+          ref={overlay}
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label={d.nav.menu}
+          data-tone="dark"
+          className="fixed inset-0 z-[70] flex flex-col overflow-y-auto bg-green-900 text-white"
+          data-lenis-prevent
+        >
           <div className="wrap flex h-16 items-center justify-between">
             <Image src="/media/logo/lockup-light.png" alt="Ghargrow" width={900} height={224} className="h-9 w-auto" />
             <button onClick={() => setMenu(false)} className="p-2" aria-label={d.nav.close}>

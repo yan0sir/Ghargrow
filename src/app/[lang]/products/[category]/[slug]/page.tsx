@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           ))}
         </FrameScrub>
       ) : p.video ? (
-        <section className="relative h-[80svh] overflow-hidden bg-ink-900" data-immersive>
+        <section data-tone="dark" className="relative h-[80svh] overflow-hidden bg-ink-900" data-immersive>
           <video className="absolute inset-0 size-full object-cover" src={p.video} poster={p.image} autoPlay muted loop playsInline preload="none" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent" />
           <div className="wrap absolute inset-x-0 bottom-0 pb-14 text-white">
@@ -166,7 +166,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
       )}
 
       {/* Service & parts */}
-      <section className="bg-green-900 text-white/80">
+      <section data-tone="dark" className="bg-green-900 text-white/80">
         <div className="wrap section-y grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
             <h2 className="h1 text-white!">{d.products.serviceTitle}</h2>
@@ -190,7 +190,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
                     </div>
                   )}
                   <p className="mt-3 text-sm text-white">{x.name[lang]}</p>
-                  {x.fits && <p className="font-mono text-xs text-white/50">{x.fits}</p>}
+                  {x.fits && <p className="font-mono text-xs text-white/70">{x.fits}</p>}
                 </li>
               ))}
             </ul>

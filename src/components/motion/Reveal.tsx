@@ -67,6 +67,8 @@ export function SplitHeading({
           type: "lines",
           mask: "lines",
           linesClass: "split-line-inner",
+          // whole lines stay readable as they are, so no aria-label is needed (it is invalid on a <p>)
+          aria: "none",
           autoSplit: true,
           onSplit: (self) =>
             gsap.from(self.lines, {

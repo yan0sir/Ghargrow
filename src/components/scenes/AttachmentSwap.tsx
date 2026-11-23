@@ -215,7 +215,7 @@ export function AttachmentSwap() {
               <div key={p.slug} data-copy className="absolute inset-0 flex flex-col justify-center" style={i ? { visibility: "hidden" } : undefined}>
                 <p className="h2 mt-3">{p.name}</p>
                 <p className="mt-3 max-w-sm">{p.summary[lang]}</p>
-                {p.keySpec && <p className="mt-3 font-mono text-sm text-green-700">{p.keySpec[lang]}</p>}
+                {p.keySpec && <p className="mt-3 font-mono text-sm text-green-800">{p.keySpec[lang]}</p>}
                 <div className="mt-6">
                   <Btn href={href(productHref(p), lang)} variant="outline">
                     {d.cta.viewProduct}

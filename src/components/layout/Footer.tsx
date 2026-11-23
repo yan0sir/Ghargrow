@@ -25,7 +25,7 @@ export function Footer() {
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm md:col-span-7 md:grid-cols-3">
             <div>
-              <p className="eyebrow mb-4 text-white/50">{d.footer.explore}</p>
+              <p className="eyebrow mb-4 text-white/70">{d.footer.explore}</p>
               <ul className="space-y-2">
                 {categories.map((c) => (
                   <li key={c.slug}>
@@ -47,7 +47,7 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <p className="eyebrow mb-4 text-white/50">{d.footer.company}</p>
+              <p className="eyebrow mb-4 text-white/70">{d.footer.company}</p>
               <ul className="space-y-2">
                 {[
                   [d.nav.about, "/about"],
@@ -66,7 +66,7 @@ export function Footer() {
               </ul>
             </div>
             <div className="col-span-2 md:col-span-1">
-              <p className="eyebrow mb-4 text-white/50">{d.footer.branches}</p>
+              <p className="eyebrow mb-4 text-white/70">{d.footer.branches}</p>
               <ul className="space-y-3">
                 {branches.map((b) => (
                   <li key={b.id}>

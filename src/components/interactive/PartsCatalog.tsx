@@ -31,7 +31,7 @@ export function PartsCatalog() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={d.parts.search}
-            className="h-12 w-full border border-ink-900/20 bg-white ps-12 pe-4 text-ink-900 focus:border-green-700 focus:outline-none"
+            className="h-12 w-full border border-ink-900/45 bg-white ps-12 pe-4 text-ink-900 focus:border-green-700 focus:outline-none"
             type="search"
           />
         </label>

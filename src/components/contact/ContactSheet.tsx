@@ -6,6 +6,7 @@ import { branches, site } from "@/content/site";
 import { waLink } from "@/lib/whatsapp";
 import { IconClose, IconPhone, IconWhatsApp, IconArrow } from "@/components/ui/Icons";
 import { gsap } from "@/lib/gsap";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 /** One shared sheet for every "Ask about this" action: WhatsApp, call a branch, or a short inquiry form. */
 export function ContactSheet() {
@@ -29,11 +30,9 @@ export function ContactSheet() {
       mobile ? { yPercent: 100 } : { xPercent: rtl ? -100 : 100 },
       { yPercent: 0, xPercent: 0, duration: 0.7, ease: "expo.out" },
     );
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeContact();
-    window.addEventListener("keydown", onKey);
-    panel.current?.querySelector<HTMLElement>("a,button")?.focus();
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, closeContact]);
+  }, [open]);
+  // Escape closes, Tab stays inside the sheet, focus returns to the button that opened it
+  useFocusTrap(open, panel, closeContact);
 
   if (!contact) return null;
 
@@ -144,7 +143,7 @@ export function ContactSheet() {
                 <Field label={d.contact.phone} name="phone" type="tel" autoComplete="tel" defaultValue="+218 " required dir="ltr" />
                 <label className="block">
                   <span className="mb-1 block text-sm text-ink-700">{d.contact.branch}</span>
-                  <select name="branch" className="h-12 w-full border border-ink-900/20 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none">
+                  <select name="branch" className="h-12 w-full border border-ink-900/45 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none">
                     {branches.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.city[lang]}
@@ -155,7 +154,7 @@ export function ContactSheet() {
                 <Field label={d.contact.farm} name="farm" />
                 <label className="block">
                   <span className="mb-1 block text-sm text-ink-700">{d.contact.message}</span>
-                  <textarea name="message" rows={3} className="w-full border border-ink-900/20 bg-white p-3 text-ink-900 focus:border-green-700 focus:outline-none" />
+                  <textarea name="message" rows={3} className="w-full border border-ink-900/45 bg-white p-3 text-ink-900 focus:border-green-700 focus:outline-none" />
                 </label>
                 <input type="text" name="company_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
                 {err && <p className="text-sm text-red-700">{err}</p>}
@@ -183,7 +182,7 @@ function Field({ label, ...rest }: { label: string } & React.InputHTMLAttributes
         {label}
         {rest.required && " *"}
       </span>
-      <input {...rest} className="h-12 w-full border border-ink-900/20 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none" />
+      <input {...rest} className="h-12 w-full border border-ink-900/45 bg-white px-3 text-ink-900 focus:border-green-700 focus:outline-none" />
     </label>
   );
 }

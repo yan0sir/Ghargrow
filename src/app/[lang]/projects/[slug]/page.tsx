@@ -28,7 +28,7 @@ export default async function ProjectPage({ params }: PageProps<"/[lang]/project
   const used = p.products.map(findProduct).filter((x) => !!x);
   return (
     <>
-      <section className="relative h-[88svh] min-h-[520px] overflow-hidden bg-ink-900">
+      <section data-tone="dark" className="relative h-[88svh] min-h-[520px] overflow-hidden bg-ink-900">
         <Image src={p.cover} alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-transparent to-ink-900/20" />
         <div className="wrap absolute inset-x-0 bottom-0 pb-14 text-white">
