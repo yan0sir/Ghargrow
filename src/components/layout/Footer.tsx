@@ -86,7 +86,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 text-xs md:flex-row md:items-center md:justify-end">
+        <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 pb-20 text-xs md:flex-row md:items-center md:justify-start md:pb-0">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               Facebook

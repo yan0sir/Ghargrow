@@ -142,10 +142,11 @@ export function HeroReveal() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-ink-900/45 to-transparent" />
         <div data-shade className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900/65 via-ink-900/5 to-transparent opacity-0" />
 
-        {/* headline over the scene, on the start side */}
+        {/* headline over the scene, on the start side. On phones it sits above the floating WhatsApp / call pill;
+            on desktop its last line is level with the pill */}
         <div
           data-copy
-          className="relative z-10 flex h-full flex-col justify-end px-[var(--gutter)] pb-4 text-sand-50 [text-shadow:0_2px_28px_rgba(20,30,10,.45)] md:w-[56%] md:pb-6"
+          className="relative z-10 flex h-full flex-col justify-end px-[var(--gutter)] pb-24 text-sand-50 [text-shadow:0_2px_28px_rgba(20,30,10,.45)] md:w-[56%] md:pb-6"
         >
           <h1 data-rise className="display-xl max-w-[10ch] text-sand-50!">
             {lang === "ar" ? "ازرع بثقة" : "Grow with Trust"}
@@ -197,11 +198,14 @@ export function HeroReveal() {
             </div>
             <div className="md:col-span-6">
               <p className="text-[clamp(20px,1.9vw,28px)] leading-snug font-light text-white/90">{d.home.nameDef}</p>
+              {/* different next steps from the headline's buttons, so the hero doesn't repeat itself */}
               <div className="mt-8 flex flex-wrap gap-3">
-                <Btn href={href("/products", lang)} variant="primary">
-                  {d.cta.explore}
+                <Btn href={href("/find-your-machine", lang)} variant="primary">
+                  {d.nav.quiz}
                 </Btn>
-                <ContactButton variant="light">{d.nav.talk}</ContactButton>
+                <Btn href={href("/spare-parts", lang)} variant="light">
+                  {d.nav.parts}
+                </Btn>
               </div>
             </div>
           </div>

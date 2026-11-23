@@ -58,7 +58,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
             {p.name}
           </SplitHeading>
           {p.cutout ? (
-            <div className="pointer-events-none relative z-10 -mt-[8vw] ms-auto w-[88%] md:-mt-[10vw] md:w-[64%]">
+            <div className="pointer-events-none relative z-10 mt-6 ms-auto w-[88%] md:-mt-[10vw] md:w-[64%]">
               <Image src={p.cutout} alt={p.name} width={1600} height={1289} priority sizes="(max-width:768px) 90vw, 64vw" className="h-auto w-full drop-shadow-[0_40px_40px_rgba(20,20,15,0.25)]" />
             </div>
           ) : (

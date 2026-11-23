@@ -125,9 +125,6 @@ export function Header() {
             >
               {lang === "en" ? "العربية" : "English"}
             </Link>
-            <button onClick={() => openContact()} className={`group hidden h-10 items-center px-5 text-sm transition hover:bg-green-700 hover:text-white md:inline-flex ${light ? "bg-white text-ink-900" : "bg-ink-900 text-white"}`}>
-              <Roll>{d.nav.talk}</Roll>
-            </button>
             <button
               onClick={() => setMenu(true)}
               className={`flex h-11 items-center gap-2 px-2 text-sm lg:hidden ${fg}`}
@@ -149,7 +146,7 @@ export function Header() {
             {categories.map((c) => (
               <div key={c.slug}>
                 <Link href={href(`/products/${c.slug}`, lang)} className="group block">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-sand-200">
+                  <div className="relative aspect-square overflow-hidden bg-sand-200">
                     <Image src={c.card ?? c.image} alt="" fill sizes="25vw" className="object-cover transition duration-700 group-hover:scale-105" />
                   </div>
                   <p className="eyebrow mt-4 text-ink-400">{c.num}</p>
