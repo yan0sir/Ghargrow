@@ -10,7 +10,7 @@ import { MachineShowcase } from "@/components/scenes/MachineShowcase";
 import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
-import { ParallaxImage } from "@/components/motion/ParallaxImage";
+import { ProvenGallery } from "@/components/scenes/ProvenGallery";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { IconArrow } from "@/components/ui/Icons";
 
@@ -56,47 +56,14 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ZettaJoule "duck egg" section: light heading left, copy + icon button right, wide parallax image with a dark info card */}
-      <section className="section-y bg-[#f1f5f8]">
-        <div className="wrap">
-          <div className="grid gap-8 md:grid-cols-12">
-            <SplitHeading className="text-[clamp(34px,4.2vw,60px)]! leading-none! font-medium! tracking-[-0.03em] whitespace-pre-line text-black md:col-span-5">
-              {lang === "ar" ? "آلات مجرّبة،\nودعم محلي" : "Proven Machinery,\nLocal Support"}
-            </SplitHeading>
-            <div className="md:col-span-4 md:col-start-9">
-              <p className="text-[clamp(15px,1.25vw,18px)] leading-[1.3] text-pretty text-[#524f4b]">{d.about.story}</p>
-              <Link
-                href={href("/about", lang)}
-                className="group mt-7 inline-flex h-12 items-stretch overflow-hidden rounded-[3px] text-[15px] font-medium text-black"
-              >
-                <span className="grid w-12 place-items-center bg-[#d7ecb4] transition-colors group-hover:bg-green-700 group-hover:text-white">
-                  <IconArrow className="size-4" />
-                </span>
-                <span className="flex items-center border border-s-0 border-black/15 px-4 transition-colors group-hover:border-black/40">
-                  {d.cta.learnMore}
-                </span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="relative mx-auto mt-12 aspect-[4/5] overflow-hidden rounded-[3px] bg-[#dfe6ea] md:aspect-[952/623] md:w-[80%]">
-            <ParallaxImage src="/media/img/claas-field.webp" alt="CLAAS AXION tractor with front and side mowers cutting alfalfa" sizes="(max-width:768px) 100vw, 92vw" />
-            <div className="absolute inset-x-4 bottom-4 md:inset-x-auto md:start-6 md:bottom-6 md:w-[min(440px,34%)]">
-              <div className="rounded-[3px] bg-black p-5 text-[#cfcdc9] md:p-6">
-                <p className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.14em] text-white uppercase">
-                  <span className="size-2 rounded-full bg-[#c6f35c]" />
-                  {lang === "ar" ? "في الحقل، معك" : "In the field, with you"}
-                </p>
-                <p className="mt-4 text-[15px] leading-[1.35] text-pretty">
-                  {lang === "ar"
-                    ? "من الحشّ إلى الري، تُسلَّم كل آلة وتُجهَّز وتُصان على أيدي فرقنا في بنغازي وسبها وجالو."
-                    : "From mowing to irrigation, every machine is delivered, set up and serviced by our own teams in Benghazi, Sabha and Jalu."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Proven machinery: heading stays at the top while the copy and a strip of photos scroll sideways */}
+      <ProvenGallery
+        title={lang === "ar" ? "آلات مجرّبة،\nودعم محلي" : "Proven Machinery,\nLocal Support"}
+        title2={lang === "ar" ? "نسلّم ونركّب ونصون، بفرقنا نحن." : "Delivered, set up and serviced by our own teams."}
+        body={d.about.story}
+        cta={d.cta.learnMore}
+        ctaHref={href("/about", lang)}
+      />
 
       {/* The 3D journey: from sand to harvest */}
       <FarmStory />
