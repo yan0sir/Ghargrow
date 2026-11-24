@@ -27,12 +27,12 @@ const GALLERY: { src: string | null; alt?: string; h: number; ratio: number }[] 
   { src: null, alt: "Western pivot irrigating ripe wheat", h: 26, ratio: 1.5 },
   { src: null, alt: "Western pivot watering a young crop", h: 29, ratio: 1.56 },
   { src: null, alt: "Arcusin AutoStack loading bale stacks", h: 24, ratio: 2.4 },
-  { src: null, alt: "CLAAS tractor mowing alfalfa", h: 32, ratio: 1.33 },
-  { src: null, alt: "Western pivot over a green maize field", h: 27, ratio: 1.78 },
-  { src: null, alt: "Sulphur Bentonite 90 fertilizer bag on soil", h: 23, ratio: 1.69 },
-  { src: null, alt: "Engineer assembling a pivot tower", h: 31, ratio: 1.5 },
-  { src: null, alt: "Sheep grazing, seen from above", h: 25, ratio: 1.78 },
-  { src: null, alt: "Camels on a farm", h: 30, ratio: 1.78 },
+  { src: null, alt: "Sheep grazing, seen from above", h: 32, ratio: 1.78 },
+  { src: null, alt: "CLAAS tractor mowing alfalfa", h: 27, ratio: 1.33 },
+  { src: null, alt: "Western pivot over a green maize field", h: 23, ratio: 1.78 },
+  { src: null, alt: "Sulphur Bentonite 90 fertilizer bag on soil", h: 31, ratio: 1.69 },
+  { src: null, alt: "Camels on a farm", h: 25, ratio: 1.78 },
+  { src: null, alt: "Engineer assembling a pivot tower", h: 30, ratio: 1.5 },
 ];
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
