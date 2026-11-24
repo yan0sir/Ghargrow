@@ -14,8 +14,9 @@ import { IconArrow } from "@/components/ui/Icons";
  * On phones (and with reduced motion / lite mode) the photos are a normal swipeable row and the second
  * heading follows them.
  *
- * GALLERY: one entry per slot, in order. Put an image path in a slot (e.g. "/media/img/expo-booth.webp")
- * to fill it; null shows an empty placeholder of the same size. The last slot is the one that grows.
+ * PHOTOS: drop files named 01.jpg … 10.jpg (or .webp / .png / .avif) into public/media/gallery/ and they
+ * fill the slots in that order (the page reads the folder, see galleryPhotos.ts). A missing number shows an
+ * empty placeholder of the same size. Slot 10 is the one that grows. GALLERY below sets each slot's size.
  */
 const GALLERY: { src: string | null; alt?: string; h: number; ratio: number }[] = [
   { src: null, h: 30, ratio: 1.6 },
@@ -37,6 +38,7 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export function ProvenGallery({
   title,
   title2,
+  photos = [],
   body,
   cta,
   ctaHref,
@@ -44,6 +46,8 @@ export function ProvenGallery({
   title: string;
   /** the heading that appears beside the enlarged last photo */
   title2: string;
+  /** image paths for slots 1–10 (null = empty), from the public/media/gallery folder */
+  photos?: (string | null)[];
   body: string;
   cta: string;
   ctaHref: string;
@@ -180,7 +184,7 @@ export function ProvenGallery({
 
           {/* the photos */}
           <ul className="no-scrollbar mt-10 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-[var(--gutter)] md:mt-0 md:snap-none md:overflow-visible md:ps-0 md:pe-[var(--gutter)]">
-            {GALLERY.map((g, i) => (
+            {GALLERY.map((slot, i) => ({ ...slot, src: photos[i] ?? slot.src })).map((g, i) => (
               <li
                 key={i}
                 data-slot={i + 1}

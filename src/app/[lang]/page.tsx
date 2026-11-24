@@ -11,6 +11,7 @@ import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { ProvenGallery } from "@/components/scenes/ProvenGallery";
+import { galleryPhotos } from "@/lib/galleryPhotos";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { IconArrow } from "@/components/ui/Icons";
 
@@ -60,6 +61,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <ProvenGallery
         title={lang === "ar" ? "آلات مجرّبة،\nودعم محلي" : "Proven Machinery,\nLocal Support"}
         title2={lang === "ar" ? "نسلّم ونركّب ونصون، بفرقنا نحن." : "Delivered, set up and serviced by our own teams."}
+        photos={galleryPhotos()}
         body={d.about.story}
         cta={d.cta.learnMore}
         ctaHref={href("/about", lang)}
