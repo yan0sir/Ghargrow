@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { IconArrow } from "@/components/ui/Icons";
+import { ScrollTrigger } from "@/lib/gsap";
 
 /**
  * "Proven Machinery, Local Support": the heading sits at the top and stays put; below it the copy and a
@@ -11,6 +12,8 @@ import { IconArrow } from "@/components/ui/Icons";
  *   1. the copy slides off to the start side and the photos follow it across
  *   2. once the last photo reaches the start edge it grows into a large frame, the first heading fades
  *      away and a second heading appears beside the frame, level with it
+ *   3. the frame then closes to a line (its height shrinks to 0 about the middle); the 3D journey that
+ *      follows (FarmStory) overlaps this last screen and opens from that same line
  * On phones (and with reduced motion / lite mode) the photos are a normal swipeable row and the second
  * heading follows them.
  *
@@ -73,7 +76,9 @@ export function ProvenGallery({
     // measured in measure(): how far the strip travels, and the last photo's start and end boxes
     let slide = 0,
       grow = 0,
+      shrink = 0,
       raf = 0;
+    const others = Array.from(strip.querySelectorAll<HTMLElement>("li")).filter((li) => li !== last);
     const box = { w0: 0, h0: 0, w1: 0, h1: 0, dy: 0 };
 
     const reset = () => {
@@ -82,11 +87,13 @@ export function ProvenGallery({
       h1.style.opacity = h1.style.transform = "";
       h2.style.opacity = h2.style.transform = "";
       last.style.width = last.style.height = last.style.transform = "";
+      others.forEach((li) => (li.style.opacity = ""));
     };
 
     const measure = () => {
       reset();
       if (still()) {
+        if (section.style.height) requestAnimationFrame(() => ScrollTrigger.refresh());
         section.style.height = "";
         section.dataset.still = "";
         slide = 0;
@@ -109,11 +116,17 @@ export function ProvenGallery({
       const bottom = r.bottom - stage.current!.getBoundingClientRect().top;
       box.dy = vh / 2 + box.h1 / 2 - bottom;
       grow = vh * 1.1;
+      shrink = vh * 0.8;
       // the second heading sits beside the final frame, centred on it
       const start = gutter + box.w1 + vw * 0.045;
       h2.style.setProperty("--x", `${start}px`);
       h2.style.setProperty("--w", `${vw - start - gutter}px`);
-      section.style.height = `${vh + slide + grow}px`;
+      const height = `${vh + slide + grow + shrink}px`;
+      if (section.style.height !== height) {
+        section.style.height = height;
+        // the pinned 3D section below depends on where this one ends
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      }
       update();
     };
 
@@ -128,13 +141,17 @@ export function ProvenGallery({
       text.style.opacity = String(Math.max(0, 1 - shift / (text.offsetWidth * 0.9)));
       // phase 2: the last photo grows, heading one gives way to heading two
       const q = ease(clamp((y - slide) / (grow * 0.75)));
+      // phase 3: the frame closes to a line about its middle
+      const r = ease(clamp((y - slide - grow) / shrink));
+      const H = r > 0 ? box.h1 * (1 - r) : lerp(box.h0, box.h1, q);
       last.style.width = `${lerp(box.w0, box.w1, q)}px`;
-      last.style.height = `${lerp(box.h0, box.h1, q)}px`;
-      last.style.transform = `translate3d(0, ${box.dy * q}px, 0)`;
+      last.style.height = `${H}px`;
+      last.style.transform = `translate3d(0, ${r > 0 ? box.dy - (box.h1 - H) / 2 : box.dy * q}px, 0)`;
+      others.forEach((li) => (li.style.opacity = String(1 - q)));
       h1.style.opacity = String(1 - clamp(q * 2.2));
       h1.style.transform = `translate3d(0, ${-30 * q}px, 0)`;
       const t2 = clamp((q - 0.45) / 0.55);
-      h2.style.opacity = String(t2);
+      h2.style.opacity = String(t2 * (1 - clamp(r * 2.5)));
       h2.style.transform = `translate3d(${(rtl ? -1 : 1) * 40 * (1 - t2)}px, -50%, 0)`;
     };
 

@@ -166,11 +166,14 @@ export function FarmStory() {
   const root = useRef<HTMLElement>(null);
   const holder = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
+  /** share of the pinned scroll spent opening the stage (when it follows the photo strip), before the journey */
+  const revealRef = useRef(0);
 
   const jump = (p: number) => {
     const st = stRef.current;
     if (!st) return;
-    const y = st.start + p * (st.end - st.start);
+    const R = revealRef.current;
+    const y = st.start + (R + p * (1 - R)) * (st.end - st.start);
     if (lenis.current) lenis.current.scrollTo(y, { duration: 1.6 });
     else window.scrollTo({ top: y, behavior: "smooth" });
   };
@@ -316,15 +319,38 @@ export function FarmStory() {
     /* scroll */
     let progress = lite ? 0.6 : 0;
     let sp = progress;
+    // Right after the "Proven Machinery" photo strip (desktop, motion on): this section is pulled up over the
+    // strip's last screen, where the enlarged photo closes to a line; the stage then opens from that line
+    // (clip-path, height 0 → full) and only then does the journey start.
+    const prev = rootEl.previousElementSibling as HTMLElement | null;
+    const joined = !lite && !!prev?.matches("[data-pg]:not([data-still])") && window.matchMedia("(min-width: 768px)").matches;
+    const REVEAL = joined ? 0.1 : 0;
+    revealRef.current = REVEAL;
+    const stageEl = q("[data-stage]");
+    if (joined) {
+      rootEl.style.marginTop = "-100svh";
+      // see-through over the strip's last screen, the strip's colour below it
+      rootEl.style.background = "linear-gradient(transparent 100svh, #f1f5f8 100svh)";
+      stageEl.style.clipPath = "inset(50% 0 50% 0)";
+    }
+    const open = (raw: number) => {
+      if (!joined) return;
+      const t = clamp(raw / REVEAL);
+      const c = 50 * (1 - t) ** 3;
+      stageEl.style.clipPath = t >= 1 ? "" : `inset(${c}% 0 ${c}% 0)`;
+    };
     const st = lite
       ? null
       : ScrollTrigger.create({
           trigger: rootEl,
           start: "top top",
-          end: "+=900%",
-          pin: q("[data-stage]"),
+          end: joined ? "+=1000%" : "+=900%",
+          pin: stageEl,
           scrub: true,
-          onUpdate: (s) => (progress = s.progress),
+          onUpdate: (s) => {
+            open(s.progress);
+            progress = REVEAL ? clamp((s.progress - REVEAL) / (1 - REVEAL)) : s.progress;
+          },
         });
     stRef.current = st;
 
@@ -715,6 +741,7 @@ export function FarmStory() {
       ro.disconnect();
       st?.kill();
       stRef.current = null;
+      rootEl.style.marginTop = rootEl.style.background = stageEl.style.clipPath = "";
       controls.dispose();
       scene.traverse((o) => {
         const m = o as THREE.Mesh;
