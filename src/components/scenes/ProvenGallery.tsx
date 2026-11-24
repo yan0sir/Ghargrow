@@ -22,16 +22,17 @@ import { ScrollTrigger } from "@/lib/gsap";
  * empty placeholder of the same size. Slot 10 is the one that grows. GALLERY below sets each slot's size.
  */
 const GALLERY: { src: string | null; alt?: string; h: number; ratio: number }[] = [
-  { src: null, h: 30, ratio: 1.6 },
-  { src: null, h: 25, ratio: 1.4 },
-  { src: null, h: 28, ratio: 1.6 },
-  { src: null, h: 32, ratio: 1 },
-  { src: null, h: 22, ratio: 0.78 },
-  { src: null, h: 27, ratio: 1.12 },
-  { src: null, h: 29, ratio: 1.78 },
-  { src: null, h: 31, ratio: 1.3 },
-  { src: null, h: 24, ratio: 0.9 },
-  { src: null, h: 30, ratio: 1.5 },
+  // box sizes roughly follow each file's own shape (heights in % of the screen, ratio = width / height)
+  { src: null, alt: "CLAAS baler in an alfalfa field from above", h: 30, ratio: 1.33 },
+  { src: null, alt: "Western pivot irrigating ripe wheat", h: 26, ratio: 1.5 },
+  { src: null, alt: "Western pivot watering a young crop", h: 29, ratio: 1.56 },
+  { src: null, alt: "Arcusin AutoStack loading bale stacks", h: 24, ratio: 2.4 },
+  { src: null, alt: "CLAAS tractor mowing alfalfa", h: 32, ratio: 1.33 },
+  { src: null, alt: "Western pivot over a green maize field", h: 27, ratio: 1.78 },
+  { src: null, alt: "Sulphur Bentonite 90 fertilizer bag on soil", h: 23, ratio: 1.69 },
+  { src: null, alt: "Engineer assembling a pivot tower", h: 31, ratio: 1.5 },
+  { src: null, alt: "Sheep grazing, seen from above", h: 25, ratio: 1.78 },
+  { src: null, alt: "Camels on a farm", h: 30, ratio: 1.78 },
 ];
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
@@ -208,7 +209,20 @@ export function ProvenGallery({
                 className="relative h-[200px] shrink-0 snap-start overflow-hidden rounded-[3px] bg-[#dfe6ea] md:h-[var(--h)] md:will-change-[width,height,transform]"
                 style={{ "--h": `${g.h}svh`, aspectRatio: String(g.ratio) } as React.CSSProperties}
               >
-                {g.src ? (
+                {g.src && /\.(mp4|webm)$/i.test(g.src) ? (
+                  // silent looping clip; NN-poster.webp shows until it plays
+                  <video
+                    className="absolute inset-0 size-full object-cover"
+                    src={g.src}
+                    poster={g.src.replace(/\.(mp4|webm)$/i, "-poster.webp")}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-label={g.alt}
+                  />
+                ) : g.src ? (
                   <Image src={g.src} alt={g.alt ?? ""} fill sizes={i === GALLERY.length - 1 ? "(max-width:768px) 70vw, 55vw" : "(max-width:768px) 70vw, 30vw"} className="object-cover" />
                 ) : (
                   <span className="absolute start-3 top-3 font-mono text-[11px] tracking-[0.14em] text-black/30">{String(i + 1).padStart(2, "0")}</span>
