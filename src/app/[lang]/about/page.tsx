@@ -103,7 +103,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
                 className="group flex min-h-64 flex-col justify-between bg-sand-50 p-8 transition hover:bg-white"
               >
                 {brands[b].logo ? (
-                  <Image src={brands[b].logo!} alt={brands[b].name} width={600} height={120} className="h-9 w-auto self-start" />
+                  <Image src={brands[b].logo!} alt={brands[b].name} width={600} height={120} className={`${b === "arcusin" ? "h-[52px]" : "h-9"} w-auto self-start`} />
                 ) : (
                   <span className="font-display text-3xl font-medium tracking-[0.2em] text-ink-900">ARCUSIN</span>
                 )}

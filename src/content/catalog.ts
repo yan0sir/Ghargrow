@@ -39,6 +39,7 @@ export const brands: Record<BrandId, Brand> = {
   arcusin: {
     id: "arcusin",
     name: "Arcusin",
+    logo: m("logo/arcusin.png"),
     role: { en: "Bale handling partner", ar: "شريك معدات مناولة البالات" },
     blurb: {
       en: "Bale collecting and stacking equipment that clears fields faster.",

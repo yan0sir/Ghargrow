@@ -80,7 +80,6 @@ export function Header() {
   const switchHref = pathname.replace(/^\/(en|ar)/, `/${otherLocale(lang)}`);
   const nav = [
     { label: d.nav.services, path: "/services" },
-    { label: d.nav.parts, path: "/spare-parts" },
     { label: d.nav.projects, path: "/projects" },
     { label: d.nav.about, path: "/about" },
   ];
@@ -129,6 +128,7 @@ export function Header() {
                 data-active={isActive(n.path) || undefined}
                 aria-current={isActive(n.path) ? "page" : undefined}
                 className="group"
+                onMouseEnter={() => setMega(false)}
               >
                 <Roll>{n.label}</Roll>
               </Link>
@@ -162,8 +162,8 @@ export function Header() {
         </div>
 
         {/* Products mega menu */}
-        <div className={`hidden overflow-hidden transition-[max-height] duration-500 lg:block ${mega ? "max-h-[520px]" : "max-h-0"}`}>
-          <div className="wrap grid grid-cols-4 gap-6 border-t border-ink-900/10 pt-8 pb-10">
+        <div className={`hidden overflow-hidden transition-[max-height] duration-500 lg:block ${mega ? "max-h-[640px]" : "max-h-0"}`}>
+          <div className="wrap grid grid-cols-5 gap-6 border-t border-ink-900/10 pt-8 pb-16">
             {categories.map((c) => (
               <div key={c.slug}>
                 <Link href={href(`/products/${c.slug}`, lang)} className="group block">
@@ -186,6 +186,16 @@ export function Header() {
                 </ul>
               </div>
             ))}
+            {/* spare parts lives under Products */}
+            <div>
+              <Link href={href("/spare-parts", lang)} className="group block">
+                <div className="relative aspect-square overflow-hidden bg-sand-200">
+                  <Image src="/media/img/og-c-parts.webp" alt="" fill sizes="20vw" className="object-cover transition duration-700 group-hover:scale-105" />
+                </div>
+                <p className="eyebrow mt-4 text-ink-400">05</p>
+                <p className="h3 mt-1 group-hover:text-green-700">{d.nav.parts}</p>
+              </Link>
+            </div>
           </div>
         </div>
       </header>

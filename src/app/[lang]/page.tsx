@@ -52,7 +52,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </Link>
           ))}
           <Link href={href("/products/bale-handling", lang)} className="flex items-center">
-            <Image src="/media/logo/arcusin.png" alt="Arcusin" width={948} height={384} className="h-9 w-auto md:h-12" />
+            <Image src="/media/logo/arcusin.png" alt="Arcusin" width={948} height={384} className="h-11 w-auto md:h-[58px]" />
           </Link>
         </div>
       </section>
