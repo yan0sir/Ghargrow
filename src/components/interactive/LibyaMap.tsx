@@ -55,7 +55,7 @@ export function LibyaMap() {
       const tl = gsap
         .timeline({ paused: true })
         .to(q("[data-border]"), {
-          duration: 4.2,
+          duration: 2.2,
           ease: "none",
           // a pen tip leads the stroke round the border, so it reads as being drawn by hand
           onUpdate() {
