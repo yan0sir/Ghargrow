@@ -1,5 +1,6 @@
 "use client";
 
+import { CartButton } from "@/components/cart/Cart";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -145,6 +146,9 @@ export function Header() {
             >
               {lang === "en" ? "العربية" : "English"}
             </Link>
+            <span data-tone-item className="flex">
+              <CartButton />
+            </span>
             <button
               onClick={() => setMenu(true)}
               data-tone-item

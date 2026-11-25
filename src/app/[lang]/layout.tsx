@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Inter, IBM_Plex_Sans_Arabic } from "next/font/google
 import "../globals.css";
 import { dirOf, hasLocale, locales } from "@/lib/i18n";
 import { site } from "@/content/site";
+import { CartProvider } from "@/components/cart/Cart";
 import { SiteProvider } from "@/components/providers/SiteProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -46,12 +47,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
     <html lang={lang} dir={dirOf(lang)} className={`${geist.variable} ${geistMono.variable} ${inter.variable} ${plex.variable}`}>
       <body>
         <SiteProvider lang={lang}>
+          <CartProvider>
           <Loader />
           <Header />
           <main id="main" tabIndex={-1} className="outline-none">{children}</main>
           <Footer />
           <ContactPill />
           <ContactSheet />
+          </CartProvider>
         </SiteProvider>
         <script
           type="application/ld+json"

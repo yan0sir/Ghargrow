@@ -11,6 +11,7 @@ import { SplitHeading, Reveal } from "@/components/motion/Reveal";
 import { FrameScrub } from "@/components/scenes/FrameScrub";
 import { HighlightTabs, Hotspots, StickyBuyBar } from "@/components/interactive/ProductBits";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { AddToCart } from "@/components/cart/Cart";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { Btn } from "@/components/ui/Btn";
 import { IconPhone } from "@/components/ui/Icons";
@@ -67,7 +68,10 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
             </div>
           )}
           <div className="relative z-10 mt-10 grid gap-8 md:grid-cols-12">
-            <p className="lead md:col-span-6">{p.summary[lang]}</p>
+            <div className="md:col-span-6">
+              <p className="lead">{p.summary[lang]}</p>
+              <AddToCart slug={p.slug} className="mt-8" />
+            </div>
             <div className="flex flex-wrap items-start gap-3 md:col-span-6 md:justify-end">
               <WhatsAppButton label={p.name} />
               <a href={`tel:${branches[0].phone}`} className="group inline-flex h-12 items-center gap-3 bg-ink-900 px-6 text-white hover:bg-green-700">
