@@ -73,52 +73,36 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Machines — KERN-style pinned showcase: category photo left, product cards sliding in on the right */}
       <MachineShowcase />
 
-      {/* Aftersales — title left, description right, ZettaJoule industry cards below */}
-      <section data-tone="dark" className="bg-[#1d211c] text-white">
+      {/* Aftersales: label left, heading + lead offset, three tall photo cards split by thin rules */}
+      <section className="bg-sand-50">
         <div className="wrap section-y">
-          <div className="grid gap-8 md:grid-cols-12 md:items-start">
-            <SplitHeading className="h1 text-white! md:col-span-5">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</SplitHeading>
-            <div className="md:col-span-5 md:col-start-8">
-              <p className="text-[clamp(16px,1.3vw,19px)] leading-[1.4] text-pretty text-white/75">
+          <div className="grid gap-6 md:grid-cols-12">
+            <p className="font-mono text-[12px] tracking-[0.16em] text-green-700 uppercase md:col-span-3">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</p>
+            <div className="md:col-span-7">
+              <SplitHeading className="h2 font-light!">
+                {lang === "ar" ? "نبقى في الحقل بعد البيع" : "We Stay in the Field After the Sale"}
+              </SplitHeading>
+              <p className="mt-6 max-w-[660px] text-[17px] leading-[1.4] text-pretty text-ink-900/70">
                 {lang === "ar"
-                  ? "نبقى في الحقل بعد البيع: تدريب على المعدات، وصيانة دورية، وقطع غيار أصلية، ومهندسون جاهزون للاستجابة في كل فروعنا في ليبيا."
-                  : "We stay in the field after the sale: operator training, scheduled maintenance, genuine parts and engineers on call from every one of our branches across Libya."}
+                  ? "تدريب على المعدات، وصيانة دورية، وقطع غيار أصلية، ومهندسون جاهزون للاستجابة في كل فروعنا في ليبيا."
+                  : "Operator training, scheduled maintenance, genuine parts and engineers on call from every one of our branches across Libya."}
               </p>
-              <div className="mt-6">
-                <Pill href={href("/services", lang)} light>
-                  {d.nav.services}
-                </Pill>
-              </div>
             </div>
           </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-              {services.map((s) => (
-                <Link
-                  key={s.id}
-                  href={href(`/services#${s.id}`, lang)}
-                  className="group flex flex-col bg-green-900 p-3.5"
-                >
-                  {/* photo inset in the card, ZettaJoule news-card style */}
-                  <div className="relative aspect-[61/38] w-full overflow-hidden">
-                    <Image src={s.image} alt="" fill sizes="(max-width:640px) 82vw, 400px" className="object-cover transition duration-700 group-hover:scale-105" />
-                  </div>
-                  <div className="flex flex-1 flex-col px-4 pt-6 pb-4 md:px-5">
-                    <p className="flex items-center gap-6 text-[13px] font-medium tracking-[0.12em] uppercase">
-                      <span className="text-sand-50">{lang === "ar" ? "خدمة" : "Service"}</span>
-                      <span className="text-green-300">{s.num}</span>
-                    </p>
-                    <div className="mt-4 flex items-end justify-between gap-6">
-                      <div>
-                        <p className="text-[clamp(24px,2.1vw,30px)] font-display leading-[1.12] font-normal tracking-[-0.02em] text-sand-50">{s.title[lang]}</p>
-                        <p className="mt-2 text-[15px] leading-[1.5] text-pretty text-sand-50/75">{s.short[lang]}</p>
-                      </div>
-                      <span className="grid size-[60px] shrink-0 place-items-center bg-green-300 text-green-900 transition-colors group-hover:bg-sand-50">
-                        <IconArrow className="size-6 transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+          <div className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
+            {services.map((s, i) => (
+              <Link
+                key={s.id}
+                href={href(`/services#${s.id}`, lang)}
+                className={`group block pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < services.length - 1 ? "md:pe-7" : ""}`}
+              >
+                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px]">
+                  <Image src={s.image} alt="" fill sizes="(max-width:768px) 90vw, 30vw" className="object-cover transition duration-700 group-hover:scale-105" />
+                </div>
+                <p className="mt-8 text-[20px] leading-tight text-ink-900 group-hover:text-green-700">{s.title[lang]}</p>
+                <p className="mt-4 max-w-[400px] text-[17px] leading-[1.4] text-pretty text-ink-900/70">{s.short[lang]}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
