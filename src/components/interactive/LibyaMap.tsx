@@ -45,13 +45,16 @@ export function LibyaMap() {
       const svg = svgRef.current!;
       if (document.documentElement.classList.contains("lite") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const q = gsap.utils.selector(svg);
-      gsap.set(q("[data-border]"), { strokeDashoffset: 1 });
+      const border = svg.querySelector("[data-border]") as SVGPathElement;
+      const blen = border.getTotalLength();
+      // real lengths (not pathLength) so the stroke reliably appears only where the pen has been
+      border.setAttribute("stroke-dasharray", `${blen} ${blen}`);
+      border.setAttribute("stroke-dashoffset", String(blen));
       gsap.set(q("[data-land], [data-label]"), { opacity: 0 });
       gsap.set(q("[data-city]"), { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
       const tl = gsap
         .timeline({ paused: true })
         .to(q("[data-border]"), {
-          strokeDashoffset: 0,
           duration: 4.2,
           ease: "none",
           // a pen tip leads the stroke round the border, so it reads as being drawn by hand
@@ -62,6 +65,7 @@ export function LibyaMap() {
             const pt = path.getPointAtLength(len * this.progress());
             pen.setAttribute("cx", String(pt.x));
             pen.setAttribute("cy", String(pt.y));
+            path.setAttribute("stroke-dashoffset", String(len * (1 - this.progress())));
             pen.style.opacity = this.progress() < 1 ? "1" : "0";
           },
         })
@@ -84,7 +88,7 @@ export function LibyaMap() {
 
   return (
     <div className="grid gap-10 md:grid-cols-12 md:items-center">
-      <div className="md:col-span-7">
+      <div className="md:order-2 md:col-span-7">
         <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`} className="mx-auto w-[60%]" role="img" aria-label="Map of Libya with Ghargrow branches">
           <defs>
             <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -95,8 +99,6 @@ export function LibyaMap() {
           <path
             data-border
             d={outlinePath}
-            pathLength={1}
-            strokeDasharray="1 1"
             fill="none"
             stroke="#43780e"
             strokeWidth={1.8}

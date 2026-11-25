@@ -46,13 +46,13 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <Link
               key={b}
               href={href(`/products/${b === "claas" ? "tractors-machinery" : "irrigation"}`, lang)}
-              className="group flex items-center gap-4 grayscale transition hover:grayscale-0"
+              className="group flex items-center gap-4"
             >
-              <Image src={brands[b].logo!} alt={brands[b].name} width={600} height={120} className="h-7 w-auto opacity-70 transition group-hover:opacity-100 md:h-9" />
+              <Image src={brands[b].logo!} alt={brands[b].name} width={600} height={120} className="h-7 w-auto md:h-9" />
             </Link>
           ))}
-          <Link href={href("/products/bale-handling", lang)} className="font-display text-2xl font-medium tracking-[0.2em] text-ink-400 hover:text-ink-900 md:text-3xl">
-            ARCUSIN
+          <Link href={href("/products/bale-handling", lang)} className="flex items-center">
+            <Image src="/media/logo/arcusin.png" alt="Arcusin" width={948} height={384} className="h-9 w-auto md:h-12" />
           </Link>
         </div>
       </section>
