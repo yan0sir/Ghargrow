@@ -191,10 +191,6 @@ export function HeroReveal() {
           <div className="pointer-events-auto mx-auto grid max-w-[1440px] gap-8 md:grid-cols-12 md:items-end">
             <div className="md:col-span-6">
               <p className="display text-white!">{lang === "ar" ? "غرغار" : "Ghargrow"}</p>
-              <p className="mt-3 flex items-baseline gap-4 font-mono text-sm text-white/70">
-                <span dir="ltr">{d.home.namePron}</span>
-                <em className="not-italic">{d.home.nameNoun}</em>
-              </p>
             </div>
             <div className="md:col-span-6">
               <p className="text-[clamp(20px,1.9vw,28px)] leading-snug font-light text-white/90">{d.home.nameDef}</p>

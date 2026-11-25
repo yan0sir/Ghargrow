@@ -256,20 +256,6 @@ function buildSurroundings() {
   wheat.rotation.x = -Math.PI / 2;
   wheat.position.set(0, 0.02, -170);
   g.add(wheat);
-  // windbreak
-  const leaf = new THREE.MeshLambertMaterial({ color: 0x4d6b38 });
-  const trunk = new THREE.MeshLambertMaterial({ color: 0x5a4a3a });
-  for (let i = 0; i < 70; i++) {
-    const tx = -260 + i * 7.5 + (Math.random() - 0.5) * 3;
-    const h = 7 + Math.random() * 5;
-    const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, h * 0.4, 6), trunk);
-    tr.position.set(tx, h * 0.2, -150);
-    g.add(tr);
-    const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 1), leaf);
-    crown.scale.set(2.2 + Math.random(), h * 0.45, 2.2 + Math.random());
-    crown.position.set(tx, h * 0.62, -150 + (Math.random() - 0.5) * 4);
-    g.add(crown);
-  }
   return g;
 }
 
@@ -639,9 +625,6 @@ export function mountFarm(canvas: HTMLCanvasElement) {
   ground.receiveShadow = true;
   scene.add(ground);
   scene.add(buildTufts());
-  scene.add(buildMossMounds());
-  scene.add(buildFerns());
-  scene.add(buildMossRocks());
   scene.add(buildSurroundings());
 
   /* products */
