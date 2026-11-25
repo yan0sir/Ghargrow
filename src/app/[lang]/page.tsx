@@ -11,6 +11,7 @@ import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { ProvenGallery } from "@/components/scenes/ProvenGallery";
+import { MiniPlanner } from "@/components/interactive/MiniPlanner";
 import { galleryPhotos } from "@/lib/galleryPhotos";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
 import { IconArrow } from "@/components/ui/Icons";
@@ -106,7 +107,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       {/* Farm planner teaser: answer a few questions, get a product list with quantities, send it on WhatsApp */}
       <section data-tone="dark" className="bg-green-900 text-sand-50">
-        <div className="wrap section-y grid gap-12 md:grid-cols-12 md:items-end">
+        <div className="wrap section-y grid gap-12 md:grid-cols-12 md:items-center">
           <div className="md:col-span-6">
             <SplitHeading className="h2 text-sand-50!">
               {lang === "ar" ? "لست متأكداً مما تحتاجه أرضك؟" : "Not Sure What Your Land Needs?"}
@@ -120,21 +121,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               href={href("/find-your-machine", lang)}
               className="mt-10 inline-flex h-14 items-center gap-3 bg-green-300 px-8 text-[16px] text-ink-900 transition hover:bg-sand-50"
             >
-              {lang === "ar" ? "ابدأ مخطط المزرعة" : "Plan my farm"} <IconArrow className="size-5" />
+              {lang === "ar" ? "المخطط الكامل" : "Open the full planner"} <IconArrow className="size-5" />
             </Link>
           </div>
-          <ol className="grid gap-px bg-sand-50/15 md:col-span-6 sm:grid-cols-3">
-            {(lang === "ar"
-              ? [["01", "أخبرنا عن أرضك", "المساحة، والمحصول، والري، والموقع."],["02", "احصل على خطة", "المعدات المقترحة وعدد كل منها."],["03", "أرسل عبر واتساب", "عدّل الكميات وأرسل الطلب بنقرة."]]
-              : [["01", "Tell us about your land", "Size, crop, water and where it is."],["02", "Get a plan", "The equipment you need and how many of each."],["03", "Send it on WhatsApp", "Adjust the quantities and send it in one tap."]]
-            ).map(([n, title, body]) => (
-              <li key={n} className="bg-green-900 p-6 sm:min-h-56">
-                <p className="font-mono text-[12px] tracking-[0.16em] text-green-300">{n}</p>
-                <p className="mt-6 text-[20px] leading-tight">{title}</p>
-                <p className="mt-3 text-[15px] leading-[1.45] text-sand-50/65">{body}</p>
-              </li>
-            ))}
-          </ol>
+          <div className="md:col-span-6">
+            <MiniPlanner />
+          </div>
         </div>
       </section>
 
