@@ -76,9 +76,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       {/* Aftersales: label left, heading + lead offset, three tall photo cards split by thin rules */}
       <section className="bg-sand-50">
         <div className="wrap section-y">
-          <div className="grid gap-6 md:grid-cols-12">
-            <p className="font-mono text-[12px] tracking-[0.16em] text-green-700 uppercase md:col-span-3">{lang === "ar" ? "خدمة ما بعد البيع" : "Aftersales"}</p>
-            <div className="md:col-span-7">
+          <div>
               <SplitHeading className="h2 font-light!">
                 {lang === "ar" ? "نبقى في الحقل بعد البيع" : "We Stay in the Field After the Sale"}
               </SplitHeading>
@@ -87,7 +85,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                   ? "تدريب على المعدات، وصيانة دورية، وقطع غيار أصلية، ومهندسون جاهزون للاستجابة في كل فروعنا في ليبيا."
                   : "Operator training, scheduled maintenance, genuine parts and engineers on call from every one of our branches across Libya."}
               </p>
-            </div>
           </div>
           <div className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
             {services.map((s, i) => (
@@ -96,7 +93,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 href={href(`/services#${s.id}`, lang)}
                 className={`group block pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < services.length - 1 ? "md:pe-7" : ""}`}
               >
-                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px]">
+                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px] md:aspect-auto md:h-[min(34vw,600px)]">
                   <Image src={s.image} alt="" fill sizes="(max-width:768px) 90vw, 30vw" className="object-cover transition duration-700 group-hover:scale-105" />
                 </div>
                 <p className="mt-8 text-[20px] leading-tight text-ink-900 group-hover:text-green-700">{s.title[lang]}</p>
