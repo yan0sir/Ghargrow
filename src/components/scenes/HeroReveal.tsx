@@ -15,7 +15,6 @@ import { mountFarm } from "@/components/three/mosslineFarm";
  * lifts away, the camera pushes on across the farm, the product hotspots pop up on the models,
  * and the closing dictionary entry for the name holds so it can be read.
  */
-const PHOTO = "/media/img/hero-background.webp";
 /** Farm flight positions: resting (landed, the machines and the pivot in view) → end of the push-in. */
 const K0 = 0.4;
 const K1 = 0.95;
@@ -130,9 +129,6 @@ export function HeroReveal() {
       <div data-stage className="relative h-svh w-full overflow-hidden bg-[#dfe3e0]">
         {/* the 3D farm, full screen */}
         <div data-scene className="absolute inset-0">
-          {/* poster: shown until the first 3D frame (and as the lite / reduced-motion fallback) */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={PHOTO} alt="Green irrigated field" className="absolute inset-0 size-full object-cover" fetchPriority="high" />
           <canvas
             ref={canvasRef}
             aria-label="3D farm with Ghargrow machinery, irrigation, bales, seed and spare parts"

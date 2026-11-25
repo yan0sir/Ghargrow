@@ -218,7 +218,7 @@ export function FarmStory() {
 
       /* camera: a slow orbit high over the circle */
       const azi = 0.9 + p * 0.8;
-      const dist = mobile ? 230 : 205;
+      const dist = mobile ? 200 : 175;
       camera.position.set(Math.cos(azi) * Math.cos(0.72) * dist, Math.sin(0.72) * dist, Math.sin(azi) * Math.cos(0.72) * dist);
       camera.lookAt(0, 0, 0);
       wheatMat.uniforms.uSun.value.copy(sun.position).normalize().transformDirection(camera.matrixWorldInverse);
@@ -273,7 +273,7 @@ export function FarmStory() {
     <section ref={root} className="relative bg-[#f1f5f8]">
       <div data-stage className="relative h-svh overflow-hidden bg-[#f1f5f8]">
         <h2 className="h2 absolute inset-x-0 top-[12svh] px-[var(--gutter)] text-center md:top-[10svh]">{t.title}</h2>
-        <div ref={holder} className="absolute top-1/2 left-1/2 aspect-square w-[min(92vw,62svh)] -translate-x-1/2 -translate-y-[58%] md:w-[min(42vw,72svh)] md:-translate-y-[45%] [&>canvas]:size-full" />
+        <div ref={holder} className="absolute top-1/2 left-1/2 aspect-square w-[min(92vw,62svh)] -translate-x-1/2 -translate-y-[58%] md:w-[min(48vw,82svh)] md:-translate-y-[45%] [&>canvas]:size-full" />
         {step(0, "start-[var(--gutter)] bottom-[8svh] md:top-[32svh] md:bottom-auto")}
         {step(1, "start-[var(--gutter)] bottom-[8svh] md:top-[58svh] md:bottom-auto")}
         {step(2, "start-[var(--gutter)] bottom-[8svh] md:start-auto md:end-[var(--gutter)] md:top-[32svh] md:bottom-auto")}

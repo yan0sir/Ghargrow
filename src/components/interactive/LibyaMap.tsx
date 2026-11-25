@@ -50,7 +50,21 @@ export function LibyaMap() {
       gsap.set(q("[data-city]"), { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" });
       const tl = gsap
         .timeline({ paused: true })
-        .to(q("[data-border]"), { strokeDashoffset: 0, duration: 2.6, ease: "power1.inOut" })
+        .to(q("[data-border]"), {
+          strokeDashoffset: 0,
+          duration: 4.2,
+          ease: "none",
+          // a pen tip leads the stroke round the border, so it reads as being drawn by hand
+          onUpdate() {
+            const path = svg.querySelector("[data-border]") as SVGPathElement;
+            const pen = svg.querySelector("[data-pen]") as SVGCircleElement;
+            const len = path.getTotalLength();
+            const pt = path.getPointAtLength(len * this.progress());
+            pen.setAttribute("cx", String(pt.x));
+            pen.setAttribute("cy", String(pt.y));
+            pen.style.opacity = this.progress() < 1 ? "1" : "0";
+          },
+        })
         .to(q("[data-land]"), { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.3")
         .to(q("[data-label]"), { opacity: 1, duration: 0.5, ease: "power2.out" }, "<")
         .to(q("[data-city]"), { opacity: 1, scale: 1, duration: 0.7, stagger: 0.25, ease: "back.out(2)" }, "-=0.2");
@@ -89,6 +103,7 @@ export function LibyaMap() {
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+          <circle data-pen r={5} fill="#43780e" opacity={0} style={{ transition: "opacity .3s" }} />
           {/* Mediterranean label */}
           <text data-label x={px(16, 33.6)[0]} y={px(16, 33.6)[1]} fontSize={12} fill="#67635c" fontFamily="var(--font-geist-mono)" letterSpacing={3}>
             {lang === "ar" ? "البحر المتوسط" : "MEDITERRANEAN SEA"}

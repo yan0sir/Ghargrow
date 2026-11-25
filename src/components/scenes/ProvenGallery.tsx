@@ -223,7 +223,7 @@ export function ProvenGallery({
                     aria-label={g.alt}
                   />
                 ) : g.src ? (
-                  <Image src={g.src} alt={g.alt ?? ""} fill sizes={i === GALLERY.length - 1 ? "(max-width:768px) 70vw, 55vw" : "(max-width:768px) 70vw, 30vw"} className="object-cover" />
+                  <Image src={g.src} alt={g.alt ?? ""} fill unoptimized sizes={i === GALLERY.length - 1 ? "(max-width:768px) 70vw, 55vw" : "(max-width:768px) 70vw, 30vw"} className="object-cover" />
                 ) : (
                   <span className="absolute start-3 top-3 font-mono text-[11px] tracking-[0.14em] text-black/30">{String(i + 1).padStart(2, "0")}</span>
                 )}
