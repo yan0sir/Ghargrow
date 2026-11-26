@@ -36,7 +36,7 @@ export function Reveal({
     { scope: ref },
   );
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} className={className} data-split>
       {children}
     </Tag>
   );
@@ -89,7 +89,7 @@ export function SplitHeading({
     { scope: ref },
   );
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} className={className} data-split>
       {children}
     </Tag>
   );
