@@ -33,8 +33,8 @@ export function CursorLeaves() {
       travelled += Math.hypot(e.clientX - lastX, e.clientY - lastY);
       lastX = e.clientX;
       lastY = e.clientY;
-      // a leaf about every 38px of movement, up to 18 on screen
-      if (travelled < 38 || alive > 18) return;
+      // a leaf about every 20px of movement, up to 40 on screen
+      if (travelled < 20 || alive > 40) return;
       travelled = 0;
       const size = 18 + Math.random() * 14;
       const leaf = document.createElement("span");
@@ -43,15 +43,17 @@ export function CursorLeaves() {
       layer.appendChild(leaf);
       alive++;
       const drift = (Math.random() - 0.5) * 180;
-      const spin = (Math.random() < 0.5 ? -1 : 1) * (120 + Math.random() * 200);
+      const spin = (Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 540);
+      // tumbling: the leaf also flips over as it spins
+      const flip = (Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 360);
       const fall = 220 + Math.random() * 200;
       const start = Math.random() * 360;
       const anim = leaf.animate(
         [
-          { transform: `translate(0,0) rotate(${start}deg)`, opacity: 0 },
-          { transform: `translate(${drift * 0.4}px,${fall * 0.25}px) rotate(${start + spin * 0.3}deg)`, opacity: 1, offset: 0.15 },
-          { transform: `translate(${-drift * 0.3}px,${fall * 0.6}px) rotate(${start + spin * 0.7}deg)`, opacity: 0.9, offset: 0.6 },
-          { transform: `translate(${drift}px,${fall}px) rotate(${start + spin}deg)`, opacity: 0 },
+          { transform: `translate(0,0) rotate(${start}deg) rotateY(0deg)`, opacity: 0 },
+          { transform: `translate(${drift * 0.4}px,${fall * 0.25}px) rotate(${start + spin * 0.3}deg) rotateY(${flip * 0.3}deg)`, opacity: 1, offset: 0.15 },
+          { transform: `translate(${-drift * 0.3}px,${fall * 0.6}px) rotate(${start + spin * 0.7}deg) rotateY(${flip * 0.7}deg)`, opacity: 0.9, offset: 0.6 },
+          { transform: `translate(${drift}px,${fall}px) rotate(${start + spin}deg) rotateY(${flip}deg)`, opacity: 0 },
         ],
         { duration: 2200 + Math.random() * 1200, easing: "cubic-bezier(.3,.1,.4,1)" },
       );
