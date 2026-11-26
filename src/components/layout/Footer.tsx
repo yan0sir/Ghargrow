@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { waLink } from "@/lib/whatsapp";
 import { useSite } from "@/components/providers/SiteProvider";
 import { branches, site } from "@/content/site";
 import { categories } from "@/content/catalog";
@@ -15,13 +16,45 @@ export function Footer() {
     () => new Date().getFullYear(),
     () => 2026,
   );
+  const [email, setEmail] = useState("");
+  const ar = lang === "ar";
+  // no mailing backend: the signup opens WhatsApp with the address, so sales can add it to their list
+  const subscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    const msg = ar ? `مرحباً، أرجو إضافتي إلى نشرة غرغار الإخبارية: ${email.trim()}` : `Hello, please add me to the Ghargrow newsletter: ${email.trim()}`;
+    window.open(waLink(site.defaultWhatsapp, msg), "_blank", "noopener,noreferrer");
+    setEmail("");
+  };
   return (
-    <footer data-tone="dark" className="relative overflow-hidden bg-green-900 text-white/80">
-      <div className="wrap relative pt-20 pb-10">
+    // sticky reveal: the page content (z-10, opaque) scrolls up off the footer, which stays pinned to the bottom
+    <footer data-tone="dark" className="sticky bottom-0 z-0 overflow-hidden border-t border-white/10 bg-green-900 text-white/80">
+      <div className="wrap relative pt-16 pb-8 md:pt-20">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <LeafMark light className="w-20" />
-            <p className="display mt-8 text-white">{site.tagline[lang]}</p>
+            <LeafMark light className="w-14" />
+            <p className="mt-6 text-[clamp(26px,2.4vw,36px)] leading-[1.1] font-medium tracking-[-0.02em] text-white">
+              {ar ? "أخبار الحقل في بريدك" : "Field news, in your inbox"}
+            </p>
+            <p className="mt-3 max-w-[400px] text-[15px] leading-[1.5] text-white/70">
+              {ar ? "معدات جديدة ومعارض ونصائح موسمية. مرة في الشهر، دون إزعاج." : "New machines, expos and seasonal tips. Once a month, no spam."}
+            </p>
+            <form onSubmit={subscribe} className="mt-6 flex max-w-[440px] border-b border-white/40 focus-within:border-green-300">
+              <label htmlFor="ft-email" className="sr-only">{ar ? "بريدك الإلكتروني" : "Your email"}</label>
+              <input
+                id="ft-email"
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={ar ? "بريدك الإلكتروني" : "Your email"}
+                className="h-12 min-w-0 flex-1 bg-transparent text-[16px] text-white outline-none placeholder:text-white/50"
+              />
+              <button type="submit" className="h-12 px-2 text-[14px] font-medium text-green-300 hover:text-white">
+                {ar ? "اشترك ←" : "Subscribe →"}
+              </button>
+            </form>
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm md:col-span-7 md:grid-cols-3">
             <div>
@@ -86,7 +119,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-20 flex flex-col gap-6 border-t border-white/15 pt-6 pb-20 text-xs md:flex-row md:items-center md:justify-start md:pb-0">
+        {/* the big logo */}
+        <p aria-hidden className="mt-14 font-display text-[clamp(64px,17.5vw,300px)] leading-[0.8] font-semibold tracking-[-0.05em] text-white/95 select-none md:mt-20">
+          {ar ? "غرغار" : "GHARGROW"}
+        </p>
+
+        <div className="mt-8 flex flex-col gap-6 border-t border-white/15 pt-6 pb-20 text-xs md:flex-row md:items-center md:justify-start md:pb-0">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               Facebook

@@ -52,7 +52,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           <CartProvider>
           <Loader />
           <Header />
-          <main id="main" tabIndex={-1} className="outline-none">{children}</main>
+          <main id="main" tabIndex={-1} className="relative z-10 bg-sand-50 outline-none">{children}</main>
           <Footer />
           <ContactPill />
           <ContactSheet />
