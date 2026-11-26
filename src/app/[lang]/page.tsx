@@ -9,7 +9,7 @@ import { HeroReveal } from "@/components/scenes/HeroReveal";
 import { MachineShowcase } from "@/components/scenes/MachineShowcase";
 import { FarmStory } from "@/components/farm/FarmStory";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
-import { Reveal, SplitHeading } from "@/components/motion/Reveal";
+import { SplitHeading } from "@/components/motion/Reveal";
 import { ProvenGallery } from "@/components/scenes/ProvenGallery";
 import { MiniPlanner } from "@/components/interactive/MiniPlanner";
 import { galleryPhotos } from "@/lib/galleryPhotos";
@@ -147,17 +147,23 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               <Pill href={href("/news", lang)}>{d.cta.viewAll}</Pill>
             </div>
           </div>
-          <Reveal stagger={0.1} className="mt-12 grid gap-6 md:grid-cols-3">
-            {posts.map((p) => (
-              <Link key={p.slug} href={href(`/news/${p.slug}`, lang)} className="group block">
-                <div className="relative aspect-[3/2] overflow-hidden rounded-lg bg-sand-200">
+          {/* same card style as Aftersales: photo, title, short text, split by thin rules */}
+          <div className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
+            {posts.slice(0, 3).map((p, i) => (
+              <Link
+                key={p.slug}
+                href={href(`/news/${p.slug}`, lang)}
+                className={`group block pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < 2 ? "md:pe-7" : ""}`}
+              >
+                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px] md:aspect-auto md:h-[min(34vw,600px)]">
                   <Image src={p.cover} alt="" fill sizes="(max-width:768px) 90vw, 30vw" className="object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <p className="mt-3 text-[13px] text-ink-400">{p.date}</p>
-                <p className="h3 mt-1 group-hover:text-green-700">{p.title[lang]}</p>
+                <p className="mt-8 font-mono text-[12px] tracking-[0.12em] text-ink-900/50">{p.date}</p>
+                <p className="mt-2 text-[20px] leading-tight text-ink-900 group-hover:text-green-700">{p.title[lang]}</p>
+                <p className="mt-4 max-w-[400px] text-[17px] leading-[1.4] text-pretty text-ink-900/70">{p.excerpt[lang]}</p>
               </Link>
             ))}
-          </Reveal>
+          </div>
         </div>
       </section>
 

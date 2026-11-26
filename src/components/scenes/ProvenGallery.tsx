@@ -202,7 +202,10 @@ export function ProvenGallery({
 
           {/* the photos */}
           <ul className="no-scrollbar mt-10 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-[var(--gutter)] md:mt-0 md:snap-none md:overflow-visible md:ps-0 md:pe-[var(--gutter)]">
-            {GALLERY.map((slot, i) => ({ ...slot, src: photos[i] ?? slot.src })).map((g, i) => (
+            {GALLERY.map((slot, i) => ({ ...slot, src: photos[i] ?? slot.src }))
+              // slots with no file are left out, so the strip closes up
+              .filter((g) => g.src)
+              .map((g, i, all) => (
               <li
                 key={i}
                 data-slot={i + 1}
@@ -223,7 +226,7 @@ export function ProvenGallery({
                     aria-label={g.alt}
                   />
                 ) : g.src ? (
-                  <Image src={g.src} alt={g.alt ?? ""} fill unoptimized sizes={i === GALLERY.length - 1 ? "(max-width:768px) 70vw, 55vw" : "(max-width:768px) 70vw, 30vw"} className="object-cover" />
+                  <Image src={g.src} alt={g.alt ?? ""} fill unoptimized sizes={i === all.length - 1 ? "(max-width:768px) 70vw, 55vw" : "(max-width:768px) 70vw, 30vw"} className="object-cover" />
                 ) : (
                   <span className="absolute start-3 top-3 font-mono text-[11px] tracking-[0.14em] text-black/30">{String(i + 1).padStart(2, "0")}</span>
                 )}
