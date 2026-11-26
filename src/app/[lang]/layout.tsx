@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Inter, IBM_Plex_Sans_Arabic } from "next/font/google
 import "../globals.css";
 import { dirOf, hasLocale, locales } from "@/lib/i18n";
 import { site } from "@/content/site";
+import { CursorLeaves } from "@/components/motion/CursorLeaves";
 import { CartProvider } from "@/components/cart/Cart";
 import { SiteProvider } from "@/components/providers/SiteProvider";
 import { Header } from "@/components/layout/Header";
@@ -54,6 +55,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           <Footer />
           <ContactPill />
           <ContactSheet />
+          <CursorLeaves />
           </CartProvider>
         </SiteProvider>
         <script
