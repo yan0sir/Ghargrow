@@ -139,13 +139,13 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
         <div className="wrap section-y">
           <ChapterHead n={4} title={t.branchesT} />
           <p className="mt-6 max-w-[520px] text-[17px] leading-[1.55] text-ink-900/75">{t.branchesP}</p>
-          <ul className="mt-14 grid gap-12 sm:grid-cols-3 md:mt-20 md:gap-10">
+          <ul className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
             {branches.map((b, i) => (
-              <li key={b.id}>
-                <div className="relative mx-auto aspect-square w-[min(100%,340px)] overflow-hidden rounded-full bg-sand-200">
+              <li key={b.id} className={`pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < 2 ? "md:pe-7" : ""}`}>
+                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px] md:aspect-auto md:h-[min(34vw,600px)]">
                   <Image src={`/media/img/${["expo-team", "agronomist", "team-duo"][i]}.webp`} alt="" fill sizes="(max-width:640px) 80vw, 30vw" className="object-cover" />
                 </div>
-                <p className="mt-8 text-[20px] leading-tight font-medium text-green-900">{b.city[lang]}</p>
+                <p className="mt-8 text-[20px] leading-tight text-ink-900">{b.city[lang]}</p>
                 <a dir="ltr" href={`tel:${b.phone}`} className="mt-2 inline-block py-1 font-mono text-[15px] text-ink-900/75 hover:text-green-700">
                   {b.phoneDisplay}
                 </a>

@@ -160,14 +160,14 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
       <section className="border-t border-ink-900/10 bg-sand-50">
         <div className="wrap section-y">
           <ChapterHead n={3} title={t.ch[2].t} />
-          <ul className="mt-14 grid gap-12 sm:grid-cols-3 md:mt-20 md:gap-10">
+          <ul className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
             {d.values.map((v, i) => (
-              <li key={v.t}>
-                <div className="relative mx-auto aspect-square w-[min(100%,340px)] overflow-hidden rounded-full bg-sand-200">
+              <li key={v.t} className={`pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < 2 ? "md:pe-7" : ""}`}>
+                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px] md:aspect-auto md:h-[min(34vw,600px)]">
                   <Image src={`/media/img/${["agronomist", "team-duo", "icontrol-field"][i]}.webp`} alt="" fill sizes="(max-width:640px) 80vw, 30vw" className="object-cover" />
                 </div>
-                <p className="mt-8 text-[20px] leading-tight font-medium text-green-900">{v.t}</p>
-                <p className="mt-3 max-w-[360px] text-[16px] leading-[1.55] text-ink-900/75">{v.d}</p>
+                <p className="mt-8 text-[20px] leading-tight text-ink-900">{v.t}</p>
+                <p className="mt-4 max-w-[400px] text-[17px] leading-[1.4] text-pretty text-ink-900/70">{v.d}</p>
               </li>
             ))}
           </ul>
