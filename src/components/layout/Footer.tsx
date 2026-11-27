@@ -119,12 +119,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* the big logo */}
-        <p aria-hidden className="mt-14 font-display text-[clamp(64px,17.5vw,300px)] leading-[0.8] font-semibold tracking-[-0.05em] text-white/95 select-none md:mt-20">
-          {ar ? "غرغار" : "GHARGROW"}
-        </p>
-
-        <div className="mt-8 flex flex-col gap-6 border-t border-white/15 pt-6 pb-20 text-xs md:flex-row md:items-center md:justify-start md:pb-0">
+        <div className="mt-16 flex flex-col gap-6 border-t border-white/15 pt-6 pb-20 text-xs md:flex-row md:items-center md:justify-start md:pb-0">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white">
               Facebook

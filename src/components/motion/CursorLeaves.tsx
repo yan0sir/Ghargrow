@@ -55,7 +55,7 @@ export function CursorLeaves() {
           { transform: `translate(${-drift * 0.3}px,${fall * 0.6}px) rotate(${start + spin * 0.7}deg) rotateY(${flip * 0.7}deg)`, opacity: 0.9, offset: 0.6 },
           { transform: `translate(${drift}px,${fall}px) rotate(${start + spin}deg) rotateY(${flip}deg)`, opacity: 0 },
         ],
-        { duration: 2200 + Math.random() * 1200, easing: "cubic-bezier(.3,.1,.4,1)" },
+        { duration: 600, easing: "cubic-bezier(.3,.1,.4,1)" },
       );
       anim.onfinish = () => {
         leaf.remove();
