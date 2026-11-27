@@ -160,11 +160,11 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
       <section className="border-t border-ink-900/10 bg-sand-50">
         <div className="wrap section-y">
           <ChapterHead n={3} title={t.ch[2].t} />
-          <ul className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:grid-cols-3">
+          <ul className="mt-14 grid border-b border-ink-900/15 md:mt-20 md:-mx-7 md:grid-cols-3">
             {d.values.map((v, i) => (
-              <li key={v.t} className={`pb-12 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15 md:ps-7" : ""} ${i < 2 ? "md:pe-7" : ""}`}>
-                <div className="relative aspect-[426/479] overflow-hidden rounded-[3px] md:aspect-auto md:h-[min(34vw,600px)]">
-                  <Image src={`/media/img/${["agronomist", "team-duo", "icontrol-field"][i]}.webp`} alt="" fill sizes="(max-width:640px) 80vw, 30vw" className="object-cover" />
+              <li key={v.t} className={`pb-12 md:px-7 md:pb-14 ${i ? "mt-10 md:mt-0 md:border-s md:border-ink-900/15" : ""}`}>
+                <div className="relative aspect-square overflow-hidden rounded-[3px] bg-sand-200">
+                  <Image src={`https://images.unsplash.com/${["photo-1594771804886-a933bb2d609b", "photo-1791570923966-e113b13766a7", "photo-1738598665698-7fd7af4b5e0c"][i]}?w=1200&h=1200&fit=crop`} alt="" fill sizes="(max-width:640px) 80vw, 30vw" className="object-cover" />
                 </div>
                 <p className="mt-8 text-[20px] leading-tight text-ink-900">{v.t}</p>
                 <p className="mt-4 max-w-[400px] text-[17px] leading-[1.4] text-pretty text-ink-900/70">{v.d}</p>
