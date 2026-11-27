@@ -17,8 +17,7 @@ export function ProductCard({ p, lang, size = "md" }: { p: Product; lang: Locale
       </div>
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
-          <p className="eyebrow text-ink-400">{p.type[lang]}</p>
-          <p className="h3 mt-1 transition-colors group-hover:text-green-700">{p.name}</p>
+          <p className="h3 transition-colors group-hover:text-green-700">{p.name}</p>
           {p.keySpec && <p className="mt-1 font-mono text-sm text-ink-700">{p.keySpec[lang]}</p>}
         </div>
         <span className="mt-1 grid size-10 shrink-0 place-items-center border border-ink-900/15 transition group-hover:border-green-700 group-hover:bg-green-700 group-hover:text-white">

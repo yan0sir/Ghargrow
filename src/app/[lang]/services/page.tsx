@@ -70,8 +70,7 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/15 to-black/65" />
         <div className="wrap flex min-h-svh flex-col justify-between pt-32 pb-12 md:pt-40 md:pb-16">
           <div>
-            <p className="font-mono text-[12px] tracking-[0.18em] text-sand-50/85 uppercase">{t.eyebrow}</p>
-            <h1 className="mt-5 max-w-[16ch] text-[clamp(40px,5.6vw,80px)] leading-[1.02] font-medium tracking-[-0.035em] text-balance">{d.services.title}</h1>
+            <h1 className="max-w-[16ch] text-[clamp(40px,5.6vw,80px)] leading-[1.02] font-medium tracking-[-0.035em] text-balance">{d.services.title}</h1>
           </div>
           <p className="max-w-[460px] self-end text-[17px] leading-[1.5] text-pretty text-sand-50/90">{d.services.lead}</p>
         </div>

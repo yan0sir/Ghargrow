@@ -174,8 +174,7 @@ export function Header() {
                   <div className="relative aspect-square overflow-hidden bg-sand-200">
                     <Image src={c.card ?? c.image} alt="" fill sizes="25vw" className="object-cover transition duration-700 group-hover:scale-105" />
                   </div>
-                  <p className="eyebrow mt-4 text-ink-400">{c.num}</p>
-                  <p className="h3 mt-1 group-hover:text-green-700">{c.title[lang]}</p>
+                  <p className="h3 mt-4 group-hover:text-green-700">{c.title[lang]}</p>
                 </Link>
                 <ul className="mt-3 space-y-1 text-sm">
                   {productsIn(c.slug)
@@ -196,8 +195,7 @@ export function Header() {
                 <div className="relative aspect-square overflow-hidden bg-sand-200">
                   <Image src="/media/img/og-c-parts.webp" alt="" fill sizes="20vw" className="object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <p className="eyebrow mt-4 text-ink-400">05</p>
-                <p className="h3 mt-1 group-hover:text-green-700">{d.nav.parts}</p>
+                <p className="h3 mt-4 group-hover:text-green-700">{d.nav.parts}</p>
               </Link>
             </div>
           </div>
