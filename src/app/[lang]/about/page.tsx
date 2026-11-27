@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, href, locales } from "@/lib/i18n";
 import { getDict } from "@/content/dict";
 import { brands } from "@/content/catalog";
+import { ChapterHead } from "@/components/ui/ChapterHead";
 import { LeafMark } from "@/components/motion/LeafMark";
 import { LibyaMap } from "@/components/interactive/LibyaMap";
 import { ContactButton, WhatsAppButton } from "@/components/contact/ContactButton";
@@ -104,20 +105,6 @@ const C = {
     planner: "خطّط لمزرعتي",
   },
 };
-
-/** "01  Title" row used at the top of every chapter. */
-function ChapterHead({ n, title, light = false }: { n: number; title: string; light?: boolean }) {
-  return (
-    <div className="flex items-start gap-6 md:gap-10">
-      <span className={`font-display text-[clamp(28px,2.6vw,40px)] leading-none font-medium ${light ? "text-sand-50" : "text-green-700"}`}>
-        {String(n).padStart(2, "0")}
-      </span>
-      <h2 className={`max-w-[14ch] text-[clamp(28px,2.6vw,40px)] leading-[1.05] font-medium tracking-[-0.02em] text-balance ${light ? "text-sand-50" : "text-green-900"}`}>
-        {title}
-      </h2>
-    </div>
-  );
-}
 
 export default async function AboutPage({ params }: PageProps<"/[lang]/about">) {
   const { lang } = await params;
